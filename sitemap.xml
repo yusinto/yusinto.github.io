@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
-<loc>http://localhost:3001/step-one-to-react-es-6-and-express/</loc>
+<loc>http://yusinto.github.io/step-one-to-react-es-6-and-express/</loc>
 <lastmod>2016-03-27T17:48:00+11:00</lastmod>
 </url>
 <url>
-<loc>http://localhost:3001/404</loc>
+<loc>http://yusinto.github.io/404</loc>
 </url>
 <url>
-<loc>http://localhost:3001/about/</loc>
+<loc>http://yusinto.github.io/about/</loc>
 </url>
 <url>
-<loc>http://localhost:3001/blog/</loc>
+<loc>http://yusinto.github.io/blog/</loc>
 </url>
 <url>
-<loc>http://localhost:3001/</loc>
+<loc>http://yusinto.github.io/</loc>
 </url>
 <url>
-<loc>http://localhost:3001/projects/</loc>
+<loc>http://yusinto.github.io/projects/</loc>
 </url>
 <url>
-<loc>http://localhost:3001/tags/</loc>
+<loc>http://yusinto.github.io/tags/</loc>
 </url>
 </urlset>
