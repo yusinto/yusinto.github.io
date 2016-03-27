@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+<generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
+<link href="http://localhost:3001/feed.xml" rel="self" type="application/atom+xml" />
+<link href="http://localhost:3001/" rel="alternate" type="text/html" />
+<updated>2016-03-28T02:21:13+11:00</updated>
+<id>http://localhost:3001/</id>
+<title>React Junkie</title>
+<entry>
+<title>Step 1 to React: Using es6 with Express</title>
+<link href="http://localhost:3001/step-one-to-react-es-6-and-express/" rel="alternate" type="text/html" title="Step 1 to React: Using es6 with Express" />
+<published>2016-03-27T17:48:00+11:00</published>
+<updated>2016-03-27T17:48:00+11:00</updated>
+<id>http://localhost:3001/step-one-to-react-es-6-and-express</id>
+<content type="html" xml:base="http://localhost:3001/step-one-to-react-es-6-and-express/">&lt;p&gt;I came from a .Net background but I realised quickly how powerful and easy node is and I love it. The advent of es6 has
+bridged the gap even further. The introduction of arrow functions, classes and destructuring really make node programming
+ that much more enjoyable and fun.&lt;/p&gt;
+
+&lt;p&gt;Enough of my rant! Let’s get to the point. This post is part one of a series of posts about react and the things I
+ encountered in the process of learning it. One of the first steps that often get overlooked is how to get es6 to work
+ with node on the server side. To me this is a very important step because I want my app to be in es6 as much as possible.&lt;/p&gt;
+
+&lt;p&gt;Note that this is a very basic example of a node app running es6 without any react elements. In my next post, I will
+ add react. The following posts will gradually include react router, relay, hot module replacement (hmr), 
+ redux, foundation (sass) and many other goodies!&lt;/p&gt;
+
+&lt;p&gt;But first thing first&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;step-11-install-babel&quot;&gt;Step 1.1: Install babel&lt;/h2&gt;
+&lt;p&gt;You’ll need to install express, babel-express and babel-preset-es2015:&lt;/p&gt;
+
+&lt;p&gt;{% highlight js %}
+npm install express babel-register babel-preset-es2015 –save
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;Where express is the standard web framework for node, babel-register will compile every file that is require’d with babel and
+babel-preset-es2015 tells babel to transpile es6 code to es5.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;step-12-configure-babel---add-a-babelrc-file&quot;&gt;Step 1.2: Configure babel - add a .babelrc file&lt;/h2&gt;
+&lt;p&gt;Create a new file called .babelrc at the root directory of your project. The file contents should look like this:&lt;/p&gt;
+
+&lt;p&gt;{% highlight js %}
+{
+    “presets”: [“es2015”]
+}
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;This configures babel to transpile es6 code to es5.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;step-13-configure-an-entry-point-in-packagejson&quot;&gt;Step 1.3: Configure an entry point in package.json&lt;/h2&gt;
+
+&lt;p&gt;In your package.json, add a scripts/start command which tells npm what to do when you run “npm start” in the command line:&lt;/p&gt;
+
+&lt;p&gt;{% highlight js %}
+{
+…
+      “scripts”: {
+        “start”: “node src/server/index.js”,
+      }
+…
+}
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;This tells npm to execute src/server/index.js when you run “npm start” at your root project folder. In this case, index.js 
+is the entry point to your app. The contents of this file should look like this:&lt;/p&gt;
+
+&lt;p&gt;{% highlight js %}
+require(‘babel-register’);
+require(‘./server’);
+{% endhighlight %}&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;step-14-write-es6-code&quot;&gt;Step 1.4: Write es6 code&lt;/h2&gt;
+&lt;p&gt;The file server.js contains all your es6 code for your app. It should look like this:&lt;/p&gt;
+
+&lt;p&gt;{% highlight js %}
+import Express from ‘express’;&lt;/p&gt;
+
+&lt;p&gt;const PORT = 3000;
+const app = Express();&lt;/p&gt;
+
+&lt;p&gt;app.use((req, res) =&amp;gt; {
+    res.end(‘hello world!’);
+});&lt;/p&gt;
+
+&lt;p&gt;app.listen(PORT, () =&amp;gt; {
+    console.log(&lt;code class=&quot;highlighter-rouge&quot;&gt;Listening at ${PORT}&lt;/code&gt;);
+});
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;Here we use import statements in place of the classic require statements, const keyword instead of var, 
+arrow functions instead of inline function declarations and es6 template strings instead of string concatenations.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;step-15-run-your-app&quot;&gt;Step 1.5: Run your app!&lt;/h2&gt;
+&lt;p&gt;Run&lt;/p&gt;
+
+&lt;p&gt;{% highlight js %}
+npm start
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;at your root directory and browse to localhost:3000 to see the output of your app. Download the complete source code from
+ &lt;a href=&quot;https://github.com/yusinto/reactStep1&quot;&gt;github&lt;/a&gt;.&lt;/p&gt;
+
+</content>
+<category term="react" />
+<category term="es6" />
+<category term="express" />
+<summary>I came from a .Net background but I realised quickly how powerful and easy node is and I love it. The advent of es6 hasbridged the gap even further. The introduction of arrow functions, classes and destructuring really make node programming that much more enjoyable and fun.</summary>
+</entry>
+</feed>
