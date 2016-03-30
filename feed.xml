@@ -3,9 +3,220 @@
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
 <link href="http://www.reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
 <link href="http://www.reactjunkie.com/" rel="alternate" type="text/html" />
-<updated>2016-03-28T11:05:34+11:00</updated>
+<updated>2016-03-30T21:40:30+11:00</updated>
 <id>http://www.reactjunkie.com/</id>
 <title>React Junkie</title>
+<entry>
+<title>Step 2 to React: Webpack and React</title>
+<link href="http://www.reactjunkie.com/step-two-to-react-webpack-and-react/" rel="alternate" type="text/html" title="Step 2 to React: Webpack and React" />
+<published>2016-03-30T21:25:00+11:00</published>
+<updated>2016-03-30T21:25:00+11:00</updated>
+<id>http://www.reactjunkie.com/step-two-to-react-webpack-and-react</id>
+<content type="html" xml:base="http://www.reactjunkie.com/step-two-to-react-webpack-and-react/">&lt;p&gt;If you haven’t read my &lt;a href=&quot;http://www.reactjunkie.com/step-one-to-react-es-6-and-express/&quot;&gt;previous post&lt;/a&gt;, 
+it might be a good idea to have a quick read before reading this one. We’ll build this example based on that last post.
+Let’s get into it!&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;step-21-install-webpack-babel-and-react&quot;&gt;Step 2.1: Install webpack, babel and react&lt;/h2&gt;
+
+&lt;p&gt;{% highlight raw %}
+npm install –save-dev webpack babel-loader
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;{% highlight raw %}
+npm install –save react react-dom babel-preset-react
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;We use webpack to bundle all our javascript code into a single file. We then include this bundled file 
+in a script tag in our html just like any other js file. This single file alone will be sufficient to run our app in the browser.&lt;/p&gt;
+
+&lt;p&gt;Our code is in es6 and jsx (we’ll talk about jsx in detail a bit later) which are not (yet) natively understood by browsers. So
+we have to transpile (short for transform and compile) it into pure javascript which are understood by all browsers. We use
+babel to perform this transpilation.&lt;/p&gt;
+
+&lt;p&gt;react and react-dom are core react modules required to write react apps. babel-preset-react instructs babel (both
+babel-register and babel-loader) to transpile jsx into pure javascript.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;step-22-configure-webpack&quot;&gt;Step 2.2: Configure webpack&lt;/h2&gt;
+&lt;p&gt;Create a new file called webpack.config.dev.js at the root directory of your project. The file contents should look like this:&lt;/p&gt;
+
+&lt;p&gt;{% highlight js %}
+var webpack = require(‘webpack’);
+var path = require(‘path’);&lt;/p&gt;
+
+&lt;p&gt;module.exports = {
+    entry: [path.join(__dirname, ‘src/client/index’)],
+    output: {
+        path: path.join(__dirname, ‘dist’),
+        filename: ‘bundle.js’
+    },
+    module: {
+        loaders:[{
+            test: /.jsx?$/,
+            loader: ‘babel’,
+            include: path.join(__dirname, ‘src’)
+        }]
+    }
+};
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;There are 3 main parts to this config:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;entry: tells webpack to start bundling from this file&lt;/li&gt;
+&lt;li&gt;output: write the resultant bundled file to the dist folder at root&lt;/li&gt;
+&lt;li&gt;module.loaders: For all js or jsx files under src folder, use babel-loader to transpile those files prior to bundling&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;step-23-add-a-build-command-to-packagejson&quot;&gt;Step 2.3: Add a build command to package.json&lt;/h2&gt;
+
+&lt;p&gt;In your package.json, add a scripts.prestart command. This is a natively supported npm command, just like start.
+When you run npm start, the prestart command will always get executed first, then the start command, followed by a
+poststart command which we don’t use here.&lt;/p&gt;
+
+&lt;p&gt;In prestart, we tell npm to run webpack with the config file above essentially
+bundling our app prior to running it.&lt;/p&gt;
+
+&lt;p&gt;{% highlight js %}
+{
+…
+      “scripts”: {
+        “prestart”: “webpack –config webpack.config.dev.js –progress”,
+        “start”: “node src/server/index.js”,
+      }
+…
+}
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;When the prestart command completes, a bundle.js file should exist in the dist folder.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;step-24-write-some-react-code&quot;&gt;Step 2.4: Write some react code&lt;/h2&gt;
+&lt;p&gt;Finally we get to write some react code! This is the meatiest part, so it’s a bit longer than the other sections, but
+it’s worth it. Let’s create two new files:&lt;/p&gt;
+
+&lt;ul&gt;
+    &lt;li&gt;src/common/component/appComponent.js&lt;/li&gt;
+    &lt;li&gt;src/client/index.js&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Note about directory structure: All my code are in a src folder to separate it from other elements of the project
+like node_modules and dist. This allows me to target only src for transpilation in my webpack build. Under src, my files
+are further organised into client, server and common.&lt;/p&gt;
+
+&lt;p&gt;So what’s in common? This is in preparation for building a universal
+app (also known as isomorphic app) where the code being run on the client and server are one and the same ergo common
+code. But we’ll talk more about this in a later post.&lt;/p&gt;
+
+&lt;p&gt;If you come from an OO background like me, you should be familiar with the syntax here.&lt;/p&gt;
+
+&lt;h5 id=&quot;appcomponentjs&quot;&gt;appComponent.js&lt;/h5&gt;
+&lt;p&gt;{% highlight C# %}
+/*
+ Import react’s default module and assign it to a variable named React. 
+ Additionally we also import the Component module and assign it to a 
+ variable named Component.
+*/
+import React, {Component} from ‘react’;&lt;/p&gt;
+
+&lt;p&gt;/*
+ Subclass React.Component and implement the render method. This method 
+ must return a single child element. A react component at minimum must 
+ implement the render method. Also set this class as the default export 
+ of this file so we can import it in other files.
+*/
+export default class App extends Component {
+    render() {
+        return (
+            // Nooo this looks like inline html! Are we back in the land
+            // of classic asp/php? Short answer is no we are not. See 
+            // below for details.
+            &amp;lt;div&amp;gt;
+                &amp;lt;h1&amp;gt;Hello world in React!&amp;lt;/h1&amp;gt;
+                &amp;lt;p&amp;gt;
+                    The time now is { (new Date()).toLocaleString() }
+                &amp;lt;/p&amp;gt;
+            &amp;lt;/div&amp;gt;
+        );
+    }
+}
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;It might look like we are writing literal html strings like old school asp/php, 
+but under the bonnet these are shorthand syntax to generate ReactElements.&lt;/p&gt;
+
+&lt;p&gt;A ReactElement is the primary basic type in React which constitutes the virtual DOM. In essence, you are
+writing virtual DOM. It’s called virtual because it’s not the real DOM. React keeps an in-memory copy
+of this “html” ergo virtual dom and only flushes changes to the real DOM in the browser if there is a props or state
+change. We’ll talk about props and state more in later posts.&lt;/p&gt;
+
+&lt;p&gt;For now, just understand that you are writing a html-like syntax called jsx which becomes part of the virtual dom.&lt;/p&gt;
+
+&lt;h5 id=&quot;indexjs&quot;&gt;index.js&lt;/h5&gt;
+&lt;p&gt;{% highlight C# %}
+// Import the render method from react-dom so we can mount our 
+// component onto an html element
+import React from ‘react’;
+import {render} from ‘react-dom’;
+import App from ‘../common/component/appComponent’;&lt;/p&gt;
+
+&lt;p&gt;// This is the entry point into our react app on the client side. Again 
+// we use jsx to create our ReactElement and mount it onto a div called 
+// reactDiv on the html template.
+render(&lt;app&gt;&lt;/app&gt;, document.getElementById(‘reactDiv’));
+{% endhighlight %}&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;step-25-modify-express-to-serve-react&quot;&gt;Step 2.5: Modify express to serve react&lt;/h2&gt;
+&lt;p&gt;Almost there! Now we need to modify server.js to serve a html page with a script reference to our dist/bundled.js generated by webpack.&lt;/p&gt;
+
+&lt;p&gt;We also need to add an express static middleware to serve that static bundle.js file. A middleware is just code that executes
+between a request and a response. In this example, a GET request comes in from the client asking for dist/bundled.js. Our
+middleware matches the route and executes our code. We use express’ built-in static middleware so we get this for free.&lt;/p&gt;
+
+&lt;p&gt;{% highlight c# %}&lt;/p&gt;
+
+&lt;p&gt;…&lt;/p&gt;
+
+&lt;p&gt;// This is our html template that contains our target mounting 
+// div id=”reactDiv”. Also note the script reference to /dist/bundle.js.
+const htmlString = &lt;code class=&quot;highlighter-rouge&quot;&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;!DOCTYPE html&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;html&amp;gt;&lt;/span&gt;
+         &lt;span class=&quot;nt&quot;&gt;&amp;lt;head&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;title&amp;gt;&lt;/span&gt;Webpack and React&lt;span class=&quot;nt&quot;&gt;&amp;lt;/title&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;/head&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;body&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;div&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;id=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;reactDiv&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;script &lt;/span&gt;&lt;span class=&quot;na&quot;&gt;src=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;/dist/bundle.js&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&amp;lt;/script&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;/body&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/html&amp;gt;&lt;/span&gt;&lt;/code&gt;;&lt;/p&gt;
+
+&lt;p&gt;// Use express’ built-in static middleware to serve static files in 
+// the dist folder
+app.use(‘/dist’, Express.static(‘dist’));&lt;/p&gt;
+
+&lt;p&gt;…
+{% endhighlight %}&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;step-26-run-the-app&quot;&gt;Step 2.6: Run the app!&lt;/h2&gt;
+&lt;p&gt;At your root directory run “npm start” and browse to localhost:3000 to see the output.
+Download the complete source code from &lt;a href=&quot;https://github.com/yusinto/reactStep2&quot;&gt;github&lt;/a&gt;.&lt;/p&gt;
+
+&lt;hr /&gt;
+</content>
+<category term="react" />
+<category term="webpack" />
+<category term="babel" />
+<summary>If you haven’t read my previous post, it might be a good idea to have a quick read before reading this one. We’ll build this example based on that last post.Let’s get into it!</summary>
+</entry>
 <entry>
 <title>Step 1 to React: Using es6 with Express</title>
 <link href="http://www.reactjunkie.com/step-one-to-react-es-6-and-express/" rel="alternate" type="text/html" title="Step 1 to React: Using es6 with Express" />
