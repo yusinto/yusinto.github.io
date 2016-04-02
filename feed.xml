@@ -3,9 +3,179 @@
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
 <link href="http://www.reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
 <link href="http://www.reactjunkie.com/" rel="alternate" type="text/html" />
-<updated>2016-03-30T22:01:13+11:00</updated>
+<updated>2016-04-02T18:06:22+11:00</updated>
 <id>http://www.reactjunkie.com/</id>
 <title>React Junkie</title>
+<entry>
+<title>Step 3 to React: Speed dev with hot module replacement</title>
+<link href="http://www.reactjunkie.com/step-three-to-react-speed-dev-with-hot-module-replacement/" rel="alternate" type="text/html" title="Step 3 to React: Speed dev with hot module replacement" />
+<published>2016-04-02T17:45:00+11:00</published>
+<updated>2016-04-02T17:45:00+11:00</updated>
+<id>http://www.reactjunkie.com/step-three-to-react-speed-dev-with-hot-module-replacement</id>
+<content type="html" xml:base="http://www.reactjunkie.com/step-three-to-react-speed-dev-with-hot-module-replacement/">&lt;p&gt;In the &lt;a href=&quot;http://www.reactjunkie.com/step-two-to-react-webpack-and-react/&quot;&gt;previous post&lt;/a&gt; we started writing react code
+and that was cool. However having to restart the app and refresh the browser everytime we make a change is a pain. 
+There must be a better way to optimise our dev/debug cycle.&lt;/p&gt;
+
+&lt;p&gt;And yes there is. Enter react hot module replacement or hmr created by &lt;a href=&quot;https://github.com/gaearon&quot;&gt;Dan Abramov&lt;/a&gt; the creator of redux. Hmr is a much much better
+“version” of liveReload. You don’t need to inject a script tag into your code and there is no browser refresh. When you make
+changes to your code, they simply appear in the browser like magic without reload.&lt;/p&gt;
+
+&lt;p&gt;This is a short post just to get hmr working so let’s dive straight into the code now and I’ll explain things along the way.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;step-31-install-transforms-and-webpack-middlewares&quot;&gt;Step 3.1: Install transforms and webpack middlewares&lt;/h2&gt;
+&lt;p&gt;There are 6 packages we need to install:&lt;/p&gt;
+
+&lt;p&gt;{% highlight raw %}
+npm install –save-dev babel-plugin-react-transform react-transform-hmr react-transform-catch-errors redbox-react webpack-dev-middleware webpack-hot-middleware
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h4 id=&quot;babel-plugin-react-transform&quot;&gt;babel-plugin-react-transform&lt;/h4&gt;
+
+&lt;p&gt;This modifies your react components by applying all the transforms we configure in .babelrc.&lt;/p&gt;
+
+&lt;h4 id=&quot;react-transform-hmr-react-transform-catch-errors&quot;&gt;react-transform-hmr, react-transform-catch-errors&lt;/h4&gt;
+&lt;p&gt;The babel plugin above applies these transforms to our react components. Each transform modifies your react component in a specific way:&lt;/p&gt;
+
+&lt;p&gt;&lt;b&gt;react-transform-hmr&lt;/b&gt; - This transform enables hot reloading of components
+&lt;b&gt;react-transform-catch-errors&lt;/b&gt; - This transform catches errors inside the render() method and renders that error instead of your component.&lt;/p&gt;
+
+&lt;h4 id=&quot;redbox-react&quot;&gt;redbox-react&lt;/h4&gt;
+&lt;p&gt;Used by react-transform-catch-errors to display errors in a red screen of death in the browser.&lt;/p&gt;
+
+&lt;h4 id=&quot;webpack-dev-middleware-webpack-hot-middleware&quot;&gt;webpack-dev-middleware, webpack-hot-middleware&lt;/h4&gt;
+&lt;p&gt;&lt;b&gt;webpack-dev-middleware&lt;/b&gt; - bundles our js file on the fly, stores it in memory and serves it&lt;/p&gt;
+
+&lt;p&gt;&lt;b&gt;webpack-hot-middleware&lt;/b&gt; - enables hot reloading using webpack-dev-middleware above&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;step-32-configure-babel&quot;&gt;Step 3.2: Configure babel&lt;/h2&gt;
+
+&lt;p&gt;Your .babelrc file should look like this:&lt;/p&gt;
+
+&lt;p&gt;{% highlight js %}
+{
+    “presets”: [“es2015”, “react”],
+    “plugins”: [
+        [“react-transform”, {
+            “transforms”: [{
+                “transform”: “react-transform-hmr”,
+                “imports”: [“react”],
+                “locals”: [“module”]
+            }, {
+                “transform”: “react-transform-catch-errors”,
+                “imports”: [“react”, “redbox-react”]
+            }]
+        }]
+    ]
+}
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;This is the configuration that uses the transform packages above. In short, we instruct the
+react-transform plugin to apply 2 transforms: the hmr and catch-errors transforms to our react 
+components. In simple terms, transforms are just functions that accepts a react component as input and modifies it. For 
+example, &lt;b&gt;&lt;i&gt;react-transform-catch-errors&lt;/i&gt;&lt;/b&gt; adds a try catch block on the original render method to catch exceptions.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;step-33-configure-webpack&quot;&gt;Step 3.3: Configure webpack&lt;/h2&gt;
+&lt;p&gt;Your webpack.config.dev.js should look like this:&lt;/p&gt;
+
+&lt;p&gt;{% highlight js %}
+var webpack = require(‘webpack’);
+var path = require(‘path’);&lt;/p&gt;
+
+&lt;p&gt;module.exports = {
+    // Add webpack-hot-middleware/client to our bundle so our app 
+    // subscribes to update notifications from the server
+    entry: [‘webpack-hot-middleware/client’, path.join(__dirname, ‘src/client/index’)],
+    output: {
+        path: path.join(__dirname, ‘dist’),
+        filename: ‘bundle.js’,&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    // Add a publicPath property. This is the path referenced in the 
+    // script tag in our html template to our bundle.js. We need 
+    // this to configure webpack-dev-middleware in server.js
+    publicPath: &#39;/dist/&#39; 
+},
+module: {
+    loaders:[{
+        test: /\.jsx?$/,
+        loader: &#39;babel&#39;,
+        include: path.join(__dirname, &#39;src&#39;)
+    }]
+},
+
+// Enables hot module replacement in webpack
+plugins: [
+    new webpack.HotModuleReplacementPlugin()
+] }; {% endhighlight %}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;step-34-modify-express-app-to-support-hmr&quot;&gt;Step 3.4: Modify express app to support hmr&lt;/h2&gt;
+&lt;p&gt;Almost there! Now we need to modify server.js to use webpack dev and hot middlewares.&lt;/p&gt;
+
+&lt;p&gt;{% highlight c# %}
+…&lt;/p&gt;
+
+&lt;p&gt;import Webpack from ‘webpack’;
+import WebpackConfig from ‘../../webpack.config.dev’;
+import WebpackDevMiddleware from ‘webpack-dev-middleware’;
+import WebPackHotMiddleware from ‘webpack-hot-middleware’;&lt;/p&gt;
+
+&lt;p&gt;…&lt;/p&gt;
+
+&lt;p&gt;// create a webpack instance from our dev config
+const webpackCompiler = Webpack(WebpackConfig);&lt;/p&gt;
+
+&lt;p&gt;// Use webpack dev middleware to bundle our app on the fly and serve it 
+// on publicPath. Turn off verbose webpack output in our server console
+// by setting noInfo: true
+app.use(WebpackDevMiddleware(webpackCompiler, {
+    publicPath: WebpackConfig.output.publicPath,
+    noInfo: true
+}));&lt;/p&gt;
+
+&lt;p&gt;// instruct our webpack instance to use webpack hot middleware
+app.use(WebPackHotMiddleware(webpackCompiler));&lt;/p&gt;
+
+&lt;p&gt;// NOTE: delete express static middleware for dist. We don’t need that
+// anymore because webpack-dev-middleware serves our bundle.js from memory&lt;/p&gt;
+
+&lt;p&gt;…
+{% endhighlight %}&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;step-35-run-the-app&quot;&gt;Step 3.5: Run the app!&lt;/h2&gt;
+&lt;p&gt;If you have been following my &lt;a href=&quot;http://www.reactjunkie.com/step-two-to-react-webpack-and-react/&quot;&gt;previous post&lt;/a&gt; up to this point, 
+note that you’ll need to delete the prestart command from package.json. We don’t need that anymore because we are using webpack
+dev middleware to bundle our app on the fly.&lt;/p&gt;
+
+&lt;p&gt;If you have the physical /dist/ folder, also delete that because
+again webpack dev middleware will serve bundle.js from memory.&lt;/p&gt;
+
+&lt;p&gt;At your root directory run “npm start” and browse to localhost:3000. Then make changes to appComponent.js; maybe change
+the h1 text. You’ll see your changes in the browser immediately without refresh.&lt;/p&gt;
+
+&lt;p&gt;Download the complete source code from &lt;a href=&quot;https://github.com/yusinto/reactStep3&quot;&gt;github&lt;/a&gt;.&lt;/p&gt;
+
+&lt;hr /&gt;
+</content>
+<category term="react" />
+<category term="hmr" />
+<category term="hot" />
+<category term="module" />
+<category term="replacement" />
+<category term="webpack" />
+<category term="babel" />
+<summary>In the previous post we started writing react codeand that was cool. However having to restart the app and refresh the browser everytime we make a change is a pain. There must be a better way to optimise our dev/debug cycle.</summary>
+</entry>
 <entry>
 <title>Step 2 to React: Webpack and React</title>
 <link href="http://www.reactjunkie.com/step-two-to-react-webpack-and-react/" rel="alternate" type="text/html" title="Step 2 to React: Webpack and React" />

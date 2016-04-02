@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://www.reactjunkie.com/step-three-to-react-speed-dev-with-hot-module-replacement/</loc>
+<lastmod>2016-04-02T17:45:00+11:00</lastmod>
+</url>
+<url>
 <loc>http://www.reactjunkie.com/step-two-to-react-webpack-and-react/</loc>
 <lastmod>2016-03-30T21:25:00+11:00</lastmod>
 </url>

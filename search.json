@@ -1,6 +1,13 @@
 [
   
     {
+      "title"    : "Step 3 to React: Speed dev with hot module replacement",
+      "tags"     : "react, hmr, hot, module, replacement, webpack, and babel",
+      "url"      : "/step-three-to-react-speed-dev-with-hot-module-replacement/",
+      "date"     : "02 Apr 2016"
+    } ,
+  
+    {
       "title"    : "Step 2 to React: Webpack and React",
       "tags"     : "react, webpack, and babel",
       "url"      : "/step-two-to-react-webpack-and-react/",
