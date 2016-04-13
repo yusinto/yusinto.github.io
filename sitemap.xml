@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://www.reactjunkie.com/return-graphql-enum-values-as-string-array/</loc>
+<lastmod>2016-04-13T15:45:00+10:00</lastmod>
+</url>
+<url>
 <loc>http://www.reactjunkie.com/step-three-to-react-speed-dev-with-hot-module-replacement/</loc>
 <lastmod>2016-04-02T17:45:00+11:00</lastmod>
 </url>

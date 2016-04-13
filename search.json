@@ -1,6 +1,13 @@
 [
   
     {
+      "title"    : "Returning GraphQLEnumType values as a string array",
+      "tags"     : "react, relay, graphql, and GraphQLEnumType",
+      "url"      : "/return-graphql-enum-values-as-string-array/",
+      "date"     : "13 Apr 2016"
+    } ,
+  
+    {
       "title"    : "Step 3 to React: Speed dev with hot module replacement",
       "tags"     : "react, hmr, hot, module, replacement, webpack, and babel",
       "url"      : "/step-three-to-react-speed-dev-with-hot-module-replacement/",

@@ -3,9 +3,75 @@
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
 <link href="http://www.reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
 <link href="http://www.reactjunkie.com/" rel="alternate" type="text/html" />
-<updated>2016-04-02T18:06:22+11:00</updated>
+<updated>2016-04-13T22:03:11+10:00</updated>
 <id>http://www.reactjunkie.com/</id>
 <title>React Junkie</title>
+<entry>
+<title>Returning GraphQLEnumType values as a string array</title>
+<link href="http://www.reactjunkie.com/return-graphql-enum-values-as-string-array/" rel="alternate" type="text/html" title="Returning GraphQLEnumType values as a string array" />
+<published>2016-04-13T15:45:00+10:00</published>
+<updated>2016-04-13T15:45:00+10:00</updated>
+<id>http://www.reactjunkie.com/return-graphql-enum-values-as-string-array</id>
+<content type="html" xml:base="http://www.reactjunkie.com/return-graphql-enum-values-as-string-array/">&lt;p&gt;In my attempt to learn Relay and GraphQL, I recently created a simple movie app. It is a single page app in both senses -
+it only has one page and it’s all client side (excuse the pun!). This single page displays a list of movie titles and their genres.
+It also has a select box to filter the list by genre.&lt;/p&gt;
+
+&lt;p&gt;This blog is not an intro to graphql or relay, that will be covered sometime in the near future. This blog about how we can return
+a list of enum values declared in our graphql schema to the client. So in a nutshell:&lt;/p&gt;
+
+&lt;h3 id=&quot;the-problem&quot;&gt;The Problem&lt;/h3&gt;
+&lt;p&gt;Given a GraphQLEnumType in the schema, how do we return all the values in that enum type as an array of string to the client?&lt;/p&gt;
+
+&lt;h3 id=&quot;the-solution&quot;&gt;The Solution&lt;/h3&gt;
+&lt;p&gt;The premise is straight-forward. I need to populate the genre select box with all the enum values declared in the schema. However, I can’t seem to
+find any posts/articles/documentation that describe how I can do this. So I set out on my own exciting investigation.&lt;/p&gt;
+
+&lt;p&gt;My genre enum type looks like this. You can find the complete schema &lt;a href=&quot;https://github.com/yusinto/movie-time/blob/master/src/graphql/schema.js&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;{% highlight js %}
+const genreEnum = new GraphQLEnumType({
+  name: ‘Genre’,
+  values: {
+    ACTION: {
+      value: ‘Action’
+    },
+    ADVENTURE: {
+      value: ‘Adventure’
+    },
+   …
+    WESTERN: {
+      value: ‘Western’
+    }
+  }
+});
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;The client expects the graphql endpoint to return an array of string like this:&lt;/p&gt;
+
+&lt;p&gt;{% highlight js %}
+[‘Action’, ‘Adventure’ ,’Western’]
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;Using the chrome debugger, I discovered the GraphQLEnumType object has a property called &lt;b&gt;_values&lt;/b&gt;. I’m guessing the underscore
+prefix means that it’s a private property by convention, so I might not be doing the best thing here! However due to the lack of
+alternatives, it will have to do for now. My resolve method then looks like this:&lt;/p&gt;
+
+&lt;p&gt;{% highlight js %}
+resolve: () =&amp;gt; genreEnum._values.map(e =&amp;gt; e.value)
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;And that’s it! You can find the complete code on &lt;a href=&quot;https://github.com/yusinto/movie-time&quot;&gt;github&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Happy coding!&lt;/p&gt;
+
+&lt;hr /&gt;
+</content>
+<category term="react" />
+<category term="relay" />
+<category term="graphql" />
+<category term="GraphQLEnumType" />
+<summary>In my attempt to learn Relay and GraphQL, I recently created a simple movie app. It is a single page app in both senses -it only has one page and it’s all client side (excuse the pun!). This single page displays a list of movie titles and their genres.It also has a select box to filter the list by genre.</summary>
+</entry>
 <entry>
 <title>Step 3 to React: Speed dev with hot module replacement</title>
 <link href="http://www.reactjunkie.com/step-three-to-react-speed-dev-with-hot-module-replacement/" rel="alternate" type="text/html" title="Step 3 to React: Speed dev with hot module replacement" />
