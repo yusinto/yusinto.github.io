@@ -3,16 +3,16 @@
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
 <link href="http://www.reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
 <link href="http://www.reactjunkie.com/" rel="alternate" type="text/html" />
-<updated>2016-04-13T22:03:11+10:00</updated>
+<updated>2016-04-13T22:11:04+10:00</updated>
 <id>http://www.reactjunkie.com/</id>
 <title>React Junkie</title>
 <entry>
-<title>Returning GraphQLEnumType values as a string array</title>
-<link href="http://www.reactjunkie.com/return-graphql-enum-values-as-string-array/" rel="alternate" type="text/html" title="Returning GraphQLEnumType values as a string array" />
-<published>2016-04-13T15:45:00+10:00</published>
-<updated>2016-04-13T15:45:00+10:00</updated>
-<id>http://www.reactjunkie.com/return-graphql-enum-values-as-string-array</id>
-<content type="html" xml:base="http://www.reactjunkie.com/return-graphql-enum-values-as-string-array/">&lt;p&gt;In my attempt to learn Relay and GraphQL, I recently created a simple movie app. It is a single page app in both senses -
+<title>Return GraphQLEnumType values as a string array</title>
+<link href="http://www.reactjunkie.com/return-graphqlenumtype-values-as-string-array/" rel="alternate" type="text/html" title="Return GraphQLEnumType values as a string array" />
+<published>2016-04-13T22:10:00+10:00</published>
+<updated>2016-04-13T22:10:00+10:00</updated>
+<id>http://www.reactjunkie.com/return-graphqlenumtype-values-as-string-array</id>
+<content type="html" xml:base="http://www.reactjunkie.com/return-graphqlenumtype-values-as-string-array/">&lt;p&gt;In my attempt to learn Relay and GraphQL, I recently created a simple movie app. It is a single page app in both senses -
 it only has one page and it’s all client side (excuse the pun!). This single page displays a list of movie titles and their genres.
 It also has a select box to filter the list by genre.&lt;/p&gt;
 
