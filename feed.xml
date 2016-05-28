@@ -3,7 +3,7 @@
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
 <link href="http://www.reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
 <link href="http://www.reactjunkie.com/" rel="alternate" type="text/html" />
-<updated>2016-05-29T00:48:23+10:00</updated>
+<updated>2016-05-29T01:05:45+10:00</updated>
 <id>http://www.reactjunkie.com/</id>
 <title>React Junkie</title>
 <entry>
@@ -16,9 +16,9 @@
 react are two buzz words we hear all the time these days. While it might look like I am just shamelessly meshing these two things 
 together to get more visitors to my site, you can’t be further from the truth (*cough).&lt;/p&gt;
 
-&lt;p&gt;Seriously though, I first learnt of microservices from &lt;a href=&quot;http://udidahan.com&quot;&gt;Udi Dahan&lt;/a&gt;. For those who don’t know him, he is the 
+&lt;p&gt;Seriously though, I first learnt of microservices from &lt;a href=&quot;http://udidahan.com&quot; target=&quot;_blank&quot;&gt;Udi Dahan&lt;/a&gt;. For those who don’t know him, he is the 
 creator of NServiceBus and founder of Particular Software. I have nothing but great respect and admiration for him. So you can 
-understand my jubilation and joy when I had the chance to meet him in person today at &lt;a href=&quot;http://dddsydney.com.au&quot;&gt;DDD Sydney&lt;/a&gt;. We talked
+understand my jubilation and joy when I had the chance to meet him in person today at &lt;a href=&quot;http://dddsydney.com.au&quot; target=&quot;_blank&quot;&gt;DDD Sydney&lt;/a&gt;. We talked
 about many a thing, one of them microservices and team structure. The two might seem unrelated but they actually are, more so than you think.&lt;/p&gt;
 
 &lt;p&gt;I was very star-struck. He seemed taller than in the videos. Maybe I was imagining things? Anyway I digress (again). So what is a service? 
@@ -39,9 +39,9 @@ boundaries and are autonomous. Each can use a completely different technology st
 a relational database like sql server whereas the customer service might use a nosql database like a graph db. This is a very big topic which deserves
 an entire blog post or technical course in its own right so I’m going to quit while I’m ahead and point you in the right direction more for information:&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=Irlw-LGIJO4&quot;&gt;Martin Fowler - Microservices@Sydney Yow!&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=Irlw-LGIJO4&quot; target=&quot;_blank&quot;&gt;Martin Fowler - Microservices@Sydney Yow!&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;http://udidahan.com/training/&quot;&gt;Udi Dahan - Advanced Distributed Systems Design&lt;/a&gt;&lt;br /&gt;
+&lt;p&gt;&lt;a href=&quot;http://udidahan.com/training/&quot; target=&quot;_blank&quot;&gt;Udi Dahan - Advanced Distributed Systems Design&lt;/a&gt;&lt;br /&gt;
 &lt;em&gt;&lt;small&gt;See &lt;a href=&quot;#freeVideos&quot;&gt;below&lt;/a&gt; for free samples of Udi’s training videos&lt;/small&gt;&lt;/em&gt;&lt;/p&gt;
 
 &lt;p&gt;Wait a minute, what’s all this got to do with React? And what the heck has it got to do with team structure? Why am I still reading this crap when I could 
@@ -66,8 +66,9 @@ definitive. If you try to fight it, you will lose.&lt;/p&gt;
 
 &lt;h3 id=&quot;span-idfreevideosudi-dahans-sample-training-videosspan&quot;&gt;&lt;span id=&quot;freeVideos&quot;&gt;Udi Dahan’s Sample Training Videos&lt;/span&gt;&lt;/h3&gt;
 &lt;p&gt;If you are inspired by this blog and want to know more about microservices or soa, I highly recommend you watch Udi’s training videos. He
-teaches a five day course on soa and for a limited time you can watch 2 full days of the course for free. Go &lt;a href=&quot;http://go.particular.net/DSY16&quot;&gt;here&lt;/a&gt;
+teaches a five day course on soa and for a limited time you can watch 2 full days of the course for free. Go &lt;a href=&quot;http://go.particular.net/DSY16&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;
 and use the activation code &lt;strong&gt;DSYU&lt;/strong&gt;. This free offer expires 12 June 2016.&lt;/p&gt;
+
 </content>
 <category term="react" />
 <category term="microservices" />
