@@ -33,20 +33,6 @@
       "tags"     : "react, es6, and express",
       "url"      : "/step-one-to-react-es-6-and-express/",
       "date"     : "27 Mar 2016"
-    } ,
-  
-    {
-      "title"    : "Markdown Extra Components",
-      "tags"     : "markdown, components, and extra",
-      "url"      : "/markdown-extra-components/",
-      "date"     : "24 Feb 2016"
-    } ,
-  
-    {
-      "title"    : "Markdown Common Elements",
-      "tags"     : "markdown and elements",
-      "url"      : "/markdown-common-elements/",
-      "date"     : "24 Feb 2016"
     } 
   
 ]
