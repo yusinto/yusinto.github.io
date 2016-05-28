@@ -1,6 +1,13 @@
 [
   
     {
+      "title"    : "React and Microservices Architectural Style",
+      "tags"     : "react, microservices, conway's law, and team structure",
+      "url"      : "/react-and-microservices/",
+      "date"     : "28 May 2016"
+    } ,
+  
+    {
       "title"    : "Return GraphQLEnumType values as a string array",
       "tags"     : "react, relay, graphql, and GraphQLEnumType",
       "url"      : "/return-graphqlenumtype-values-as-string-array/",
@@ -26,6 +33,20 @@
       "tags"     : "react, es6, and express",
       "url"      : "/step-one-to-react-es-6-and-express/",
       "date"     : "27 Mar 2016"
+    } ,
+  
+    {
+      "title"    : "Markdown Extra Components",
+      "tags"     : "markdown, components, and extra",
+      "url"      : "/markdown-extra-components/",
+      "date"     : "24 Feb 2016"
+    } ,
+  
+    {
+      "title"    : "Markdown Common Elements",
+      "tags"     : "markdown and elements",
+      "url"      : "/markdown-common-elements/",
+      "date"     : "24 Feb 2016"
     } 
   
 ]
