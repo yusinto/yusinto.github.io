@@ -1,102 +1,265 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
-<link href="http://www.reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
-<link href="http://www.reactjunkie.com/" rel="alternate" type="text/html" />
-<updated>2016-05-29T01:05:45+10:00</updated>
-<id>http://www.reactjunkie.com/</id>
+<link href="http://localhost:3000/feed.xml" rel="self" type="application/atom+xml" />
+<link href="http://localhost:3000/" rel="alternate" type="text/html" />
+<updated>2016-06-30T18:50:12-07:00</updated>
+<id>http://localhost:3000/</id>
 <title>React Junkie</title>
 <entry>
-<title>React and Microservices Architectural Style</title>
-<link href="http://www.reactjunkie.com/react-and-microservices/" rel="alternate" type="text/html" title="React and Microservices Architectural Style" />
-<published>2016-05-28T20:45:00+10:00</published>
-<updated>2016-05-28T20:45:00+10:00</updated>
-<id>http://www.reactjunkie.com/react-and-microservices</id>
-<content type="html" xml:base="http://www.reactjunkie.com/react-and-microservices/">&lt;p&gt;I am going to digress a little today and talk about how react fits into the microservice architectural style. Of course microservices and 
-react are two buzz words we hear all the time these days. While it might look like I am just shamelessly meshing these two things 
-together to get more visitors to my site, you can’t be further from the truth (*cough).&lt;/p&gt;
+<title>Step 4 to React: Intro to routing with react router</title>
+<link href="http://localhost:3000/step-four-to-react-routing-with-react-router/" rel="alternate" type="text/html" title="Step 4 to React: Intro to routing with react router" />
+<published>2016-06-30T14:52:00-07:00</published>
+<updated>2016-06-30T14:52:00-07:00</updated>
+<id>http://localhost:3000/step-four-to-react-routing-with-react-router</id>
+<content type="html" xml:base="http://localhost:3000/step-four-to-react-routing-with-react-router/">&lt;p&gt;I am in LA for holidays! Yep, I’m blogging as I am holidaying; I don’t know why but I just can’t stop thinking about it.
+My wife says I’m addicted to work, I said no. We fight a lot but we love each other. Love is weird.&lt;/p&gt;
 
-&lt;p&gt;Seriously though, I first learnt of microservices from &lt;a href=&quot;http://udidahan.com&quot; target=&quot;_blank&quot;&gt;Udi Dahan&lt;/a&gt;. For those who don’t know him, he is the 
+&lt;p&gt;Anyway! This is a short and basic guide to implement routing with react router.
+If you haven’t read my &lt;a href=&quot;http://www.reactjunkie.com/2016-04-02-step-three-to-react-speed-dev-with-hot-module-replacement/&quot;&gt;previous post&lt;/a&gt;, 
+it might be a good idea to have a quick read before reading this one. We’ll build this example based on that last post.
+Let’s get into it!&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;step-41-install-react-router&quot;&gt;Step 4.1: Install react-router&lt;/h2&gt;
+
+&lt;p&gt;{% highlight raw %}
+npm install –save react-router
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;The latest version of react-router at the time of writing is 2.5.1. This single npm package is sufficient for 
+all our routing needs.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;step-42-initialise-routes&quot;&gt;Step 4.2: Initialise routes&lt;/h2&gt;
+&lt;p&gt;You set up react router routes in jsx. What does that mean? That means you set up your routes
+the same way you write jsx; in an xml-like format with nested parent-child structure.&lt;/p&gt;
+
+&lt;p&gt;{% highlight xml %}
+import React from ‘react’;
+import {Route, IndexRoute} from ‘react-router’;
+import App from ‘./component/appComponent’;
+import Home from ‘./component/homeComponent’;
+import Contact from ‘./component/contactComponent’;&lt;/p&gt;
+
+&lt;p&gt;const routes =
+  &amp;lt;Route path=”/” component={App}&amp;gt;
+    &amp;lt;IndexRoute component={Home}/&amp;gt;
+    &amp;lt;Route path=”/contact” component={Contact}/&amp;gt;
+  &amp;lt;/Route&amp;gt;;&lt;/p&gt;
+
+&lt;p&gt;export default routes;
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;Setting up routes like this maybe confusing to someone who is new to react router and perhaps even more confusing
+for .NET developers who are used to setting up MVC routes. Let me explain how this works in react router:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Each &quot;Route&quot; element must specify a path and a component attribute.&lt;/li&gt;
+&lt;li&gt;Incoming urls will be matched to a path. When matched, the corresponding component will be rendered.&lt;/li&gt;
+&lt;li&gt;The previous point means that a path like &quot;/contact&quot; is actually a nested path which 
+matches &lt;b&gt;two&lt;/b&gt; components at &quot;/&quot; and &quot;/contact&quot;. That means &lt;b&gt;both&lt;/b&gt; the App and Contact components will be rendered.
+&lt;/li&gt;
+&lt;li&gt;IndexRoute is the default component which gets rendered when no nested route is specified i.e. when only &quot;/&quot; or &quot;&quot; is specified.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;step-43-add-react-router-links&quot;&gt;Step 4.3: Add react router links&lt;/h2&gt;
+&lt;p&gt;You need to use the Link component from react-router package instead of the standard html anchor tags to 
+be able to route across pages SPA style.&lt;/p&gt;
+
+&lt;p&gt;{% highlight xml %}&lt;/p&gt;
+&lt;link to=&quot;/&quot; /&gt;
+&lt;p&gt;Home&amp;lt;/Link&amp;gt;&lt;/p&gt;
+&lt;link to=&quot;/contact&quot; /&gt;
+&lt;p&gt;Contact Us&amp;lt;/Link&amp;gt;
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;Each Link component needs to have a “to” attribute specified. The value of each “to” attribute must match a route specified in the route.js 
+file in the previous section.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;step-44-reactdom-render-router&quot;&gt;Step 4.4: ReactDom render Router&lt;/h2&gt;
+&lt;p&gt;Instead of rendering your root component directly on the client side, you render the Router component (from react-router package) with the routes attribute
+specified. This is so we can match urls and render matching components using the routes declared in common/route.js
+The history attribute tells react router to use html5 history api as opposed to hash history. If you don’t specify this attribute,
+ you will get this warning: 
+ {% highlight xml %}
+ [react-router] &lt;code class=&quot;highlighter-rouge&quot;&gt;Router&lt;/code&gt; no longer defaults the history prop to 
+ hash history. Please use the &lt;code class=&quot;highlighter-rouge&quot;&gt;hashHistory&lt;/code&gt; singleton instead.”
+ {% endhighlight %}
+Html5 history api is preferable to hash history because it keeps the url clean:&lt;/p&gt;
+
+&lt;p&gt;“/contact”&lt;/p&gt;
+
+&lt;p&gt;as opposed to:&lt;/p&gt;
+
+&lt;p&gt;”/#/contact”&lt;/p&gt;
+
+&lt;p&gt;The whole client/index.js looks like this:
+{% highlight xml %}
+// Import the render method from react-dom so we can mount our
+// component onto an html element
+import React from ‘react’;
+import {render} from ‘react-dom’;
+import {Router, browserHistory} from ‘react-router’;
+import routes from ‘../common/route’;&lt;/p&gt;
+
+&lt;p&gt;/**
+ * Render the Router component with routes attribute so we can match urls 
+ * and render matching components using the routes declared in common/route.js.
+ * The history attribute tells react router to use html5 history api as 
+ * opposed to hash history. Html5 history api is preferable to hash history 
+ * because it keeps the url clean e.g. “/contact” as opposed to “/#/contact”
+ */
+render(&amp;lt;Router routes={routes} history={browserHistory} /&amp;gt;, document.getElementById(‘reactDiv’));
+{% endhighlight %}&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;step-45-write-child-react-components&quot;&gt;Step 4.5: Write child React components!&lt;/h2&gt;
+&lt;p&gt;Almost there! Now we create the actual Home and Contact components that
+get rendered when matched. These are pretty simple:&lt;/p&gt;
+
+&lt;h4 id=&quot;homecomponentjs&quot;&gt;homeComponent.js&lt;/h4&gt;
+&lt;p&gt;{% highlight c# %}
+import React, {Component} from ‘react’;&lt;/p&gt;
+
+&lt;p&gt;export default class Home extends Component {
+  render() {
+    return (
+      &amp;lt;div&amp;gt;
+        &amp;lt;p&amp;gt;React junkie will rock ndc 2016 in Sydney!&amp;lt;/p&amp;gt;
+      &amp;lt;/div&amp;gt;
+    );
+  }
+}
+{% endhighlight %}
+#### contactComponent.js
+{% highlight c# %}
+import React, {Component} from ‘react’;&lt;/p&gt;
+
+&lt;p&gt;export default class Contact extends Component {
+  render() {
+    return (
+      &amp;lt;div&amp;gt;
+        &amp;lt;p&amp;gt;Contact us! 555-6969&amp;lt;/p&amp;gt;
+      &amp;lt;/div&amp;gt;
+    );
+  }
+}
+{% endhighlight %}&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;step-46-some-finishing-touches-on-styling-and-run-the-app&quot;&gt;Step 4.6: Some finishing touches on styling and run the app!&lt;/h2&gt;
+&lt;p&gt;We’ll prettify our app by deactivating the current active link so users get a feedback on where they are on the website.
+The whole appComponent.js looks like this:&lt;/p&gt;
+
+&lt;h4 id=&quot;appcomponentjs&quot;&gt;appComponent.js&lt;/h4&gt;
+&lt;p&gt;{% highlight xml %}
+import React, {Component} from ‘react’;
+import {Link} from ‘react-router’;&lt;/p&gt;
+
+&lt;p&gt;export default class App extends Component {
+  render() {
+    return (
+      &amp;lt;div&amp;gt;
+        &amp;lt;h1&amp;gt;React Router Demo&amp;lt;/h1&amp;gt;
+        &lt;span&gt;
+          {
+            /* Activate or deactivate link depending on current route */
+            this.props.location.pathname === ‘/’ || this.props.location.pathname === ‘/home’ ?
+              &lt;span&gt;Home&lt;/span&gt; : &lt;link to=&quot;/&quot; /&gt;Home&amp;lt;/Link&amp;gt;
+          }
+        &lt;/span&gt; | 
+        &lt;span&gt;
+          {
+            this.props.location.pathname === ‘/contact’ ?
+              &lt;span&gt;Contact Us&lt;/span&gt; : &lt;link to=&quot;/contact&quot; /&gt;Contact Us&amp;lt;/Link&amp;gt;
+          }
+        &lt;/span&gt;
+        &amp;lt;div&amp;gt;{this.props.children}&amp;lt;/div&amp;gt;
+      &amp;lt;/div&amp;gt;
+    );
+  }
+}
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;Notes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;You render child components from your routes by calling {this.props.children}&lt;/li&gt;
+&lt;li&gt;You can access the current location through &quot;this.props.location&quot;. This contains a &quot;pathname&quot; property which will tell you the current path
+that&#39;s matched.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;At your root directory run “npm start” and browse to localhost:3000 to see the output.
+Download the complete source code from &lt;a href=&quot;https://github.com/yusinto/reactStep4&quot;&gt;github&lt;/a&gt;.&lt;/p&gt;
+
+&lt;hr /&gt;
+</content>
+<category term="react" />
+<category term="react router" />
+<category term="routing" />
+<summary>I am in LA for holidays! Yep, I’m blogging as I am holidaying; I don’t know why but I just can’t stop thinking about it.My wife says I’m addicted to work, I said no. We fight a lot but we love each other. Love is weird.</summary>
+</entry>
+<entry>
+<title>How React fits into the microservice team structure</title>
+<link href="http://localhost:3000/react-and-microservices/" rel="alternate" type="text/html" title="How React fits into the microservice team structure" />
+<published>2016-05-28T20:45:00-07:00</published>
+<updated>2016-05-28T20:45:00-07:00</updated>
+<id>http://localhost:3000/react-and-microservices</id>
+<content type="html" xml:base="http://localhost:3000/react-and-microservices/">&lt;p&gt;I am going to digress a little today and talk about how react fits into the microservice architectural style. Of course microservices and 
+react are two buzzwords we hear all the time these days. While it might look like I am just shamelessly meshing these two things 
+together to get more visitors to my site, you can’t be further than the truth (*cough).&lt;/p&gt;
+
+&lt;p&gt;Seriously though, I first learnt of microservices from &lt;a href=&quot;http://udidahan.com&quot;&gt;Udi Dahan&lt;/a&gt;. For those of you who don’t know him, he is the 
 creator of NServiceBus and founder of Particular Software. I have nothing but great respect and admiration for him. So you can 
-understand my jubilation and joy when I had the chance to meet him in person today at &lt;a href=&quot;http://dddsydney.com.au&quot; target=&quot;_blank&quot;&gt;DDD Sydney&lt;/a&gt;. We talked
+understand my jubilation and joy when I had the chance to meet him in person today at &lt;a href=&quot;http://dddsydney.com.au&quot;&gt;DDD Sydney&lt;/a&gt;. We talked
 about many a thing, one of them microservices and team structure. The two might seem unrelated but they actually are, more so than you think.&lt;/p&gt;
 
-&lt;p&gt;I was very star-struck. He seemed taller than in the videos. Maybe I was imagining things? Anyway I digress (again). So what is a service? 
-I am going to shamelessly rip off Udi’s quote and say:&lt;/p&gt;
+&lt;p&gt;I was very starstruck. He seemed taller than in the videos. Maybe I was imagining things? Anyway I digress (again). So what is a service? 
+I am going to shamelessly rip off Udi’s quotes and say:&lt;/p&gt;
 
-&lt;p&gt;&lt;em&gt;“A service is the technical authority for a specific business capability. It is autonomous. It has an explicit boundary. All data
-and business rules reside within the service.”&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;“A service is the technical authority for a specific business capability. It is autonomous. It has an explicit boundary. All data
+and business rules reside within the service.”&lt;/p&gt;
 
-&lt;p&gt;I used to think that a service is just a wcf or a webapi endpoint. For the longest time, I naively thought I was doing soa and microservices just
-because I expose wcf and webapi endpoints in my application for consumption by other applications. This is incorrect.&lt;/p&gt;
-
-&lt;p&gt;A service is an autonomous 
+&lt;p&gt;I used to think that a service is just a wcf or a webapi endpoint. For the longest time, I thought I was doing soa and microservices just
+because I expose wcf and webapi endpoints in my application for consumption by other applications. This is incorrect. A service is an autonomous 
 piece of your domain that is self contained. For example, you might have a product service and a customer service in your domain. The product
-service has its own aggregates and its own database schema separate and independent from the customer service. The two services have explicit
-boundaries and are autonomous. Each can use a completely different technology stack from the other.&lt;/p&gt;
-
-&lt;p&gt;For example the product service might use
-a relational database like sql server whereas the customer service might use a nosql database like a graph db. This is a very big topic which deserves
+service has its own aggregates and its own database schema separate and independent of the customer service. The two services have explicit
+boundaries and are autonomous. Each can use a completely different technology stack from the other. For example the product service might use
+a relational database like sql server whereas the customer service might use a nosql database like mongodb. This is a very big topic which deserves
 an entire blog post or technical course in its own right so I’m going to quit while I’m ahead and point you in the right direction more for information:&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=Irlw-LGIJO4&quot; target=&quot;_blank&quot;&gt;Martin Fowler - Microservices@Sydney Yow!&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://udidahan.com/training/&quot; target=&quot;_blank&quot;&gt;Udi Dahan - Advanced Distributed Systems Design&lt;/a&gt;&lt;br /&gt;
-&lt;em&gt;&lt;small&gt;See &lt;a href=&quot;#freeVideos&quot;&gt;below&lt;/a&gt; for free samples of Udi’s training videos&lt;/small&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=Irlw-LGIJO4&quot;&gt;Martin Fowler - Microservices@Sydney Yow!&lt;/a&gt;
+&lt;a href=&quot;http://udidahan.com/training/&quot;&gt;Udi Dahan - Advanced Distributed Systems Design&lt;/a&gt; See below for free samples of his training videos.&lt;/p&gt;
 
 &lt;p&gt;Wait a minute, what’s all this got to do with React? And what the heck has it got to do with team structure? Why am I still reading this crap when I could 
-just easily watch Game of Thrones?&lt;/p&gt;
+just easily watch a pirated copy of Game of Thrones?&lt;/p&gt;
 
-&lt;p&gt;When you write that react component that displays a product’s image, description, seller details, you become, or I should say you ARE a part of
+&lt;p&gt;When you write that react component that displays a product’s image, description, seller info, etc, you become, or I should say you ARE a part of
 the Product Service team. That team comprises of you plus the backend guys which implement the endpoint that talks to the product database. So you 
 the react developer and the backend guys are all in the same Product Service team.&lt;/p&gt;
 
-&lt;h3 id=&quot;conways-law&quot;&gt;Conway’s Law&lt;/h3&gt;
-&lt;p&gt;&lt;em&gt;Software architecture follows the organisational structure of people who design it&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;Conway’s Law: Software follows the organisational structure of people who design it.&lt;/p&gt;
 
-&lt;p&gt;What does this mean? It means that if you are truly practising microservices, the react/angular guys working on the product widget on the front end,
-are in the same team as the backend .net/java guys who implement the wcf/webapi product service endpoints.&lt;/p&gt;
-
-&lt;p&gt;In reality though, this is often not the case. Companies continue to organise teams by physical tiers i.e. front end team, back end services team, 
+&lt;p&gt;What does this mean? It means that if you are truly practising microservices, the react/angular guys and the backend .net/java guys are in the same team. 
+In reality though, this is often not the case. Companies continue to organise their teams by physical tiers i.e. front end team, back end services team, 
 mobile team, database team, etc irrespective of service orientation.&lt;/p&gt;
 
-&lt;p&gt;This could be because of political reasons or historical reasons, but make no
-mistake, you can’t say you are doing microservices unless you are also structurally organised in a service oriented way. Conway’s law is both unambiguous and
-definitive. If you try to fight it, you will lose.&lt;/p&gt;
-
-&lt;h3 id=&quot;span-idfreevideosudi-dahans-sample-training-videosspan&quot;&gt;&lt;span id=&quot;freeVideos&quot;&gt;Udi Dahan’s Sample Training Videos&lt;/span&gt;&lt;/h3&gt;
 &lt;p&gt;If you are inspired by this blog and want to know more about microservices or soa, I highly recommend you watch Udi’s training videos. He
-teaches a five day course on soa and for a limited time you can watch 2 full days of the course for free. Go &lt;a href=&quot;http://go.particular.net/DSY16&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;
-and use the activation code &lt;strong&gt;DSYU&lt;/strong&gt;. This free offer expires 12 June 2016.&lt;/p&gt;
+teaches a five day course on soa and for a limited time you can watch 2 full days of the course for free. Go &lt;a href=&quot;http://go.particular.net/DSY16&quot;&gt;here&lt;/a&gt;
+and use the access code DSYU. This free offer expires 12 June 2016.&lt;/p&gt;
 
-</content>
-<category term="react" />
-<category term="microservices" />
-<category term="conway&#39;s law" />
-<category term="team structure" />
-<summary>I am going to digress a little today and talk about how react fits into the microservice architectural style. Of course microservices and react are two buzz words we hear all the time these days. While it might look like I am just shamelessly meshing these two things together to get more visitors to my site, you can’t be further from the truth (*cough).</summary>
-</entry>
-<entry>
-<title>Return GraphQLEnumType values as a string array</title>
-<link href="http://www.reactjunkie.com/return-graphqlenumtype-values-as-string-array/" rel="alternate" type="text/html" title="Return GraphQLEnumType values as a string array" />
-<published>2016-04-13T22:10:00+10:00</published>
-<updated>2016-04-13T22:10:00+10:00</updated>
-<id>http://www.reactjunkie.com/return-graphqlenumtype-values-as-string-array</id>
-<content type="html" xml:base="http://www.reactjunkie.com/return-graphqlenumtype-values-as-string-array/">&lt;p&gt;In my attempt to learn Relay and GraphQL, I recently created a simple movie app. It is a single page app in both senses -
-it only has one page and it’s all client side (excuse the pun!). This single page displays a list of movie titles and their genres.
-It also has a select box to filter the list by genre.&lt;/p&gt;
+&lt;hr /&gt;
 
-&lt;p&gt;This blog is not an intro to graphql or relay, that will be covered sometime in the near future. This blog about how we can return
-a list of enum values declared in our graphql schema to the client. So in a nutshell:&lt;/p&gt;
+&lt;h2 id=&quot;the-schema&quot;&gt;The Schema&lt;/h2&gt;
 
-&lt;h3 id=&quot;the-problem&quot;&gt;The Problem&lt;/h3&gt;
-&lt;p&gt;Given a GraphQLEnumType in the schema, how do we return all the values in that enum type as an array of string to the client?&lt;/p&gt;
-
-&lt;h3 id=&quot;the-solution&quot;&gt;The Solution&lt;/h3&gt;
-&lt;p&gt;The premise is straight-forward. I need to populate the genre select box with all the enum values declared in the schema. However, I can’t seem to
-find any posts/articles/documentation that describe how I can do this. So I set out on my own exciting investigation.&lt;/p&gt;
-
-&lt;p&gt;My genre enum type looks like this. You can find the complete schema &lt;a href=&quot;https://github.com/yusinto/movie-time/blob/master/src/graphql/schema.js&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The genre enum type looks like this. You can find the complete schema &lt;a href=&quot;https://github.com/yusinto/movie-time/blob/master/src/graphql/schema.js&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;{% highlight js %}
 const genreEnum = new GraphQLEnumType({
@@ -116,21 +279,91 @@ const genreEnum = new GraphQLEnumType({
 });
 {% endhighlight %}&lt;/p&gt;
 
-&lt;p&gt;The client expects the graphql endpoint to return an array of string like this:&lt;/p&gt;
+&lt;p&gt;Our graphql endpoint should return a list like this:&lt;/p&gt;
 
 &lt;p&gt;{% highlight js %}
-[‘Action’, ‘Adventure’ ,’Western’]
+[‘Action’, ‘Adventure’,…,’Western’]
 {% endhighlight %}&lt;/p&gt;
 
-&lt;p&gt;Using the chrome debugger, I discovered the GraphQLEnumType object has a property called &lt;b&gt;_values&lt;/b&gt;. I’m guessing the underscore
-prefix means that it’s a private property by convention, so I might not be doing the best thing here! However due to the lack of
-alternatives, it will have to do for now. My resolve method then looks like this:&lt;/p&gt;
+&lt;p&gt;Using the chrome debugger, I discovered that the genreEnum object has a property called &lt;b&gt;_values&lt;/b&gt;. I’m guessing the underscore
+prefix means that it’s a private property by convention, so we might not be doing the best thing here! However due to the lack of
+alternatives, it will have to do for now. Your resolve method should then look like this:&lt;/p&gt;
 
 &lt;p&gt;{% highlight js %}
 resolve: () =&amp;gt; genreEnum._values.map(e =&amp;gt; e.value)
 {% endhighlight %}&lt;/p&gt;
 
-&lt;p&gt;And that’s it! You can find the complete code on &lt;a href=&quot;https://github.com/yusinto/movie-time&quot;&gt;github&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;And that’s it! You can find the complete code on &lt;a href=&quot;https://github.com/yusinto/movie-time&quot;&gt;github&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Happy coding!&lt;/p&gt;
+
+&lt;hr /&gt;
+</content>
+<category term="react" />
+<category term="microservices" />
+<category term="conway&#39;s law" />
+<category term="team structure" />
+<summary>I am going to digress a little today and talk about how react fits into the microservice architectural style. Of course microservices and react are two buzzwords we hear all the time these days. While it might look like I am just shamelessly meshing these two things together to get more visitors to my site, you can’t be further than the truth (*cough).</summary>
+</entry>
+<entry>
+<title>Returning graphql enum values to the client</title>
+<link href="http://localhost:3000/return-graphql-enums/" rel="alternate" type="text/html" title="Returning graphql enum values to the client" />
+<published>2016-04-13T15:45:00-07:00</published>
+<updated>2016-04-13T15:45:00-07:00</updated>
+<id>http://localhost:3000/return-graphql-enums</id>
+<content type="html" xml:base="http://localhost:3000/return-graphql-enums/">&lt;p&gt;In my attempt to learn Relay and GraphQL, I recently created a simple movie app. It is a single page app in both senses -
+it only has one page and it’s all client side (excuse the pun!). This single page displays a list of movie titles and their genres.
+It also has a select box to filter the list by genre.&lt;/p&gt;
+
+&lt;p&gt;This blog is not an intro to graphql or relay, that will be covered sometime in the near future. It’s about how to return
+a list of enum values declared in our graphql schema to the client. So in a nutshell:&lt;/p&gt;
+
+&lt;h3 id=&quot;the-problem&quot;&gt;The Problem&lt;/h3&gt;
+&lt;p&gt;Given a GraphQLEnumType in the schema, how do we return all the values in that enum type as a list to the client?&lt;/p&gt;
+
+&lt;h3 id=&quot;the-solution&quot;&gt;The Solution&lt;/h3&gt;
+&lt;p&gt;The premise is straight forward. We need to populate our genre select box with all the enum values declared in the schema. However, I can’t seem to
+find any posts/articles/documentation that describe how I can do this. So I set out on my own exciting investigation.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;the-schema&quot;&gt;The Schema&lt;/h2&gt;
+
+&lt;p&gt;The genre enum type looks like this. You can find the complete schema &lt;a href=&quot;https://github.com/yusinto/movie-time/blob/master/src/graphql/schema.js&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;{% highlight js %}
+const genreEnum = new GraphQLEnumType({
+  name: ‘Genre’,
+  values: {
+    ACTION: {
+      value: ‘Action’
+    },
+    ADVENTURE: {
+      value: ‘Adventure’
+    },
+   …
+    WESTERN: {
+      value: ‘Western’
+    }
+  }
+});
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;Our graphql endpoint should return a list like this:&lt;/p&gt;
+
+&lt;p&gt;{% highlight js %}
+[‘Action’, ‘Adventure’,…,’Western’]
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;Using the chrome debugger, I discovered that the genreEnum object has a property called &lt;b&gt;_values&lt;/b&gt;. I’m guessing the underscore
+prefix means that it’s a private property by convention, so we might not be doing the best thing here! However due to the lack of
+alternatives, it will have to do for now. Your resolve method should then look like this:&lt;/p&gt;
+
+&lt;p&gt;{% highlight js %}
+resolve: () =&amp;gt; genreEnum._values.map(e =&amp;gt; e.value)
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;And that’s it! You can find the complete code on &lt;a href=&quot;https://github.com/yusinto/movie-time&quot;&gt;github&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;Happy coding!&lt;/p&gt;
 
@@ -144,11 +377,11 @@ resolve: () =&amp;gt; genreEnum._values.map(e =&amp;gt; e.value)
 </entry>
 <entry>
 <title>Step 3 to React: Speed dev with hot module replacement</title>
-<link href="http://www.reactjunkie.com/step-three-to-react-speed-dev-with-hot-module-replacement/" rel="alternate" type="text/html" title="Step 3 to React: Speed dev with hot module replacement" />
-<published>2016-04-02T17:45:00+11:00</published>
-<updated>2016-04-02T17:45:00+11:00</updated>
-<id>http://www.reactjunkie.com/step-three-to-react-speed-dev-with-hot-module-replacement</id>
-<content type="html" xml:base="http://www.reactjunkie.com/step-three-to-react-speed-dev-with-hot-module-replacement/">&lt;p&gt;In the &lt;a href=&quot;http://www.reactjunkie.com/step-two-to-react-webpack-and-react/&quot;&gt;previous post&lt;/a&gt; we started writing react code
+<link href="http://localhost:3000/step-three-to-react-speed-dev-with-hot-module-replacement/" rel="alternate" type="text/html" title="Step 3 to React: Speed dev with hot module replacement" />
+<published>2016-04-02T17:45:00-07:00</published>
+<updated>2016-04-02T17:45:00-07:00</updated>
+<id>http://localhost:3000/step-three-to-react-speed-dev-with-hot-module-replacement</id>
+<content type="html" xml:base="http://localhost:3000/step-three-to-react-speed-dev-with-hot-module-replacement/">&lt;p&gt;In the &lt;a href=&quot;http://www.reactjunkie.com/step-two-to-react-webpack-and-react/&quot;&gt;previous post&lt;/a&gt; we started writing react code
 and that was cool. However having to restart the app and refresh the browser everytime we make a change is a pain. 
 There must be a better way to optimise our dev/debug cycle.&lt;/p&gt;
 
@@ -314,11 +547,11 @@ the h1 text. You’ll see your changes in the browser immediately without refres
 </entry>
 <entry>
 <title>Step 2 to React: Webpack and React</title>
-<link href="http://www.reactjunkie.com/step-two-to-react-webpack-and-react/" rel="alternate" type="text/html" title="Step 2 to React: Webpack and React" />
-<published>2016-03-30T21:25:00+11:00</published>
-<updated>2016-03-30T21:25:00+11:00</updated>
-<id>http://www.reactjunkie.com/step-two-to-react-webpack-and-react</id>
-<content type="html" xml:base="http://www.reactjunkie.com/step-two-to-react-webpack-and-react/">&lt;p&gt;If you haven’t read my &lt;a href=&quot;http://www.reactjunkie.com/step-one-to-react-es-6-and-express/&quot;&gt;previous post&lt;/a&gt;, 
+<link href="http://localhost:3000/step-two-to-react-webpack-and-react/" rel="alternate" type="text/html" title="Step 2 to React: Webpack and React" />
+<published>2016-03-30T21:25:00-07:00</published>
+<updated>2016-03-30T21:25:00-07:00</updated>
+<id>http://localhost:3000/step-two-to-react-webpack-and-react</id>
+<content type="html" xml:base="http://localhost:3000/step-two-to-react-webpack-and-react/">&lt;p&gt;If you haven’t read my &lt;a href=&quot;http://www.reactjunkie.com/step-one-to-react-es-6-and-express/&quot;&gt;previous post&lt;/a&gt;, 
 it might be a good idea to have a quick read before reading this one. We’ll build this example based on that last post.
 Let’s get into it!&lt;/p&gt;
 
@@ -525,11 +758,11 @@ Download the complete source code from &lt;a href=&quot;https://github.com/yusin
 </entry>
 <entry>
 <title>Step 1 to React: Using es6 with Express</title>
-<link href="http://www.reactjunkie.com/step-one-to-react-es-6-and-express/" rel="alternate" type="text/html" title="Step 1 to React: Using es6 with Express" />
-<published>2016-03-27T17:48:00+11:00</published>
-<updated>2016-03-27T17:48:00+11:00</updated>
-<id>http://www.reactjunkie.com/step-one-to-react-es-6-and-express</id>
-<content type="html" xml:base="http://www.reactjunkie.com/step-one-to-react-es-6-and-express/">&lt;p&gt;I came from a .Net background but I realised quickly how powerful and easy node is and I love it. The advent of es6 has
+<link href="http://localhost:3000/step-one-to-react-es-6-and-express/" rel="alternate" type="text/html" title="Step 1 to React: Using es6 with Express" />
+<published>2016-03-27T17:48:00-07:00</published>
+<updated>2016-03-27T17:48:00-07:00</updated>
+<id>http://localhost:3000/step-one-to-react-es-6-and-express</id>
+<content type="html" xml:base="http://localhost:3000/step-one-to-react-es-6-and-express/">&lt;p&gt;I came from a .Net background but I realised quickly how powerful and easy node is and I love it. The advent of es6 has
 bridged the gap even further. The introduction of arrow functions, classes and destructuring really make node programming
  that much more enjoyable and fun.&lt;/p&gt;
 

@@ -1,16 +1,23 @@
 [
   
     {
-      "title"    : "React and Microservices Architectural Style",
+      "title"    : "Step 4 to React: Intro to routing with react router",
+      "tags"     : "react, react router, and routing",
+      "url"      : "/step-four-to-react-routing-with-react-router/",
+      "date"     : "30 Jun 2016"
+    } ,
+  
+    {
+      "title"    : "How React fits into the microservice team structure",
       "tags"     : "react, microservices, conway's law, and team structure",
       "url"      : "/react-and-microservices/",
       "date"     : "28 May 2016"
     } ,
   
     {
-      "title"    : "Return GraphQLEnumType values as a string array",
+      "title"    : "Returning graphql enum values to the client",
       "tags"     : "react, relay, graphql, and GraphQLEnumType",
-      "url"      : "/return-graphqlenumtype-values-as-string-array/",
+      "url"      : "/return-graphql-enums/",
       "date"     : "13 Apr 2016"
     } ,
   
