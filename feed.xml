@@ -3,7 +3,7 @@
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
 <link href="http://www.reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
 <link href="http://www.reactjunkie.com/" rel="alternate" type="text/html" />
-<updated>2016-06-30T22:17:18-07:00</updated>
+<updated>2016-06-30T22:38:40-07:00</updated>
 <id>http://www.reactjunkie.com/</id>
 <title>React Junkie</title>
 <entry>
@@ -16,7 +16,7 @@
 My wife says I’m addicted to work, I said no. We fight a lot but we love each other. Love is weird.&lt;/p&gt;
 
 &lt;p&gt;Anyway! This is a short and basic guide to implement routing with react router.
-If you haven’t read my &lt;a href=&quot;http://www.reactjunkie.com/2016-04-02-step-three-to-react-speed-dev-with-hot-module-replacement/&quot;&gt;previous post&lt;/a&gt;, 
+If you haven’t read my &lt;a href=&quot;http://www.reactjunkie.com/step-three-to-react-speed-dev-with-hot-module-replacement/&quot;&gt;previous post&lt;/a&gt;, 
 it might be a good idea to have a quick read before reading this one. We’ll build this example based on that last post.
 Let’s get into it!&lt;/p&gt;
 
