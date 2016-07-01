@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
-<link href="http://localhost:3000/feed.xml" rel="self" type="application/atom+xml" />
-<link href="http://localhost:3000/" rel="alternate" type="text/html" />
-<updated>2016-06-30T18:50:12-07:00</updated>
-<id>http://localhost:3000/</id>
+<link href="http://www.reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
+<link href="http://www.reactjunkie.com/" rel="alternate" type="text/html" />
+<updated>2016-06-30T22:17:18-07:00</updated>
+<id>http://www.reactjunkie.com/</id>
 <title>React Junkie</title>
 <entry>
 <title>Step 4 to React: Intro to routing with react router</title>
-<link href="http://localhost:3000/step-four-to-react-routing-with-react-router/" rel="alternate" type="text/html" title="Step 4 to React: Intro to routing with react router" />
+<link href="http://www.reactjunkie.com/step-four-to-react-routing-with-react-router/" rel="alternate" type="text/html" title="Step 4 to React: Intro to routing with react router" />
 <published>2016-06-30T14:52:00-07:00</published>
 <updated>2016-06-30T14:52:00-07:00</updated>
-<id>http://localhost:3000/step-four-to-react-routing-with-react-router</id>
-<content type="html" xml:base="http://localhost:3000/step-four-to-react-routing-with-react-router/">&lt;p&gt;I am in LA for holidays! Yep, I’m blogging as I am holidaying; I don’t know why but I just can’t stop thinking about it.
+<id>http://www.reactjunkie.com/step-four-to-react-routing-with-react-router</id>
+<content type="html" xml:base="http://www.reactjunkie.com/step-four-to-react-routing-with-react-router/">&lt;p&gt;I am in LA for holidays! Yep, I’m blogging as I am holidaying; I don’t know why but I just can’t stop thinking about it.
 My wife says I’m addicted to work, I said no. We fight a lot but we love each other. Love is weird.&lt;/p&gt;
 
 &lt;p&gt;Anyway! This is a short and basic guide to implement routing with react router.
@@ -208,11 +208,11 @@ Download the complete source code from &lt;a href=&quot;https://github.com/yusin
 </entry>
 <entry>
 <title>How React fits into the microservice team structure</title>
-<link href="http://localhost:3000/react-and-microservices/" rel="alternate" type="text/html" title="How React fits into the microservice team structure" />
+<link href="http://www.reactjunkie.com/react-and-microservices/" rel="alternate" type="text/html" title="How React fits into the microservice team structure" />
 <published>2016-05-28T20:45:00-07:00</published>
 <updated>2016-05-28T20:45:00-07:00</updated>
-<id>http://localhost:3000/react-and-microservices</id>
-<content type="html" xml:base="http://localhost:3000/react-and-microservices/">&lt;p&gt;I am going to digress a little today and talk about how react fits into the microservice architectural style. Of course microservices and 
+<id>http://www.reactjunkie.com/react-and-microservices</id>
+<content type="html" xml:base="http://www.reactjunkie.com/react-and-microservices/">&lt;p&gt;I am going to digress a little today and talk about how react fits into the microservice architectural style. Of course microservices and 
 react are two buzzwords we hear all the time these days. While it might look like I am just shamelessly meshing these two things 
 together to get more visitors to my site, you can’t be further than the truth (*cough).&lt;/p&gt;
 
@@ -307,11 +307,11 @@ resolve: () =&amp;gt; genreEnum._values.map(e =&amp;gt; e.value)
 </entry>
 <entry>
 <title>Returning graphql enum values to the client</title>
-<link href="http://localhost:3000/return-graphql-enums/" rel="alternate" type="text/html" title="Returning graphql enum values to the client" />
+<link href="http://www.reactjunkie.com/return-graphql-enums/" rel="alternate" type="text/html" title="Returning graphql enum values to the client" />
 <published>2016-04-13T15:45:00-07:00</published>
 <updated>2016-04-13T15:45:00-07:00</updated>
-<id>http://localhost:3000/return-graphql-enums</id>
-<content type="html" xml:base="http://localhost:3000/return-graphql-enums/">&lt;p&gt;In my attempt to learn Relay and GraphQL, I recently created a simple movie app. It is a single page app in both senses -
+<id>http://www.reactjunkie.com/return-graphql-enums</id>
+<content type="html" xml:base="http://www.reactjunkie.com/return-graphql-enums/">&lt;p&gt;In my attempt to learn Relay and GraphQL, I recently created a simple movie app. It is a single page app in both senses -
 it only has one page and it’s all client side (excuse the pun!). This single page displays a list of movie titles and their genres.
 It also has a select box to filter the list by genre.&lt;/p&gt;
 
@@ -377,11 +377,11 @@ resolve: () =&amp;gt; genreEnum._values.map(e =&amp;gt; e.value)
 </entry>
 <entry>
 <title>Step 3 to React: Speed dev with hot module replacement</title>
-<link href="http://localhost:3000/step-three-to-react-speed-dev-with-hot-module-replacement/" rel="alternate" type="text/html" title="Step 3 to React: Speed dev with hot module replacement" />
+<link href="http://www.reactjunkie.com/step-three-to-react-speed-dev-with-hot-module-replacement/" rel="alternate" type="text/html" title="Step 3 to React: Speed dev with hot module replacement" />
 <published>2016-04-02T17:45:00-07:00</published>
 <updated>2016-04-02T17:45:00-07:00</updated>
-<id>http://localhost:3000/step-three-to-react-speed-dev-with-hot-module-replacement</id>
-<content type="html" xml:base="http://localhost:3000/step-three-to-react-speed-dev-with-hot-module-replacement/">&lt;p&gt;In the &lt;a href=&quot;http://www.reactjunkie.com/step-two-to-react-webpack-and-react/&quot;&gt;previous post&lt;/a&gt; we started writing react code
+<id>http://www.reactjunkie.com/step-three-to-react-speed-dev-with-hot-module-replacement</id>
+<content type="html" xml:base="http://www.reactjunkie.com/step-three-to-react-speed-dev-with-hot-module-replacement/">&lt;p&gt;In the &lt;a href=&quot;http://www.reactjunkie.com/step-two-to-react-webpack-and-react/&quot;&gt;previous post&lt;/a&gt; we started writing react code
 and that was cool. However having to restart the app and refresh the browser everytime we make a change is a pain. 
 There must be a better way to optimise our dev/debug cycle.&lt;/p&gt;
 
@@ -547,11 +547,11 @@ the h1 text. You’ll see your changes in the browser immediately without refres
 </entry>
 <entry>
 <title>Step 2 to React: Webpack and React</title>
-<link href="http://localhost:3000/step-two-to-react-webpack-and-react/" rel="alternate" type="text/html" title="Step 2 to React: Webpack and React" />
+<link href="http://www.reactjunkie.com/step-two-to-react-webpack-and-react/" rel="alternate" type="text/html" title="Step 2 to React: Webpack and React" />
 <published>2016-03-30T21:25:00-07:00</published>
 <updated>2016-03-30T21:25:00-07:00</updated>
-<id>http://localhost:3000/step-two-to-react-webpack-and-react</id>
-<content type="html" xml:base="http://localhost:3000/step-two-to-react-webpack-and-react/">&lt;p&gt;If you haven’t read my &lt;a href=&quot;http://www.reactjunkie.com/step-one-to-react-es-6-and-express/&quot;&gt;previous post&lt;/a&gt;, 
+<id>http://www.reactjunkie.com/step-two-to-react-webpack-and-react</id>
+<content type="html" xml:base="http://www.reactjunkie.com/step-two-to-react-webpack-and-react/">&lt;p&gt;If you haven’t read my &lt;a href=&quot;http://www.reactjunkie.com/step-one-to-react-es-6-and-express/&quot;&gt;previous post&lt;/a&gt;, 
 it might be a good idea to have a quick read before reading this one. We’ll build this example based on that last post.
 Let’s get into it!&lt;/p&gt;
 
@@ -758,11 +758,11 @@ Download the complete source code from &lt;a href=&quot;https://github.com/yusin
 </entry>
 <entry>
 <title>Step 1 to React: Using es6 with Express</title>
-<link href="http://localhost:3000/step-one-to-react-es-6-and-express/" rel="alternate" type="text/html" title="Step 1 to React: Using es6 with Express" />
+<link href="http://www.reactjunkie.com/step-one-to-react-es-6-and-express/" rel="alternate" type="text/html" title="Step 1 to React: Using es6 with Express" />
 <published>2016-03-27T17:48:00-07:00</published>
 <updated>2016-03-27T17:48:00-07:00</updated>
-<id>http://localhost:3000/step-one-to-react-es-6-and-express</id>
-<content type="html" xml:base="http://localhost:3000/step-one-to-react-es-6-and-express/">&lt;p&gt;I came from a .Net background but I realised quickly how powerful and easy node is and I love it. The advent of es6 has
+<id>http://www.reactjunkie.com/step-one-to-react-es-6-and-express</id>
+<content type="html" xml:base="http://www.reactjunkie.com/step-one-to-react-es-6-and-express/">&lt;p&gt;I came from a .Net background but I realised quickly how powerful and easy node is and I love it. The advent of es6 has
 bridged the gap even further. The introduction of arrow functions, classes and destructuring really make node programming
  that much more enjoyable and fun.&lt;/p&gt;
 
