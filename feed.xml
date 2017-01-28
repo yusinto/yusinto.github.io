@@ -3,14 +3,1491 @@
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
 <link href="http://www.reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
 <link href="http://www.reactjunkie.com/" rel="alternate" type="text/html" />
-<updated>2016-06-30T22:38:40-07:00</updated>
+<updated>2017-01-28T22:01:12+11:00</updated>
 <id>http://www.reactjunkie.com/</id>
 <title>React Junkie</title>
 <entry>
+<title>Testing Connected Redux and Relay Components</title>
+<link href="http://www.reactjunkie.com/testing-connected-redux-relay-components/" rel="alternate" type="text/html" title="Testing Connected Redux and Relay Components" />
+<published>2017-01-28T08:30:00+11:00</published>
+<updated>2017-01-28T08:30:00+11:00</updated>
+<id>http://www.reactjunkie.com/testing-connected-redux-relay-components</id>
+<content type="html" xml:base="http://www.reactjunkie.com/testing-connected-redux-relay-components/">&lt;p&gt;Happy chinese new year everyone! In the spirit of the year of the cock, I shall write the rest of this post in chinese. 
+中国著名的大思想家、大教育家。孔子开创了私人讲学的风气，是儒家学派的创始人。孔子曾受业于老子 (roughly translates to… I don’t know).
+Did I say Cock? I mean Rooster. Apologies my dear chinese readers… I don’t think there’s a difference anyway?&lt;/p&gt;
+
+&lt;p&gt;I’m gonna talk about testing redux components today. If you use react-redux, you are probably connecting
+your components to redux using the connect method. If you do this in one file with a single default export (which is the connected component)
+you have a problem. You’ll find that you can’t test your component directly because the default export of your module is not the component
+itself, rather it’s the redux connected component. What you want to test is the presentational component, not the connected component. Redux
+itself is already tested!&lt;/p&gt;
+
+&lt;p&gt;You have two options at this point; you can either bite the bullet and test the redux component meaning mocking a lot of the redux stuff OR 
+you can modify your code to be testable by exporting the private presentational component. This second approach is the one recommended by the 
+&lt;a href=&quot;https://github.com/reactjs/redux/blob/master/docs/recipes/WritingTests.md&quot; target=&quot;_blank&quot;&gt;official redux documentation&lt;/a&gt;. I find that although 
+this works it does so at the expense of encapsulation. I believe code should be driven by design and requirements, not testing restrictions. 
+So I set out to find a better approach.&lt;/p&gt;
+
+&lt;p&gt;There is a popular npm package &lt;a href=&quot;https://github.com/jhnns/rewire&quot; target=&quot;_blank&quot;&gt;rewire&lt;/a&gt; which seems to be promising. I failed to make it work
+quickly though, because it does not work with es6 so a little more googling reveals &lt;a href=&quot;https://github.com/speedskater/babel-plugin-rewire&quot; target=&quot;_blank&quot;&gt;babel-plugin-rewire&lt;/a&gt; 
+which is based on rewire and works with es6. Armed with this library, I embarked on a journey towards a better cock year oops I mean better unit tests.&lt;/p&gt;
+
+&lt;h2 id=&quot;enough-talk-show-me-some-code&quot;&gt;Enough talk, show me some code&lt;/h2&gt;
+&lt;p&gt;Consider the following code (which you can see in entirety &lt;a href=&quot;https://github.com/yusinto/test-react/blob/master/src/universal/home/home.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;):&lt;/p&gt;
+
+&lt;h4 id=&quot;homejs&quot;&gt;home.js&lt;/h4&gt;
+&lt;p&gt;{% highlight javascript %}
+import React, {Component} from ‘react’;
+import {connect} from ‘react-redux’;
+import * as Actions from ‘./homeAction’;&lt;/p&gt;
+
+&lt;p&gt;// private class
+class Home extends Component {
+  constructor(props) {
+    super(props);
+    this.onClickGenerateRandom = ::this.onClickGenerateRandom;
+  }&lt;/p&gt;
+
+&lt;p&gt;onClickGenerateRandom() {
+    this.props.generateRandom();
+  }&lt;/p&gt;
+
+&lt;p&gt;render() {
+    let homeText = ‘Click button below to generate a random number!’;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;return (
+  &amp;lt;div&amp;gt;
+    &amp;lt;p&amp;gt;{ homeText }&amp;lt;/p&amp;gt;
+    &amp;lt;div&amp;gt;{this.props.randomNumber}&amp;lt;/div&amp;gt;
+    &amp;lt;button onClick={this.onClickGenerateRandom}&amp;gt;
+        Generate random number
+    &amp;lt;/button&amp;gt;
+  &amp;lt;/div&amp;gt;
+);   } }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;const mapStateToProps = (state) =&amp;gt; {
+  const homeState = state.Home;&lt;/p&gt;
+
+&lt;p&gt;return {
+    randomNumber: homeState.randomNumber
+  };
+};&lt;/p&gt;
+
+&lt;p&gt;export default connect(mapStateToProps, Actions)(Home);
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;The Home class is private and that’s what we want to test. It is not exported at all, so we can’t access it directly. 
+As mentioned above, the official redux documentation recommends exporting this class, but that breaks encapsulation.
+So what do we do? Enter &lt;a href=&quot;https://github.com/speedskater/babel-plugin-rewire&quot; target=&quot;_blank&quot;&gt;babel-plugin-rewire&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;using-rewire&quot;&gt;Using rewire&lt;/h2&gt;
+&lt;p&gt;You need to install the following npm packages:&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+yarn add –dev jest babel-plugin-rewire enzyme react-addons-test-utils
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;I use &lt;a href=&quot;https://facebook.github.io/jest/&quot; target=&quot;_blank&quot;&gt;jest&lt;/a&gt; for my test framework and you should too, it kicks butt. 
+I also use &lt;a href=&quot;https://github.com/airbnb/enzyme&quot; target=&quot;_blank&quot;&gt;enzyme&lt;/a&gt; which is a utility library for testing react components. 
+Enzyme requires the official &lt;a href=&quot;https://facebook.github.io/react/docs/test-utils.html&quot; target=&quot;_blank&quot;&gt;react-addons-test-utils&lt;/a&gt; package.&lt;/p&gt;
+
+&lt;p&gt;In your .babelrc, add an “env” block to include babel-plugin-rewire when running tests:&lt;/p&gt;
+
+&lt;h4 id=&quot;babelrc&quot;&gt;.babelrc&lt;/h4&gt;
+&lt;p&gt;{% highlight javascript %}
+{
+    “presets”: [“es2015”, “react”, “stage-0”],&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/* etc your other config */
+
+&quot;env&quot;: {
+  &quot;test&quot;: {
+    &quot;plugins&quot;: [&quot;babel-plugin-rewire&quot;]
+  }
+} } {% endhighlight %}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;write-the-tests&quot;&gt;Write the tests!&lt;/h2&gt;
+&lt;p&gt;Now we can write the tests! The complete file is &lt;a href=&quot;https://github.com/yusinto/test-react/blob/master/src/universal/home/home.test.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;:&lt;/p&gt;
+
+&lt;h4 id=&quot;hometestjs&quot;&gt;home.test.js&lt;/h4&gt;
+&lt;p&gt;{% highlight javascript %}
+import React from ‘react’;
+import {shallow} from ‘enzyme’;
+import HomeRedux from ‘./home’;&lt;/p&gt;
+
+&lt;p&gt;describe(‘Home component tests’, () =&amp;gt; {
+  // rewire injects &lt;strong&gt;get&lt;/strong&gt; and &lt;strong&gt;set&lt;/strong&gt; methods to all our modules.
+  // These can then be used to extract and set top level private variables.
+  // In this instance, we extract the private Home class
+  const Home = HomeRedux.&lt;strong&gt;get&lt;/strong&gt;(‘Home’);&lt;/p&gt;
+
+&lt;p&gt;it(‘should render correctly’, () =&amp;gt; {
+    // Yayy! We can now render the presentational component directly! 
+    const output = shallow(&amp;lt;Home randomNumber={45}/&amp;gt;);&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// Use jest snapshot testing for convenience
+expect(output).toMatchSnapshot();   }); }); {% endhighlight %}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;This approach incurs a little more time to setup, but I think it’s worth it. We leave the code fully testable, encapsulation intact. 
+This feels right for me. Also, you can apply the same technique to test react components wrapped in relay containers. It works!&lt;/p&gt;
+
+&lt;p&gt;Check out the &lt;a href=&quot;https://github.com/yusinto/test-react&quot; target=&quot;_blank&quot;&gt;sample code&lt;/a&gt; for a working example and let me know if this is useful (or not)!&lt;/p&gt;
+
+&lt;hr /&gt;
+</content>
+<category term="redux" />
+<category term="relay" />
+<category term="connected" />
+<category term="unit" />
+<category term="tests" />
+<category term="testing" />
+<category term="encapsulation" />
+<category term="jest" />
+<category term="rewire" />
+<summary>Happy chinese new year everyone! In the spirit of the year of the cock, I shall write the rest of this post in chinese. 中国著名的大思想家、大教育家。孔子开创了私人讲学的风气，是儒家学派的创始人。孔子曾受业于老子 (roughly translates to… I don’t know).Did I say Cock? I mean Rooster. Apologies my dear chinese readers… I don’t think there’s a difference anyway?I’m gonna talk about testing redux components today. If you use react-redux, you are probably connectingyour components to redux using the connect method. If you do this in one file with a single default export (which is the connected component)you have a problem. You’ll find that you can’t test your component directly because the default export of your module is not the componentitself, rather it’s the redux connected component. What you want to test is the presentational component, not the connected component. Reduxitself is already tested!</summary>
+</entry>
+<entry>
+<title>Building graphql schema without babelrc</title>
+<link href="http://www.reactjunkie.com/build-graphql-schema-without-babelrc/" rel="alternate" type="text/html" title="Building graphql schema without babelrc" />
+<published>2016-12-12T19:30:00+11:00</published>
+<updated>2016-12-12T19:30:00+11:00</updated>
+<id>http://www.reactjunkie.com/build-graphql-schema-without-babelrc</id>
+<content type="html" xml:base="http://www.reactjunkie.com/build-graphql-schema-without-babelrc/">&lt;p&gt;Man it has been a busy month! It’s been a while since I blogged, I have to say I miss it a lot. Almost as much as I 
+miss drinking..&lt;/p&gt;
+
+&lt;p&gt;Today I’ll be talking about graphql and relay, specifically about building the schema. Warning this is not a beginner’s
+guide to graphql and relay, there are tons of other tutorials which can help you with that. This blog is about
+decoupling your graphql schema build from your project’s .babelrc file.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-problem&quot;&gt;The problem&lt;/h2&gt;
+&lt;p&gt;Your project has a .babelrc file which contains presets, plugins, etc used by babel when you run your app. You need 
+to include babelRelayPlugin in your .babelrc plugins section so your relay app can comprehend your graphql schema.&lt;/p&gt;
+
+&lt;p&gt;However, babelRelayPlugin.js contains a reference to schema.json which is generated by babel-node &lt;a href=&quot;https://github.com/relayjs/relay-starter-kit/blob/master/scripts/updateSchema.js&quot; target=&quot;_blank&quot;&gt;updateSchema.js&lt;/a&gt; 
+which in turn uses .babelrc which has a dependency on babelRelayPlugin which is a cyclic dependency which gives me a 
+migraine.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-solution&quot;&gt;The solution&lt;/h2&gt;
+&lt;p&gt;We need to decouple graphql schema generation from app runtime. The standard .babelrc file is required for our app runtime so that stays.
+That means we cannot depend on .babelrc for our schema generation i.e. when running &lt;a href=&quot;https://github.com/relayjs/relay-starter-kit/blob/master/scripts/updateSchema.js&quot; target=&quot;_blank&quot;&gt;updateSchema.js&lt;/a&gt;
+we can’t use babel-node. Instead we use plain vanilla node in combination with babel-register with inline
+config when running updateSchema.&lt;/p&gt;
+
+&lt;h2 id=&quot;enough-talk-show-me-some-code&quot;&gt;Enough talk, show me some code&lt;/h2&gt;
+&lt;p&gt;You need the following babel packages:&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+sudo yarn add –dev babel-polyfill babel-preset-latest
+sudo yarn add babel-register babel-preset-stage-0
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;In your package.json, you declare an npm run command update-schema which points an index.js file:&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+“scripts”: {
+    “update-schema”: “node ./src/graphql/index.js”,
+    …
+}
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;Your src/graphql/index.js then looks like this:&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+require(‘babel-register’)({
+  babelrc: false,
+  presets: [
+    “latest”
+  ]
+});
+require(“babel-polyfill”); // required for async generators
+require(‘./updateSchema’);
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;where updateSchema.js is provided by facebook &lt;a href=&quot;https://github.com/relayjs/relay-starter-kit/blob/master/scripts/updateSchema.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;Check out the &lt;a href=&quot;https://github.com/yusinto/movie-time&quot; target=&quot;_blank&quot;&gt;sample code&lt;/a&gt; for a working example and let me know if this is useful (or not)!&lt;/p&gt;
+
+&lt;hr /&gt;
+</content>
+<category term="graphql" />
+<category term="schema" />
+<category term="relay" />
+<category term="react" />
+<category term="babel" />
+<category term="babelrc" />
+<category term="build" />
+<category term="babelrelayplugin" />
+<summary>Man it has been a busy month! It’s been a while since I blogged, I have to say I miss it a lot. Almost as much as I miss drinking..</summary>
+</entry>
+<entry>
+<title>Targeting users with React Redux and Launch Darkly</title>
+<link href="http://www.reactjunkie.com/launch-darkly-part-two/" rel="alternate" type="text/html" title="Targeting users with React Redux and Launch Darkly" />
+<published>2016-11-01T19:30:00+11:00</published>
+<updated>2016-11-01T19:30:00+11:00</updated>
+<id>http://www.reactjunkie.com/launch-darkly-part-two</id>
+<content type="html" xml:base="http://www.reactjunkie.com/launch-darkly-part-two/">&lt;p&gt;In my &lt;a href=&quot;http://www.reactjunkie.com/react-feature-toggle-launch-darkly/&quot; target=&quot;_blank&quot;&gt;previous previous post&lt;/a&gt; 
+I introduced launch darkly as a feature toggling platform and how to use it with react redux. In this post I
+will explain how you can further leverage the power of feature toggling with user targeting.&lt;/p&gt;
+
+&lt;h2 id=&quot;whats-user-targeting&quot;&gt;What’s user targeting?&lt;/h2&gt;
+&lt;p&gt;You have a feature or functionality you only want to display to a select group of audience. For example 
+releasing a beta feature to users who have signed up. Kinda like a sneak preview for early adopters. 
+Or perhaps you want to show special offers only to premium members of your website. This is user targeting.&lt;/p&gt;
+
+&lt;h2 id=&quot;ok-sounds-interesting-how-do-i-do-it&quot;&gt;Ok sounds interesting. How do I do it?&lt;/h2&gt;
+&lt;p&gt;On init, you’ll need to pass a user object to Launch Darkly so it has something to work with:&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+import ldClient from ‘ldclient-js’;&lt;/p&gt;
+
+&lt;p&gt;// Launch Darkly supports the following user attributes by default
+const user = {
+   key: ‘some-unique-key’, // mandatory, the only mandatory property
+   ip: ‘111.222.3.4’,
+   email: ‘some@email.com’,
+   name: ‘React Junkie’,
+   firstName: ‘React’,
+   lastName: ‘Junkie’,
+   country: ‘Australia’
+};&lt;/p&gt;
+
+&lt;p&gt;ldClient.initialize(‘your/client/side/id’, user);
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;You’ll need to pass a user object containing at least a key property to Launch Darkly.&lt;/p&gt;
+
+&lt;h2 id=&quot;configure-the-dashboard&quot;&gt;Configure the dashboard&lt;/h2&gt;
+&lt;p&gt;Login to Launch Darkly and in the Feature Flags section select a feature flag. In the targeting section,
+you can target individual users, use rules to target a group of users or default to a blanket rule for 
+all users.&lt;/p&gt;
+
+&lt;p&gt;I will delve into using rules to target a group of users because I think that’s a more common use case 
+compared to targeting individual users.&lt;/p&gt;
+
+&lt;p&gt;For example, the settings below will target users in Australia:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/user_targeting_by_country.png&quot; alt=&quot;Targeting user by country?&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;You can also serve true to a percentage of Australian users using the “percentage rollout” serve option.
+For example the settings below will rollout true to 50% of Australian users:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/user_targeting_percentage_rollout.png&quot; alt=&quot;Targeting user by country percentage rollout?&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;advanced-targeting&quot;&gt;Advanced targeting&lt;/h3&gt;
+&lt;p&gt;If you look carefully there’s an Advanced option if you select percentage rollout. The purpose of this 
+option is not very obvious. In our example above you can use this advanced option to further group 
+Australian users by (say) their browser.&lt;/p&gt;
+
+&lt;p&gt;For example, the settings below will serve true to half of chrome users, half of safari users, 
+half of firefox users, etc. It’s a way of “bucketing” your users so each bucket receives the 
+percentage rollout you specified.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/user_targeting_advanced.png&quot; alt=&quot;Targeting user by country percentage rollout?&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;usage-with-ld-redux&quot;&gt;Usage with ld-redux&lt;/h2&gt;
+&lt;p&gt;If you use &lt;a href=&quot;https://github.com/yusinto/ld-redux&quot; target=&quot;_blank&quot;&gt;ld-redux&lt;/a&gt;, you pass the user object
+as the third parameter to ldRedux.init method:
+{% highlight javascript %}
+import createStore from ‘&lt;your-project&gt;/store&#39;;
+import ldRedux from &#39;ld-redux&#39;;&lt;/your-project&gt;&lt;/p&gt;
+
+&lt;p&gt;// standard redux createStore
+const store = createStore();&lt;/p&gt;
+
+&lt;p&gt;const user = {
+   key: ‘some-unique-key’,
+   ip: ‘111.222.3.4’,
+   email: ‘some@email.com’,
+   name: ‘React Junkie’,
+   firstName: ‘React’,
+   lastName: ‘Junkie’,
+   country: ‘Australia’
+};&lt;/p&gt;
+
+&lt;p&gt;// Pass the user object after store to the init method
+ldRedux.init(‘yourClientSideId’, store, user);&lt;/p&gt;
+
+&lt;p&gt;render(
+  &amp;lt;Provider store={store}&amp;gt;
+    &amp;lt;Router routes={routes} history={browserHistory}/&amp;gt;
+  &amp;lt;/Provider&amp;gt;,
+  document.getElementById(‘reactDiv’)
+);
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;By default, if you don’t specify a user object, ld-redux will create a default
+user like below:&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+user = {
+   key: uuid.v4(),
+   ip: ip.address(),
+   custom: {
+        browser: userAgentParser.getResult().browser.name,
+        device, // either mobile, tablet or desktop
+   },
+};
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;You can see the complete logic for default user creation &lt;a href=&quot;https://github.com/yusinto/ld-redux/blob/master/src/init.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The custom property allows you to pass any arbitrary properties to Launch Darkly which you can use for targeting. This is very useful and powerful.&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;Feature flagging coupled with user targeting is a powerful way to control your target audience. This opens up a whole
+new world of possibilities in regards to what you can do with your app. Someday all apps will be built this way.&lt;/p&gt;
+
+&lt;p&gt;Check out &lt;a href=&quot;https://github.com/yusinto/ld-redux&quot; target=&quot;_blank&quot;&gt;ld-redux&lt;/a&gt; if you haven’t, and please give me some feedback if you use it! Thanks.&lt;/p&gt;
+
+&lt;hr /&gt;
+</content>
+<category term="targeting" />
+<category term="users" />
+<category term="react" />
+<category term="redux" />
+<category term="feature" />
+<category term="toggle" />
+<category term="launch" />
+<category term="darkly" />
+<category term="toggling" />
+<category term="ld-redux" />
+<summary>In my previous previous post I introduced launch darkly as a feature toggling platform and how to use it with react redux. In this post Iwill explain how you can further leverage the power of feature toggling with user targeting.What’s user targeting?You have a feature or functionality you only want to display to a select group of audience. For example releasing a beta feature to users who have signed up. Kinda like a sneak preview for early adopters. Or perhaps you want to show special offers only to premium members of your website. This is user targeting.</summary>
+</entry>
+<entry>
+<title>Hot Reloading Universally Bundled Webpack Apps</title>
+<link href="http://www.reactjunkie.com/universal-hot-reload/" rel="alternate" type="text/html" title="Hot Reloading Universally Bundled Webpack Apps" />
+<published>2016-10-22T10:52:00+11:00</published>
+<updated>2016-10-22T10:52:00+11:00</updated>
+<id>http://www.reactjunkie.com/universal-hot-reload</id>
+<content type="html" xml:base="http://www.reactjunkie.com/universal-hot-reload/">&lt;p&gt;I learnt quite a lot in the past week. Firstly there’s no substitute to good sleep. Secondly, you can actually eat a salmon steak raw! Thirdly, it’s really really hard
+to hot reload a server bundle if you are writing a universal app.&lt;/p&gt;
+
+&lt;p&gt;On the client side, &lt;a href=&quot;https://github.com/webpack/webpack-dev-middleware&quot; target=&quot;_blank&quot;&gt;webpack-dev-middleware&lt;/a&gt; and &lt;a href=&quot;https://github.com/gaearon/react-hot-loader&quot; target=&quot;_blank&quot;&gt;react-hot-loader&lt;/a&gt;
+have been around for a while now and have become indispensable to developers. However, what about the server side?&lt;/p&gt;
+
+&lt;p&gt;One solution is to use nodemon to restart the server on file changes. This works if you don’t bundle your server side code. If you do, you’ll have to use a task runner 
+like gulp to first compile your code, then use nodemon to restart the server.&lt;/p&gt;
+
+&lt;p&gt;I don’t particularly like this solution because I need to introduce gulp and nodemon into my project. I believe webpack can solve anything and everything. So the challenge was set:
+use only webpack to implement server side bundling and hot reload.&lt;/p&gt;
+
+&lt;p&gt;The final product is &lt;a href=&quot;https://github.com/yusinto/universal-hot-reload&quot; target=&quot;_blank&quot;&gt;universal-hot-reload&lt;/a&gt; if you want to skip straight to dessert.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-plan&quot;&gt;The plan&lt;/h2&gt;
+
+&lt;p&gt;We want to use webpack to watch our server files for changes, rebundle on change and restart the express server for changes to take effect.&lt;/p&gt;
+
+&lt;h2 id=&quot;whats-so-hard-about-it&quot;&gt;What’s so hard about it?&lt;/h2&gt;
+
+&lt;p&gt;Watching files for changes is already supported by webpack out of the box so that’s easy. For example we can do this:&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+  function watchServerChanges() {
+    const webpack = require(‘webpack’);
+    const serverCompiler = webpack(require(‘path/to/webpack/server/config’);
+    const options = {
+      aggregateTimeout: 300, // wait so long for more changes
+      poll: true // use polling instead of native watchers
+    };&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;serverCompiler.watch(options, function onServerChange(err, stats) {
+  if (err) {
+    console.log(&#39;Server bundling error:&#39; + JSON.stringify(err));
+    return;
+  }
+
+  // TODO: restart express here 
+});   } {% endhighlight %}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;We can call watchServerChanges on our server bootstrap and walah problem solved. Well not quite. How do we tackle restarting express on server file changes?&lt;/p&gt;
+
+&lt;h2 id=&quot;step-1-express-server-restart-using-htttpserverclose&quot;&gt;Step 1: Express server restart using htttp.Server.close()&lt;/h2&gt;
+&lt;p&gt;The http.Server object provides a &lt;a href=&quot;https://nodejs.org/api/http.html#http_server_close_callback&quot; target=&quot;_blank&quot;&gt;close&lt;/a&gt; method which sounds like it might do the job.
+For example we can theoretically do this:&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+  function onServerChange(err, stats) {
+    if (err) {
+      console.log(‘Server bundling error:’ + JSON.stringify(err));
+      return;
+    }&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// TODO: somehow get a reference to the running http.Server object;
+//const httpServer = ??? 
+
+httpServer.close(function () {
+  console.log(&#39;Server restarted &#39; + new Date());
+});   } {% endhighlight %}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Two things we need to solve here:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;We need to obtain a reference to the running http.Server object.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;close() does not restart the server. It stops the server from accepting new connections and then shuts down the server when all its existing connections have closed.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;step-11-getting-a-reference-to-httpserver&quot;&gt;Step 1.1: Getting a reference to http.Server&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/neo_spoon.jpg&quot; alt=&quot;Neo Spoon&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Let’s take a look at some code.&lt;/p&gt;
+
+&lt;h4 id=&quot;srcserverindexjs-bootstrap&quot;&gt;src/server/index.js (bootstrap)&lt;/h4&gt;
+&lt;p&gt;{% highlight javascript %}
+  require(‘babel-polyfill’);&lt;/p&gt;
+
+&lt;p&gt;// require the server entry file where the express server is initialised
+  // expect the server entry file to export a http.Server object
+  const httpServer = require(‘./server’);&lt;/p&gt;
+
+&lt;p&gt;//… then we can call httpServer.close() at some point later
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h4 id=&quot;srcserverserverjs-entry&quot;&gt;src/server/server.js (entry)&lt;/h4&gt;
+&lt;p&gt;{% highlight javascript %}
+import express from ‘express’;&lt;/p&gt;
+
+&lt;p&gt;const PORT = 3000;
+const app = express();&lt;/p&gt;
+
+&lt;p&gt;//… your other express middlewares&lt;/p&gt;
+
+&lt;p&gt;// the listen method returns the currently running instance of 
+// http.Server object 
+const httpServer = app.listen(PORT, () =&amp;gt; {
+  console.log(&lt;code class=&quot;highlighter-rouge&quot;&gt;Listening at ${PORT}&lt;/code&gt;);
+});&lt;/p&gt;
+
+&lt;p&gt;// export httpServer object so we can access it in bootstrap
+module.exports = httpServer;
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;What’s happening here:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;src/server/index.js is our bootstrap file. It requires src/server/server.js 
+and expects an http.Server object as the exported value of that module.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;In server.js, the listen() method returns an instance of the running http.Server object. 
+This is what we export out of this module for index.js.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;We are not done yet. Merely setting module.exports will not expose the exported object to
+the consumer of our bundled js. Essentially we need to create a library out of our app. 
+Meaning the main export of our app needs to be exposed to the consumer. To do this, 
+in your webpack server config file, set &lt;strong&gt;output.libraryTarget = ‘commonjs2’&lt;/strong&gt;, like so:&lt;/p&gt;
+
+&lt;h4 id=&quot;webpackconfigserverjs&quot;&gt;webpack.config.server.js&lt;/h4&gt;
+&lt;p&gt;{% highlight javascript %}
+const webpack = require(‘webpack’);
+const path = require(‘path’);
+const nodeExternals = require(‘webpack-node-externals’);&lt;/p&gt;
+
+&lt;p&gt;module.exports = {
+  devtool: ‘cheap-module-inline-source-map’,&lt;/p&gt;
+
+&lt;p&gt;// set this to your server entry point. This should be where you start 
+  // your express server with .listen()
+  entry: ‘./src/server/server.js’,&lt;/p&gt;
+
+&lt;p&gt;// tell webpack this bundle will be used in nodejs environment.
+  target: ‘node’,&lt;/p&gt;
+
+&lt;p&gt;// Omit node_modules code from the bundle. You don’t want and don’t 
+  // need them in the bundle.
+  externals: [nodeExternals()], 
+  output: {
+    path: path.resolve(‘dist’),
+    filename: ‘serverBundle.js’,&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// IMPORTANT! Add module.exports to the beginning of the bundle 
+// so your main module is exposed to the consumer of the bundle.
+libraryTarget: &#39;commonjs2&#39;   },   // The rest of the config is pretty standard and can contain    // other webpack stuff you need.   module: {
+loaders: [
+  {
+    test: /\.json$/,
+    loader: &#39;json-loader&#39;
+  },
+  {
+    test: /\.jsx?$/,
+    loader: &#39;babel&#39;,
+    include: path.resolve(&#39;src&#39;)
+  }]   } }; {% endhighlight %}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;step-12-restarting-express&quot;&gt;Step 1.2: Restarting express&lt;/h3&gt;
+
+&lt;p&gt;Now we have http.Server, we can call close() to stop the server. However as mentioned earlier, 
+close() shuts down the server ONLY when all existing connections have closed. It does not terminate
+stale or idle keep-alive connections. As a result after close() is invoked, your server will continue to run.
+It will not accept new connections and it will wait for existing connections to timeout, which is in minutes.&lt;/p&gt;
+
+&lt;p&gt;Obviously you can’t develop rapidly like this. You can’t call this hot-reload, it’s more like shit-reload.
+A little googling reveals a promising &lt;a href=&quot;http://stackoverflow.com/questions/14626636/how-do-i-shutdown-a-node-js-https-server-immediately&quot;&gt;solution from stackoverflow&lt;/a&gt; by
+&lt;a href=&quot;http://www.goloroden.de/&quot;&gt;Golo Roden&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The takeaway from that post is that each time a connection is made to our 
+server, we have to keep a reference to the socket object that represents 
+the connection. I store these in a Map for better performance rather
+than a normal object as suggested in the post. We can then call
+socket.destroy() in our watch handler for all sockets, which
+terminates all connections to our http.Server. The close() method can then
+proceed to shut the server.&lt;/p&gt;
+
+&lt;p&gt;What does it look like in code?&lt;/p&gt;
+
+&lt;h4 id=&quot;srcserverindexjs-bootstrap-1&quot;&gt;src/server/index.js (bootstrap)&lt;/h4&gt;
+&lt;p&gt;{% highlight javascript %}
+  require(‘babel-polyfill’);&lt;/p&gt;
+
+&lt;p&gt;watchServerChanges();&lt;/p&gt;
+
+&lt;p&gt;// Starts the express server. Caches sockets and delete those caches 
+  // on socket close. Returns the running http.Server object and the
+  // socket Map cache.
+  function initHttpServer() {
+    // start the server, getting back a reference to http.Server
+    const httpServer = require(‘/path/to/server/bundle’);
+    const sockets = new Map(); // cache all sockets in a Map
+    let nextSocketId = 0;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;httpServer.on(&#39;connection&#39;, function (socket) {
+  var socketId = nextSocketId++;
+  sockets.set(socketId, socket);
+
+  // remove socket from Map on close.
+  // this is not where we terminate the socket! That happens 
+  // in webpack.watch done handler below 
+  socket.on(&#39;close&#39;, function () {
+    sockets.delete(socketId);
+  });
+});
+
+return {httpServer, sockets};   }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;function watchServerChanges() {
+      const webpack = require(‘webpack’);&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  // contains the running http.Server and socket cache
+  let httpServerInitObject;
+  let initialLoad = true;
+  const compiler = webpack(require(&#39;path/to/webpack/server/config&#39;);
+  const compilerOptions = {
+    aggregateTimeout: 300, // wait so long for more changes
+    poll: true // use polling instead of native watchers
+  };
+  
+  // watch file changes
+  compiler.watch(compilerOptions, function onServerChange(err, stats){
+    if (err) {
+      console.log(&#39;Server bundling error:&#39; + JSON.stringify(err));
+      return;
+    }
+  
+    if (initialLoad) {
+      // first time run, just start the server, no need to restart
+      initialLoad = false;
+      httpServerInitObject = initHttpServer();
+      console.log(&#39;Server bundling done&#39;);
+    } else {
+      // subsequent runs need to close the server and restart
+      // call close() method, but this won&#39;t complete until all
+      // sockets are destroyed below.
+      httpServerInitObject.httpServer.close(function () {
+        // if we reach this step, that means we have succeeded
+        // in shutting down the server!!! Omg fuck yea!
+        httpServerInitObject = initHttpServer(); // re-start
+        console.log(&#39;Server restarted &#39; + new Date());
+      });
+  
+      // This is where the magic happens: destroy all open sockets
+      for (var socket of httpServerInitObject.sockets.values()) {
+        socket.destroy();
+      }        
+    }
+  });
+} {% endhighlight %}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;step-2-clearing-the-require-cache&quot;&gt;Step 2: Clearing the require cache&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/batman_robin.jpg&quot; alt=&quot;Are we there yet?&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;If you try the code above, you realise that it does not freakin work. Why? 
+We are forgetting one thing: node caches all modules when required. How is
+this a problem? At initial load, initHttpServer() will require your server.bundle.js
+and node will cache that. Subsequent calls to initHttpServer() will re-use that
+same server.bundle.js which is not we want. We want to require the newly
+bundled server.bundle.js which webpack produces. To do this we need to clear
+the require cache:&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+  function clearCache() {
+    const cacheIds = Object.keys(require.cache);
+    for(let id of cacheIds) {
+      if (id === ‘path/to/server/bundle’) {
+        delete require.cache[id];
+        return;
+      }
+    }
+  }
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;You call clearCache() in onServerChange callback prior to starting the 
+express server like so:
+{% highlight javascript %}&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  //... same code as above
+  
+  // watch file changes
+  compiler.watch(compilerOptions, function onServerChange(err, stats){
+    if (err) {
+      console.log(&#39;Server bundling error:&#39; + JSON.stringify(err));
+      return;
+    }
+    
+    // This solves all first world problems
+    clearCache();
+  
+    //... same as above
+  });
+
+// ...  {% endhighlight %}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;step-3-but-wait-theres-more&quot;&gt;Step 3: But wait there’s more!&lt;/h2&gt;
+&lt;p&gt;You can combine this with existing client hot reload techniques using &lt;a href=&quot;https://github.com/webpack/webpack-dev-server&quot;&gt;webpack-dev-server&lt;/a&gt; 
+and &lt;a href=&quot;https://github.com/gaearon/react-hot-loader&quot;&gt;react-hot-loader&lt;/a&gt; to achieve the ultimate universal hot reload experience. 
+I have done this in &lt;a href=&quot;https://github.com/yusinto/universal-hot-reload&quot; target=&quot;_blank&quot;&gt;universal-hot-reload&lt;/a&gt; so you can check the source
+code for that if you are interested. But for now, I’m out of time .. I need to take a shower.&lt;/p&gt;
+
+&lt;h2 id=&quot;whats-next&quot;&gt;What’s next?&lt;/h2&gt;
+&lt;p&gt;So webpack does solve everything and anything like I said in the beginning.. can it do my laundry and feed my dog too?&lt;/p&gt;
+
+&lt;p&gt;The final product is &lt;a href=&quot;https://github.com/yusinto/universal-hot-reload&quot; target=&quot;_blank&quot;&gt;universal-hot-reload&lt;/a&gt;. 
+Check it out! Let me know if there’s any issues.&lt;/p&gt;
+
+&lt;hr /&gt;
+</content>
+<category term="universal" />
+<category term="hot" />
+<category term="reload" />
+<category term="webpack" />
+<category term="server" />
+<category term="client" />
+<category term="bundle" />
+<summary>I learnt quite a lot in the past week. Firstly there’s no substitute to good sleep. Secondly, you can actually eat a salmon steak raw! Thirdly, it’s really really hardto hot reload a server bundle if you are writing a universal app.</summary>
+</entry>
+<entry>
+<title>Implementing feature toggle with launch darkly and react redux</title>
+<link href="http://www.reactjunkie.com/react-feature-toggle-launch-darkly/" rel="alternate" type="text/html" title="Implementing feature toggle with launch darkly and react redux" />
+<published>2016-09-16T10:52:00+10:00</published>
+<updated>2016-09-16T10:52:00+10:00</updated>
+<id>http://www.reactjunkie.com/react-feature-toggle-launch-darkly</id>
+<content type="html" xml:base="http://www.reactjunkie.com/react-feature-toggle-launch-darkly/">&lt;h3 id=&quot;update-22-october-2016&quot;&gt;&lt;em&gt;Update: 22 October 2016&lt;/em&gt;&lt;/h3&gt;
+&lt;p&gt;&lt;em&gt;I have published an npm package called &lt;a href=&quot;https://github.com/yusinto/ld-redux&quot; target=&quot;_blank&quot;&gt;ld-redux&lt;/a&gt; which covers everything you need to integrate launch darkly with your react 
+redux app. It’s the contents of this blog in an npm package. If you use it, please give me some feedback. Thanks!&lt;/em&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;I first heard the term feature toggle from someone I interviewed when we were talking about continuous deployment (deploying to prod at anytime, continuously).
+I didn’t really think much of it at first, thinking that it’s just a trivial bunch of if-else flags that I have to maintain
+manually. I couldn’t be more wrong.&lt;/p&gt;
+
+&lt;p&gt;Maintaining feature flags in your codebase can become messy very quickly. On top of that you need to build targeting and analytics tools that 
+the business will (eventually) want. I soon realise that feature toggle is a distinct and separate supporting domain of my core domain. Much like identity and
+access management. So is there anything existing out there we can use to integrate with our core domain?&lt;/p&gt;
+
+&lt;p&gt;Enter Launch Darkly. I met Edith Harbaugh the CEO of Launch Darkly at NDC Sydney 2016. She was kind enough to give a demo of launch darkly in situ and I was blown away.
+Launch darkly stores feature flags without coupling to the UI, so it works with React or any modern javascript framework with virtual dom reconciliation. 
+The sdk supports almost every imaginable platform, but most importantly it’s on &lt;a href=&quot;https://www.npmjs.com/package/ldclient-js&quot; target=&quot;_blank&quot;&gt;npm&lt;/a&gt; and 
+open source on &lt;a href=&quot;https://github.com/launchdarkly/js-client&quot; target=&quot;_blank&quot;&gt;github&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;In this blog I will walk through step by step how to integrate launch darkly feature toggles with your react react-router redux app.
+Note that this blog assumes prior working knowledge of redux and redux-thunk.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-end-game&quot;&gt;The end game&lt;/h2&gt;
+&lt;p&gt;By the end of this blog, we will have a feature-flag driven react redux app using Launch Darkly as our feature toggle provider.&lt;/p&gt;
+
+&lt;h2 id=&quot;step-1-configure-launch-darkly-dashboard&quot;&gt;Step 1: Configure launch darkly dashboard&lt;/h2&gt;
+
+&lt;p&gt;{% youtube _WDy_V0h-qk %}&lt;/p&gt;
+
+&lt;h2 id=&quot;step-2-install-ldclient-js&quot;&gt;Step 2: Install ldclient-js&lt;/h2&gt;
+&lt;p&gt;{% highlight bash %}
+npm i ldclient-js –save
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h2 id=&quot;step-3-create-redux-action-and-reducer-to-instantiate-ldclient&quot;&gt;Step 3: Create redux action and reducer to instantiate ldclient&lt;/h2&gt;
+&lt;p&gt;We need to instantiate the ldclient in order to communicate with launch darkly. This instantiation
+should be done once at the start of the app, and the resultant client object stored in redux state to be 
+re-used throughout the app.&lt;/p&gt;
+
+&lt;p&gt;We’ll go ahead and create the action and reducer to perform this instantiation.&lt;/p&gt;
+
+&lt;h4 id=&quot;appactionjs&quot;&gt;appAction.js&lt;/h4&gt;
+&lt;p&gt;{% highlight c# %}
+import ldClient from ‘ldclient-js’;&lt;/p&gt;
+
+&lt;p&gt;export const initialiseLD = () =&amp;gt; {
+  // use redux-thunk for async action
+  return dispatch =&amp;gt; {
+    /**
+     * Launch darkly provides a comprehensive suite of targeting and
+     * rollout options. Targeting and rollouts are based on the user
+     * viewing the page, so we must pass a user at initialisation time.
+     *
+     * The user object can contain these properties:
+     * key, ip, firstName, lastName, country, email, avatar, name,
+     * anonymous.
+     *
+     * The only mandatory property is “key”. All the others are
+     * optional. You can also specify custom properties using the
+     * “custom” property name like company and authorOf properties below.
+     *
+     * For more info on users, check here:
+     * http://docs.launchdarkly.com/docs/js-sdk-reference#users
+    */
+    const user = {
+      // key is MANDATORY! You can use guid for anonymous users 
+      “key”: “deadbeef”,
+      “firstName”: “John”,
+      “lastName”: “Carmack”,
+      “email”: “jcarmack@doom.com”,&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  // specify custom properties here. These will appear
+  // automatically on the dashboard.
+  &quot;custom&quot;: {
+    &quot;company&quot;: &quot;ID Software&quot;,
+    &quot;authorOf&quot;: [&quot;doom&quot;, &quot;quake&quot;]
+  }
+};
+
+// Actual work done here. You&#39;ll need to use your environment id as
+// configured in your dashboard
+const client = ldClient.initialize(&#39;YOUR-ENVIRONMENT-ID&#39;, user);
+
+// The client will emit an &quot;ready&quot; event when it has finished
+// initialising. At that point we want to store that client
+// object in our redux state. Do this by dispatching an action
+// with the client object as the argument to be stored in app state.
+client.on(&#39;ready&#39;, () =&amp;gt; {
+  dispatch(setLDReady(client));
+});   }; };
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;// Stores launch darkly client object in app state
+export const setLDReady = ldClient =&amp;gt; {
+  return {
+    type: Constants.LD_READY,
+    data: ldClient
+  }
+};
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h4 id=&quot;appreducerjs&quot;&gt;appReducer.js&lt;/h4&gt;
+&lt;p&gt;{% highlight c# %}
+import Constants from ‘./common/constant’;&lt;/p&gt;
+
+&lt;p&gt;const defaultState = {
+  isLDReady: false,
+  ldClient: null,
+};&lt;/p&gt;
+
+&lt;p&gt;export default function App(state = defaultState, action) {
+  switch (action.type) {
+    case Constants.LD_READY:
+      return Object.assign({}, state, 
+        {
+            isLDReady: true, 
+            ldClient: action.data
+        });&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;default:
+  return state;   } } {% endhighlight %}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;step-4-invoke-initialiseld-on-componentdidmount&quot;&gt;Step 4: Invoke initialiseLD on componentDidMount&lt;/h2&gt;
+&lt;p&gt;We want to initialise the client just once at the start of the app. The
+best place to do this is at the root component’s componentDidMount.&lt;/p&gt;
+
+&lt;p&gt;I’ll skip the appContainer snippet to keep things short.&lt;/p&gt;
+
+&lt;h4 id=&quot;appcomponentjs&quot;&gt;appComponent.js&lt;/h4&gt;
+&lt;p&gt;{% highlight c# %}
+import React, {Component} from ‘react’;&lt;/p&gt;
+
+&lt;p&gt;export default class App extends Component {
+  componentDidMount() {
+    // This will trigger ldclient initialisation
+    this.props.initialiseLD();
+  }&lt;/p&gt;
+
+&lt;p&gt;render() {
+    …
+  }
+}
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h2 id=&quot;step-5-fetching-feature-flags&quot;&gt;Step 5. Fetching feature flags&lt;/h2&gt;
+&lt;p&gt;This is the jist of the entire blog so pay attention! Now we have the 
+client initialised, we can fetch our flags! Each component which uses 
+feature flagging must subscribe to the isLDReady app state above. 
+This is pretty standard in redux, and you can do this like so:&lt;/p&gt;
+
+&lt;h4 id=&quot;homecontainerjs&quot;&gt;homeContainer.js&lt;/h4&gt;
+&lt;p&gt;{% highlight c# %}
+import React, {Component} from ‘react’;
+import {connect} from ‘react-redux’;
+import * as Actions from ‘./homeAction’;
+import HomeComponent from ‘./homeComponent’;&lt;/p&gt;
+
+&lt;p&gt;const mapStateToProps = (state) =&amp;gt; {
+  const appState = state.App;
+  const homeState = state.Home;&lt;/p&gt;
+
+&lt;p&gt;return {
+    isLDReady: appState.isLDReady,
+    …homeState
+  };
+};&lt;/p&gt;
+
+&lt;p&gt;@ connect(mapStateToProps, Actions)
+export default class HomeContainer extends Component {
+  render() {
+    return &amp;lt;HomeComponent {…this.props} /&amp;gt;;
+  }
+}
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;So now we can fetch “home” specific feature flags when ldclient is ready
+like so:&lt;/p&gt;
+
+&lt;h4 id=&quot;homecomponentjs&quot;&gt;homeComponent.js&lt;/h4&gt;
+&lt;p&gt;{% highlight c# %}
+import React, {Component} from ‘react’;&lt;/p&gt;
+
+&lt;p&gt;export default class Home extends Component {
+  …
+  // When the ready flag changes to true, we fetch feature flags for
+  // this component
+  componentWillReceiveProps(newProps) {
+    if (newProps.isLDReady &amp;amp;&amp;amp; !this.props.isLDReady) {
+      this.props.initialiseHomeFlags();
+    }
+  }
+  …
+}
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;&lt;b&gt;&lt;i&gt;initialiseHomeFLags&lt;/i&gt;&lt;/b&gt; is the interesting bit here. The way you 
+ retrieve flags from launch darkly is through the “variation” method. You
+ pass the feature flag key (which you set up in the dashboard) along with 
+ a default, just in case the call failed or if 
+ the flag doesn’t exist. That means you need to store all your feature
+ flag keys somewhere in the app so it can be shared across actions and reducers. 
+ I store it in a “logic” file specific to the component, so I can have 
+ a clean separation of concerns between actions and business logic.&lt;/p&gt;
+
+&lt;h4 id=&quot;homelogicjs&quot;&gt;homeLogic.js&lt;/h4&gt;
+&lt;p&gt;{% highlight c# %}
+export const homeFlags = {
+  ‘random-number’: false // default flag value
+};
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h4 id=&quot;homereducerjs&quot;&gt;homeReducer.js&lt;/h4&gt;
+&lt;p&gt;{% highlight c# %}
+…
+const defaultState = {
+  randomNumber: 0,&lt;/p&gt;
+
+&lt;p&gt;// store home flags in component state
+  …homeFlags 
+};&lt;/p&gt;
+
+&lt;p&gt;export default function App(state = defaultState, action) {
+  switch (action.type) {
+    case Constants.GENERATE_RANDOM:
+      return Object.assign({}, state, {randomNumber: action.data});&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;case Constants.SET_HOME_FLAGS:
+  return Object.assign({}, state, action.data);
+
+default:
+  return state;   } } {% endhighlight %}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;We can then retrieve individual feature flags for the home component
+in our initialiseHomeFlags action using ldclient’s variation method:&lt;/p&gt;
+
+&lt;h4 id=&quot;homeactionjs&quot;&gt;homeAction.js&lt;/h4&gt;
+&lt;p&gt;{% highlight c# %}
+…
+export const initialiseHomeFlags = () =&amp;gt; {
+  // use thunk
+  return (dispatch, getState) =&amp;gt; {
+    // get launch darkly client from app state
+    const ldClient = getState().App.ldClient;
+    const flags = {};&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;for (let key in homeFlags) {
+  // fetch each key
+  flags[key] = ldClient.variation(key, homeFlags[key]);
+
+  // EXTRA!! Subscribe to changes!
+  ldClient.on(`change:${key}`, current =&amp;gt; {
+    const changedFlag = {};
+    changedFlag[key] = current;
+    dispatch(setHomeFlags(changedFlag));
+  });
+}
+
+dispatch(setHomeFlags(flags));   };
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;const setHomeFlags = flags =&amp;gt; {
+    return {
+      type: Constants.SET_HOME_FLAGS,
+      data: flags
+    }
+  };
+};
+…
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;&lt;b&gt;EXTRA!!&lt;/b&gt; Launch darkly provides support for realtime feature flag change
+propagation using Server Sent Events (SSE, which is a html5 thing). This is like
+websockets but it’s a one way connection from the server to client to allow
+ for push notifications. This is super cool! That means the client can 
+ see feature flag changes from the dashboard in realtime without having to 
+ refresh the browser!&lt;/p&gt;
+&lt;p&gt;
+ The way you subscribe to this is by using the &quot;on&quot; event on the client object,
+ specifying the string &#39;change:featureFlagKey&#39; as the first argument, and the
+ action to take as the second argument. In this case, we send an action
+ to store the updated flags in our component state via our reducer.
+ &lt;/p&gt;
+
+&lt;h2 id=&quot;step-6-use-feature-flags&quot;&gt;Step 6: Use feature flags&lt;/h2&gt;
+&lt;p&gt;This is the most fun and easy part!&lt;/p&gt;
+
+&lt;h4 id=&quot;homecomponentjs-1&quot;&gt;homeComponent.js&lt;/h4&gt;
+&lt;p&gt;{% highlight c# %}
+import React, {Component} from ‘react’;&lt;/p&gt;
+
+&lt;p&gt;export default class Home extends Component {
+  …
+  render() {
+      return (
+        &amp;lt;div&amp;gt;
+          &amp;lt;p&amp;gt;
+            Welcome to the homepage! The random number feature below is 
+            feature toggled.
+          &amp;lt;/p&amp;gt;
+          {
+            // feature toggle!
+            this.props[‘random-number’] ?
+              &amp;lt;div&amp;gt;
+                &amp;lt;button onClick={this.onClickGenerateRandom}&amp;gt;Generate 
+                random number&amp;lt;/button&amp;gt;
+                &amp;lt;p&amp;gt;{this.props.randomNumber}&amp;lt;/p&amp;gt;
+              &amp;lt;/div&amp;gt;
+              :
+              null
+          }
+        &amp;lt;/div&amp;gt;
+      );
+    }
+  …
+}
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;Your feature flags will be available to you as props because it’s hydrated
+by actions in the state. The only gotcha here is that you need to access
+the feature flags using the brackets notation i.e. this.props.[‘feature-flag-key’] 
+instead of the standard dot notation. This is because keys can contain
+ spaces when created in the dashboard and spaces are replaced by dashes
+ automatically by launch darkly. Since dashes are not allowed when using
+ the dot notation, we have to use square brackets. There could be a better
+ way, if you find one, let me know!&lt;/p&gt;
+
+&lt;h2 id=&quot;whats-next&quot;&gt;What’s next?&lt;/h2&gt;
+&lt;p&gt;Feature flagging is instrumental in achieving continuous deployment and I have just
+touched the tip of the iceberg. I will
+be blogging more about my journey towards continuous deployment with docker
+and launch darkly in the coming posts.&lt;/p&gt;
+
+&lt;p&gt;All the code in this blog are available on &lt;a href=&quot;https://github.com/yusinto/launchdarkly&quot; target=&quot;_blank&quot;&gt;github&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+</content>
+<category term="react" />
+<category term="redux" />
+<category term="feature" />
+<category term="toggle" />
+<category term="launch" />
+<category term="darkly" />
+<category term="toggling" />
+<summary>Update: 22 October 2016I have published an npm package called ld-redux which covers everything you need to integrate launch darkly with your react redux app. It’s the contents of this blog in an npm package. If you use it, please give me some feedback. Thanks!</summary>
+</entry>
+<entry>
+<title>Deploying react apps on docker using ecs and terraform part 1</title>
+<link href="http://www.reactjunkie.com/docker-ecs-terraform-react/" rel="alternate" type="text/html" title="Deploying react apps on docker using ecs and terraform part 1" />
+<published>2016-09-03T10:52:00+10:00</published>
+<updated>2016-09-03T10:52:00+10:00</updated>
+<id>http://www.reactjunkie.com/docker-ecs-terraform-react</id>
+<content type="html" xml:base="http://www.reactjunkie.com/docker-ecs-terraform-react/">&lt;p&gt;I was tinkering on blogging about Step 5 to React: Introduction to Redux, but I decided to write something closer to my heart: 
+using ecs and terraform to deploy docker react apps (can I squeeze in anymore buzzwords?). This is not an intro to docker so 
+I assume you are familiar with the basics.&lt;/p&gt;
+
+&lt;p&gt;My plan was to use docker to achieve continuous integration and ultimately continuous delivery and then deployment. But I like to
+start things small so the plan was to firstly create a docker image on every master merge and save that image.&lt;/p&gt;
+
+&lt;p&gt;This image
+is a stable and deployable package which can be deployed and run on any environment. This is the “golden” build concept - a single build
+that is used on all steps of the deployment pipeline: uat, stage and prod. This is a good practice to adopt because the exact same 
+build that has gone through all the QA steps is the one that’s going out to production.&lt;/p&gt;
+
+&lt;p&gt;It gives you confidence the prod deployment at the end
+will work as expected. This is only possible if the package that comes out of your CI build is immutable - that’s where docker comes in. I don’t 
+know about you but I get really turned on by this kind of stuff! Let’s get to it!&lt;/p&gt;
+
+&lt;h2 id=&quot;the-end-game&quot;&gt;The end game&lt;/h2&gt;
+&lt;p&gt;By the end of this blog, we want to be able to create a docker image containing our react app, be able to run lint, tests and the actual app
+on that image.&lt;/p&gt;
+
+&lt;p&gt;We will be using the codebase from my &lt;a href=&quot;http://www.reactjunkie.com/step-four-to-react-routing-with-react-router/&quot; target=&quot;_blank&quot;&gt;previous blog on react router&lt;/a&gt;. It’s 
+a minimal react spa with routing, you should be able to easily substitute your own codebase and follow the steps here to use docker.&lt;/p&gt;
+
+&lt;h2 id=&quot;step-1-install-docker&quot;&gt;Step 1: Install docker&lt;/h2&gt;
+&lt;p&gt;I’m on a mac so download docker for mac from &lt;a href=&quot;https://download.docker.com/mac/stable/Docker.dmg&quot;&gt;here&lt;/a&gt;. It’s a 110mb download so stop reading and do it first, continue reading later.
+There are some hardware &amp;amp; os requirements. The important ones are:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;OS X 10.10.3 Yosemite or newer&lt;/li&gt;
+&lt;li&gt;VirtualBox 4.3.30 or newer&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;If you have a previous install of docker-machine, mac docker will ask if you want to migrate data from that install to your new install. I said no because I don’t have anything
+important to migrate as I’ll be starting from scratch.&lt;/p&gt;
+
+&lt;p&gt;Once installation is done, open terminal and type:
+{% highlight bash %}
+docker -v
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;You should get something like 
+{% highlight bash %}
+Docker version 1.12.0, build 8eab29e
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;Now we are ready to rock!&lt;/p&gt;
+
+&lt;h2 id=&quot;step-2-create-dockerfile&quot;&gt;Step 2: Create Dockerfile&lt;/h2&gt;
+
+&lt;p&gt;We need to create a Dockerfile first. This is the sequence of instructions you tell docker to execute to create the image. 
+It’s akin to you manually entering a sequence of shell commands on the terminal of a new linux box when deploying your app. Except
+docker runs it for you automatically, and then saves the resultant state of that linux box as an image.&lt;/p&gt;
+
+&lt;p&gt;So right click on the root directory of your project, add a new file call it &lt;i&gt;Dockerfile&lt;/i&gt;. It should look like this:&lt;/p&gt;
+
+&lt;h4 id=&quot;dockerfile&quot;&gt;DockerFile&lt;/h4&gt;
+&lt;p&gt;{% highlight bash %}
+# We need a base image to build upon. Use the latest node image from 
+# dockerhub as the base image so we get node and npm for free
+FROM node:latest
+MAINTAINER Yus Ng&lt;/p&gt;
+
+&lt;h1 id=&quot;store-all-our-app-code-in-the-src-folder-starting-from-packagejson&quot;&gt;Store all our app code in the /src folder, starting from package.json&lt;/h1&gt;
+&lt;p&gt;# first. Why copy package.json first? So we can take advantage of 
+# the docker build cache. More below.
+COPY package.json /src/package.json&lt;/p&gt;
+
+&lt;h1 id=&quot;once-we-have-packagejson-do-npm-install-restricting-the-loglevel&quot;&gt;Once we have package.json, do npm install (restricting the loglevel&lt;/h1&gt;
+&lt;p&gt;# to minimise noise)
+RUN cd /src &amp;amp;&amp;amp; npm install –loglevel error&lt;/p&gt;
+
+&lt;h1 id=&quot;copy-all-our-code-yes-including-packagejson-again-to-src&quot;&gt;Copy all our code (yes including package.json again) to /src.&lt;/h1&gt;
+&lt;p&gt;COPY . /src&lt;/p&gt;
+
+&lt;h1 id=&quot;change-directory-into-the-src-folder-so-we-can-execute-npm-commands&quot;&gt;Change directory into the /src folder so we can execute npm commands&lt;/h1&gt;
+&lt;p&gt;WORKDIR /src&lt;/p&gt;
+
+&lt;h1 id=&quot;this-is-the-express-port-on-which-our-app-runs&quot;&gt;This is the express port on which our app runs&lt;/h1&gt;
+&lt;p&gt;EXPOSE 3000&lt;/p&gt;
+
+&lt;h1 id=&quot;this-is-the-default-command-to-execute-when-docker-run-is-issued-only&quot;&gt;This is the default command to execute when docker run is issued. Only&lt;/h1&gt;
+&lt;p&gt;# one CMD instruction is allowed per Dockerfile.
+CMD npm start
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;&lt;b&gt;Important points&lt;/b&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Each instruction creates a new intermediate layer.&lt;/li&gt;
+&lt;li&gt;Docker uses the instruction string as the cache key. The result of that instruction is a new layer which gets stored as the cache value.&lt;/li&gt;
+&lt;li&gt;ADD and COPY instructions are special. The cache key for these are the checksum of their file contents.&lt;/li&gt;
+&lt;li&gt;If your package.json file does not change, the cache will be hit because the checksum matches. The next instruction npm install will also hit the cache 
+because docker uses the instruction string as key which has not changed.&lt;/li&gt;
+&lt;li&gt;In contrast, consider what will happen if do COPY . /src and then followed by RUN npm install.&lt;/li&gt;
+&lt;li&gt;The COPY command does a checksum of all the files in current directory and compares that against previous layers. Some files
+would have changed in the src folder, because it contains all our source code, images, config files, styles, etc. The checksum comparison would not match, hence
+the cache will be invalidated. Once invalidated, all subsequent instructions will create new layers ignoring the cache.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;For more information on docker build cache check the official doco &lt;a href=&quot;https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;step-3-create-dockerignore&quot;&gt;Step 3: Create .dockerignore&lt;/h2&gt;
+
+&lt;p&gt;We need one more file before we can build our image. Go ahead and add a new file to the root directory of your project call it 
+&lt;i&gt;.dockerignore&lt;/i&gt;&lt;/p&gt;
+
+&lt;p&gt;Docker will exclude files and directories specified here from the image. It should look like this:&lt;/p&gt;
+
+&lt;p&gt;{% highlight bash %}
+.git
+.gitignore
+node_modules
+npm-debug.log
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h2 id=&quot;step-4-build-the-docker-image&quot;&gt;Step 4: Build the docker image&lt;/h2&gt;
+
+&lt;p&gt;Let’s do it! Go to terminal, cd into your root project folder where your Dockerfile resides and type the following (&lt;b&gt;NOTE&lt;/b&gt; the “.” at the end
+is very important!):&lt;/p&gt;
+
+&lt;p&gt;{% highlight bash %}
+docker build -t reactjunkie:v1 .
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;Docker will build an image named “reactjunkie:v1” using the Dockerfile specified in the current directory (represented by the “.” at the end). You can see it
+by issuing the command:&lt;/p&gt;
+
+&lt;p&gt;{% highlight bash %}
+docker images
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;You should see two images; the latest node base image which gets downloaded when docker built our image and our reactjunkie:v1 image.&lt;/p&gt;
+
+&lt;h2 id=&quot;step-5-run-the-docker-container&quot;&gt;Step 5: Run the docker container&lt;/h2&gt;
+
+&lt;p&gt;Now we have an image, we can start a container based on that image and run our app!&lt;/p&gt;
+
+&lt;p&gt;{% highlight bash %}
+docker run -d -p 8080:3000 reactjunkie:v1
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;This command tells docker to run the default CMD command specified in the last line of our Dockerfile above. As we will see shortly we can
+override this default by issuing our own commands.&lt;/p&gt;
+
+&lt;p&gt;The -d flag tells docker to detach from the container process after issuing the command so we regain control of our terminal window.&lt;/p&gt;
+&lt;p&gt;The -p flag maps the port on your mac (the host) to the container port.
+Hit &lt;a href=&quot;http://localhost:8080&quot; target=&quot;_blank&quot;&gt;http://localhost:8080&lt;/a&gt; and you should be able to see the app running!&lt;/p&gt;
+
+&lt;h2 id=&quot;step-6-running-lint-and-test&quot;&gt;Step 6: Running lint and test&lt;/h2&gt;
+
+&lt;p&gt;So the previous step demonstrated how we can run our webapp on our docker container. However in a CI environment, we want to be able to first build our image,
+run lint and tests and then save the image first prior to starting the web app.&lt;/p&gt;
+
+&lt;p&gt;I’ve setup eslint and jest in this project (available on &lt;a href=&quot;https://github.com/yusinto/docker&quot; target=&quot;_blank&quot;&gt;github&lt;/a&gt;). To run eslint and tests on our container, type 
+the following:&lt;/p&gt;
+
+&lt;p&gt;{% highlight bash %}
+docker run -i –rm reactjunkie:v1 npm run lint
+docker run -i –rm reactjunkie:v1 npm t
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;The -i flag tells docker to run in &quot;interactive&quot; mode so we can see eslint console output from the container.&lt;/p&gt;
+&lt;p&gt;The --rm flag tells docker to automatically clean up the container and remove its file system when the it exits.&lt;/p&gt;
+&lt;p&gt;Then npm run lint and npm t are the commands that override the default CMD instruction in our Dockerfile. Docker will start
+a container based on our image, issue these commands and then cleanup and remove the container when that command is finished.&lt;/p&gt;
+
+&lt;h2 id=&quot;whats-next&quot;&gt;What’s next?&lt;/h2&gt;
+&lt;p&gt;Now we have the docker image on our local machine, we need a way to export it to a central place so it can be shared with other developers, 
+build systems and so on. Docker has dockerhub which does exactly that, but I use ECR which is aws’ offering.&lt;/p&gt;
+
+&lt;p&gt;All the code in this blog are available on &lt;a href=&quot;https://github.com/yusinto/docker&quot; target=&quot;_blank&quot;&gt;github&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;To be continued…&lt;/p&gt;
+
+&lt;hr /&gt;
+</content>
+<category term="react" />
+<category term="docker" />
+<category term="ecs" />
+<category term="terraform" />
+<category term="deploy" />
+<category term="continuous" />
+<category term="integration" />
+<category term="deployment" />
+<summary>I was tinkering on blogging about Step 5 to React: Introduction to Redux, but I decided to write something closer to my heart: using ecs and terraform to deploy docker react apps (can I squeeze in anymore buzzwords?). This is not an intro to docker so I assume you are familiar with the basics.My plan was to use docker to achieve continuous integration and ultimately continuous delivery and then deployment. But I like tostart things small so the plan was to firstly create a docker image on every master merge and save that image.</summary>
+</entry>
+<entry>
+<title>Australia Brain Drain</title>
+<link href="http://www.reactjunkie.com/brain-drain-australia/" rel="alternate" type="text/html" title="Australia Brain Drain" />
+<published>2016-08-05T01:19:00+10:00</published>
+<updated>2016-08-05T01:19:00+10:00</updated>
+<id>http://www.reactjunkie.com/brain-drain-australia</id>
+<content type="html" xml:base="http://www.reactjunkie.com/brain-drain-australia/">&lt;p&gt;My first NDC conference (anywhere) I have to say the whole event was very well planned, although there are a
+couple of things which can be improved:&lt;/p&gt;
+&lt;ul&gt;
+    &lt;li&gt;Wifi connection - the Hilton&#39;s wifi connection was so crap, all the guest speakers especially american and uk
+    speakers think that Australia as a whole are running on a 56k modem. I actually attended a session where the speaker had
+    to tether from an Android 4G connection just to demo his stuff (Peter Myers, please forgive us). If you are from overseas 
+    speaking/spoke at NDC Sydney, please accept our sincerest apology, and please don&#39;t misunderstand. Our internet connection 
+    in Australia is pretty good, it&#39;s just at Hilton&#39;s, so please forgive us.&lt;/li&gt;
+    &lt;br /&gt;
+    &lt;li&gt;Pricing was a bit steep. I understand Sydney is one of the most expensive cities in the world, yes yes. It&#39;s such 
+    a shame though many developers are left out of NDC because of pricing/cost. Personally I know many a great
+    developer that missed out on NDC Sydney purely due to financial reasons. I believe an event such as this should be more
+    accessible and affordable to the community in general, because it&#39;s a symbiosis. The more people attending these events,
+    the more aware they are of the current technologies on offer today, the higher the adoption rate and awareness, and
+    the whole thing propagates in a vicious cycle that can only benefit the development world.
+    &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Enough of my rant and angst, I want to emphasise on a more pressing issue at hand; which is the title of this blog today “Brain Drain”.
+Not for the first time in recent years/months, I heard a colleague/friend saying “Oh I used to work in &lt;b&gt;{insert iconic aussie company here}&lt;/b&gt;,
+but I’m moving to Seattle to work for Amazon now”.&lt;/p&gt;
+
+&lt;p&gt;I have to admit, I have attended more than one interviews with
+Amazon, Facebook, Google you name it and the lure of working for these mammoth companies is irresistible. Not only the prospect
+ of living and working overseas attractive for Australians, imagine how your resume will look after working for
+ Facebook or Amazon. You can pretty much quit after 2 years, come back to Australia or go anywhere in the world and
+ get a job based on the premise that “Oh by the way I worked for Aws/Facebook for a couple of years”. It’s definitely a legit reason
+ to quit your job in Australia and move to the States.&lt;/p&gt;
+
+&lt;p&gt;I want to challenge that temptation right now. Australia is facing a severe “brain drain” at the moment. What I mean by that
+is our talent is being poached by Amazon/Facebook/Google; they are leaving Australia for the States because these are the
+leading innovative tech companies at the moment. Or so people assume.&lt;/p&gt;
+
+&lt;p&gt;Think about it for a second. If you are a developer in Australia and you are offered by Facebook to join their engineering team,
+would you turn it down? Would you give up your lifestyle, your kids’ lifestyle, your wife’s career, pack up and go to Sillicon Valley
+and live happily ever after in Santa Clara? Probably. Instinctively I think most people would say yes. However, I would 
+implore you to consider more carefully.&lt;/p&gt;
+
+&lt;p&gt;For one, food. I’m an avid food lover, and I like my food healthy and cholesterol friendly. I want my kids and family to be 
+healthy too. I’m not saying the food in the States are crap, all I’m saying is that we are spoilt for choice in Sydney.
+There are things that we take for granted, for example good coffee or a decent loaf of bread or fresh seafood. You can still
+find these in Sillicon Valley, but perhaps not so easily.&lt;/p&gt;
+
+&lt;p&gt;Secondly weather. I was in San Francisco a few weeks ago and I had a chance to experience “summer” there. Let me tell you now you can’t
+wear a bikini to the beach even in summer there. For one, there are no “beaches” there, at least not one that’s comparable to Bondi or any beach in
+Sydney. It’s just way too cold even during summer to go to the beach for a dip. If you think winter in Sydney is cold, think again.&lt;/p&gt;
+
+&lt;p&gt;I’m just really disappointed in Australia’s inability to retain talent. We are a talented nation. I know so because I have been 
+working in the IT industry for over 13 years now and I’ve met and worked with many talented developers. Why can’t Australia keep Australians
+working in Australia in the IT industry? There are a few reasons that pop to my head.&lt;/p&gt;
+
+&lt;p&gt;For one, the “big” names like Apple, Facebook, Amazon are too big to resist. Hollywood movies of Steve Jobs and “The Social Network” further
+extremised these views that Sillicon Valley is the place to be if you want to be somebody. I don’t blame them. The Australian government are
+not helping either, imposing strict legislations on innovative services and startups like Uber and AirBnb.&lt;/p&gt;
+
+&lt;p&gt;Do you know that Uber is still not
+completely legal in Australia? Nor is AirBnb. In San Francisco, the local government are so supportive of tech and startups, it became almost
+seamless and natural that new ideas are legalised almost immediately. In fact, if you are against new ideas or innovation, you’re weird.&lt;/p&gt;
+
+&lt;p&gt;Australia need
+to embrace tech like the San Franciscans. We need to do this in order to retain talent and to be competitive with the mammoth that are Google, 
+Amazon, etc in Sillicon Valley/Seattle. There is no reason why we can’t nurture this culture of tech startups and innovation. There is no reason
+why Sydney can’t have a “Sillicon Valley” or “Kangaroo Valley” (excuse the pun). We actually do have a place called Kangaroo Valley which is quite 
+lovely, I highly recommend it.&lt;/p&gt;
+
+&lt;p&gt;A change in government mentality towards technology is required in Australia to promote innovation and startups and to retain talent. I believe
+one day Australia will be a comparable competitor to the States in terms of technological advancement, talent pool and innovation. Companies like
+Atlassian and Xero are leading the way, but we need more. One day the tables will turn and Australia will be the ones poaching talent from the 
+States and the rest of the world as well.&lt;/p&gt;
+
+&lt;hr /&gt;
+</content>
+<category term="australia" />
+<category term="brain" />
+<category term="drain" />
+<summary>My first NDC conference (anywhere) I have to say the whole event was very well planned, although there are acouple of things which can be improved:    Wifi connection - the Hilton&#39;s wifi connection was so crap, all the guest speakers especially american and uk    speakers think that Australia as a whole are running on a 56k modem. I actually attended a session where the speaker had    to tether from an Android 4G connection just to demo his stuff (Peter Myers, please forgive us). If you are from overseas     speaking/spoke at NDC Sydney, please accept our sincerest apology, and please don&#39;t misunderstand. Our internet connection     in Australia is pretty good, it&#39;s just at Hilton&#39;s, so please forgive us.        Pricing was a bit steep. I understand Sydney is one of the most expensive cities in the world, yes yes. It&#39;s such     a shame though many developers are left out of NDC because of pricing/cost. Personally I know many a great    developer that missed out on NDC Sydney purely due to financial reasons. I believe an event such as this should be more    accessible and affordable to the community in general, because it&#39;s a symbiosis. The more people attending these events,    the more aware they are of the current technologies on offer today, the higher the adoption rate and awareness, and    the whole thing propagates in a vicious cycle that can only benefit the development world.    </summary>
+</entry>
+<entry>
+<title>Demistifying es6 class method and property initializer arrow function</title>
+<link href="http://www.reactjunkie.com/demistifying-es6-class-method-and-property-initializer-arrow-function/" rel="alternate" type="text/html" title="Demistifying es6 class method and property initializer arrow function" />
+<published>2016-07-30T14:52:00+10:00</published>
+<updated>2016-07-30T14:52:00+10:00</updated>
+<id>http://www.reactjunkie.com/demistifying-es6-class-method-and-property-initializer-arrow-function</id>
+<content type="html" xml:base="http://www.reactjunkie.com/demistifying-es6-class-method-and-property-initializer-arrow-function/">&lt;p&gt;Welcome back to another episode of react junkie’s blog post. Today I’ll be talking about meth crystal meth ice and how to
+replicate the perfect process to produce the most immaculate blue sky just like Jesse Pinkman.&lt;/p&gt;
+
+&lt;p&gt;Did that get your attention? :)&lt;/p&gt;
+
+&lt;p&gt;Actually no. Today I’ll be talking about a much more exciting topic: the difference between es6 class methods and arrow functions.&lt;/p&gt;
+
+&lt;p&gt;I encountered this at work when two of my colleagues (let’s call them Lill and Woic to preserve anonymity) implemented class methods
+in two different styles. Compare the printQuality method in the following code snippets:&lt;/p&gt;
+
+&lt;h4 id=&quot;lill-standard-es6-class-method&quot;&gt;Lill: Standard es6 class method&lt;/h4&gt;
+&lt;p&gt;{% highlight c# %}
+import React, {Component} from ‘react’;&lt;/p&gt;
+
+&lt;p&gt;export default class MethLab extends Component {&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;constructor(props) {
+    super(props);
+    
+    this.state = {
+        methQuality: &#39;blueSky&#39;
+    };
+    
+    // manually bind &quot;this&quot; context of printQuality function
+    // to the instance of MethLab being constructed
+    this.printQuality = ::this.printQuality;
+}
+
+// Use the standard es6 class method syntax
+printQuality() {
+    console.log(`${this.state.methQuality}`);
+} } {% endhighlight %}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h4 id=&quot;woic-property-initializer-with-arrow-function&quot;&gt;Woic: Property initializer with arrow function&lt;/h4&gt;
+&lt;p&gt;{% highlight c# %}
+import React, {Component} from ‘react’;&lt;/p&gt;
+
+&lt;p&gt;export default class MethLab extends Component {&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;constructor(props) {
+    super(props);
+    
+    this.state = {
+       methQuality: &#39;blueSky&#39;
+    };
+}
+
+// Use property initializer combined with arrow function
+printQuality = () =&amp;gt; {
+    console.log(`${this.state.methQuality}`);
+}; } {% endhighlight %}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Can you guess the output of each implementation? If you’ve been using react
+for a while, you would guess that they would both output ‘bluesky’ and you would be
+right. Based on that guess, you would further extrapolate that they are both
+doing the same thing and are indifferent from each other. It’s a fair and logical guess, but you would be wrong.&lt;/p&gt;
+
+&lt;p&gt;The answer lies in the es5 translation of these syntactic sugar. Let me explain through code:&lt;/p&gt;
+
+&lt;h4 id=&quot;lill-standard-es6-class-method-in-es5&quot;&gt;Lill: Standard es6 class method in es5&lt;/h4&gt;
+&lt;p&gt;{% highlight c# %}
+function MethLab(props) {
+    …&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// manually bind &quot;this&quot; context of printQuality function
+// to the instance of MethLab being constructed
+this.printQuality = this.printQuality.bind(this);
+
+... }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;MethLab.prototype.printQuality = function printQuality() {
+    console.log(this.state.methQuality);
+};
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h4 id=&quot;woic-property-initializer-with-arrow-function-in-es5&quot;&gt;Woic: Property initializer with arrow function in es5&lt;/h4&gt;
+&lt;p&gt;{% highlight c# %}
+function MethLab(props) {
+    …&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;this.printQuality = function () {
+    console.log(this.state.methQuality);
+};
+
+... }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;The above are simplified versions of the actual babel6 output (you can see 
+the full translations using the kick-ass babel6 repl editor 
+&lt;a href=&quot;https://babeljs.io/repl/&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;)&lt;/p&gt;
+
+&lt;p&gt;The key point here is that the standard es6 class method translates to
+a method on the function prototype, whereas the arrow function translates
+to a method in the constructor function.&lt;/p&gt;
+
+&lt;p&gt;What does this mean? Traditionally in es5, you would only declare instance 
+properties in the constructor function. These are properties that are 
+specific to the instance and are not shared across instances. For example constructor arguments. 
+These are created every time for each instance and hence are not very efficient.&lt;/p&gt;
+
+&lt;p&gt;To improve performance, you would declare shared properties and methods on the
+function prototype. These will be created once for the function and then shared across all
+instances. I would normally declare methods on the function prototype; properties not so much.&lt;/p&gt;
+
+&lt;p&gt;It makes sense to share methods across instances for performance reasons and keep instance properties
+in the constructor function. This leads to the conclusion that the es6 standard class method syntax
+(Lill’s way) is preferable to the property initializer arrow function syntax.&lt;/p&gt;
+
+&lt;p&gt;Hopefully by understanding what es6 does under the hood you can now better decide
+how to declare your class methods. I know many developers are using the property
+initializer arrow function syntax because it’s convenient, albeit unaware of what’s 
+really happening under the hood.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;other-news&quot;&gt;Other news&lt;/h2&gt;
+&lt;p&gt;I’ll be attending &lt;a href=&quot;http://ndcsydney.com/&quot; target=&quot;_blank&quot;&gt;NDC Sydney&lt;/a&gt; on 3-5 August. If you are around, please say hello otherwise
+it will be quite a lonely conference for me :(&lt;/p&gt;
+
+&lt;p&gt;I have also organised a reading group which will take place on Thu 25 Aug. The pick is &lt;a href=&quot;https://www.nostarch.com/hemingway&quot; target=&quot;_blank&quot;&gt;“If Hemingway Wrote Javascript”
+by Angus Croll&lt;/a&gt;. Please reach out to me if you would like to join!&lt;/p&gt;
+
+&lt;p&gt;Until next time, cowabunga.&lt;/p&gt;
+
+&lt;hr /&gt;
+</content>
+<category term="react" />
+<category term="es6" />
+<category term="es 6" />
+<category term="class" />
+<category term="classes" />
+<category term="method" />
+<category term="property" />
+<category term="initializer" />
+<category term="arrow" />
+<category term="function" />
+<summary>Welcome back to another episode of react junkie’s blog post. Today I’ll be talking about meth crystal meth ice and how toreplicate the perfect process to produce the most immaculate blue sky just like Jesse Pinkman.</summary>
+</entry>
+<entry>
 <title>Step 4 to React: Intro to routing with react router</title>
 <link href="http://www.reactjunkie.com/step-four-to-react-routing-with-react-router/" rel="alternate" type="text/html" title="Step 4 to React: Intro to routing with react router" />
-<published>2016-06-30T14:52:00-07:00</published>
-<updated>2016-06-30T14:52:00-07:00</updated>
+<published>2016-06-30T14:52:00+10:00</published>
+<updated>2016-06-30T14:52:00+10:00</updated>
 <id>http://www.reactjunkie.com/step-four-to-react-routing-with-react-router</id>
 <content type="html" xml:base="http://www.reactjunkie.com/step-four-to-react-routing-with-react-router/">&lt;p&gt;I am in LA for holidays! Yep, I’m blogging as I am holidaying; I don’t know why but I just can’t stop thinking about it.
 My wife says I’m addicted to work, I said no. We fight a lot but we love each other. Love is weird.&lt;/p&gt;
@@ -209,8 +1686,8 @@ Download the complete source code from &lt;a href=&quot;https://github.com/yusin
 <entry>
 <title>How React fits into the microservice team structure</title>
 <link href="http://www.reactjunkie.com/react-and-microservices/" rel="alternate" type="text/html" title="How React fits into the microservice team structure" />
-<published>2016-05-28T20:45:00-07:00</published>
-<updated>2016-05-28T20:45:00-07:00</updated>
+<published>2016-05-28T20:45:00+10:00</published>
+<updated>2016-05-28T20:45:00+10:00</updated>
 <id>http://www.reactjunkie.com/react-and-microservices</id>
 <content type="html" xml:base="http://www.reactjunkie.com/react-and-microservices/">&lt;p&gt;I am going to digress a little today and talk about how react fits into the microservice architectural style. Of course microservices and 
 react are two buzzwords we hear all the time these days. While it might look like I am just shamelessly meshing these two things 
@@ -256,614 +1733,11 @@ teaches a five day course on soa and for a limited time you can watch 2 full day
 and use the access code DSYU. This free offer expires 12 June 2016.&lt;/p&gt;
 
 &lt;hr /&gt;
-
-&lt;h2 id=&quot;the-schema&quot;&gt;The Schema&lt;/h2&gt;
-
-&lt;p&gt;The genre enum type looks like this. You can find the complete schema &lt;a href=&quot;https://github.com/yusinto/movie-time/blob/master/src/graphql/schema.js&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;{% highlight js %}
-const genreEnum = new GraphQLEnumType({
-  name: ‘Genre’,
-  values: {
-    ACTION: {
-      value: ‘Action’
-    },
-    ADVENTURE: {
-      value: ‘Adventure’
-    },
-   …
-    WESTERN: {
-      value: ‘Western’
-    }
-  }
-});
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;Our graphql endpoint should return a list like this:&lt;/p&gt;
-
-&lt;p&gt;{% highlight js %}
-[‘Action’, ‘Adventure’,…,’Western’]
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;Using the chrome debugger, I discovered that the genreEnum object has a property called &lt;b&gt;_values&lt;/b&gt;. I’m guessing the underscore
-prefix means that it’s a private property by convention, so we might not be doing the best thing here! However due to the lack of
-alternatives, it will have to do for now. Your resolve method should then look like this:&lt;/p&gt;
-
-&lt;p&gt;{% highlight js %}
-resolve: () =&amp;gt; genreEnum._values.map(e =&amp;gt; e.value)
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;And that’s it! You can find the complete code on &lt;a href=&quot;https://github.com/yusinto/movie-time&quot;&gt;github&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;Happy coding!&lt;/p&gt;
-
-&lt;hr /&gt;
 </content>
 <category term="react" />
 <category term="microservices" />
 <category term="conway&#39;s law" />
 <category term="team structure" />
 <summary>I am going to digress a little today and talk about how react fits into the microservice architectural style. Of course microservices and react are two buzzwords we hear all the time these days. While it might look like I am just shamelessly meshing these two things together to get more visitors to my site, you can’t be further than the truth (*cough).</summary>
-</entry>
-<entry>
-<title>Returning graphql enum values to the client</title>
-<link href="http://www.reactjunkie.com/return-graphql-enums/" rel="alternate" type="text/html" title="Returning graphql enum values to the client" />
-<published>2016-04-13T15:45:00-07:00</published>
-<updated>2016-04-13T15:45:00-07:00</updated>
-<id>http://www.reactjunkie.com/return-graphql-enums</id>
-<content type="html" xml:base="http://www.reactjunkie.com/return-graphql-enums/">&lt;p&gt;In my attempt to learn Relay and GraphQL, I recently created a simple movie app. It is a single page app in both senses -
-it only has one page and it’s all client side (excuse the pun!). This single page displays a list of movie titles and their genres.
-It also has a select box to filter the list by genre.&lt;/p&gt;
-
-&lt;p&gt;This blog is not an intro to graphql or relay, that will be covered sometime in the near future. It’s about how to return
-a list of enum values declared in our graphql schema to the client. So in a nutshell:&lt;/p&gt;
-
-&lt;h3 id=&quot;the-problem&quot;&gt;The Problem&lt;/h3&gt;
-&lt;p&gt;Given a GraphQLEnumType in the schema, how do we return all the values in that enum type as a list to the client?&lt;/p&gt;
-
-&lt;h3 id=&quot;the-solution&quot;&gt;The Solution&lt;/h3&gt;
-&lt;p&gt;The premise is straight forward. We need to populate our genre select box with all the enum values declared in the schema. However, I can’t seem to
-find any posts/articles/documentation that describe how I can do this. So I set out on my own exciting investigation.&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;the-schema&quot;&gt;The Schema&lt;/h2&gt;
-
-&lt;p&gt;The genre enum type looks like this. You can find the complete schema &lt;a href=&quot;https://github.com/yusinto/movie-time/blob/master/src/graphql/schema.js&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;{% highlight js %}
-const genreEnum = new GraphQLEnumType({
-  name: ‘Genre’,
-  values: {
-    ACTION: {
-      value: ‘Action’
-    },
-    ADVENTURE: {
-      value: ‘Adventure’
-    },
-   …
-    WESTERN: {
-      value: ‘Western’
-    }
-  }
-});
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;Our graphql endpoint should return a list like this:&lt;/p&gt;
-
-&lt;p&gt;{% highlight js %}
-[‘Action’, ‘Adventure’,…,’Western’]
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;Using the chrome debugger, I discovered that the genreEnum object has a property called &lt;b&gt;_values&lt;/b&gt;. I’m guessing the underscore
-prefix means that it’s a private property by convention, so we might not be doing the best thing here! However due to the lack of
-alternatives, it will have to do for now. Your resolve method should then look like this:&lt;/p&gt;
-
-&lt;p&gt;{% highlight js %}
-resolve: () =&amp;gt; genreEnum._values.map(e =&amp;gt; e.value)
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;And that’s it! You can find the complete code on &lt;a href=&quot;https://github.com/yusinto/movie-time&quot;&gt;github&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;Happy coding!&lt;/p&gt;
-
-&lt;hr /&gt;
-</content>
-<category term="react" />
-<category term="relay" />
-<category term="graphql" />
-<category term="GraphQLEnumType" />
-<summary>In my attempt to learn Relay and GraphQL, I recently created a simple movie app. It is a single page app in both senses -it only has one page and it’s all client side (excuse the pun!). This single page displays a list of movie titles and their genres.It also has a select box to filter the list by genre.</summary>
-</entry>
-<entry>
-<title>Step 3 to React: Speed dev with hot module replacement</title>
-<link href="http://www.reactjunkie.com/step-three-to-react-speed-dev-with-hot-module-replacement/" rel="alternate" type="text/html" title="Step 3 to React: Speed dev with hot module replacement" />
-<published>2016-04-02T17:45:00-07:00</published>
-<updated>2016-04-02T17:45:00-07:00</updated>
-<id>http://www.reactjunkie.com/step-three-to-react-speed-dev-with-hot-module-replacement</id>
-<content type="html" xml:base="http://www.reactjunkie.com/step-three-to-react-speed-dev-with-hot-module-replacement/">&lt;p&gt;In the &lt;a href=&quot;http://www.reactjunkie.com/step-two-to-react-webpack-and-react/&quot;&gt;previous post&lt;/a&gt; we started writing react code
-and that was cool. However having to restart the app and refresh the browser everytime we make a change is a pain. 
-There must be a better way to optimise our dev/debug cycle.&lt;/p&gt;
-
-&lt;p&gt;And yes there is. Enter react hot module replacement or hmr created by &lt;a href=&quot;https://github.com/gaearon&quot;&gt;Dan Abramov&lt;/a&gt; the creator of redux. Hmr is a much much better
-“version” of liveReload. You don’t need to inject a script tag into your code and there is no browser refresh. When you make
-changes to your code, they simply appear in the browser like magic without reload.&lt;/p&gt;
-
-&lt;p&gt;This is a short post just to get hmr working so let’s dive straight into the code now and I’ll explain things along the way.&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;step-31-install-transforms-and-webpack-middlewares&quot;&gt;Step 3.1: Install transforms and webpack middlewares&lt;/h2&gt;
-&lt;p&gt;There are 6 packages we need to install:&lt;/p&gt;
-
-&lt;p&gt;{% highlight raw %}
-npm install –save-dev babel-plugin-react-transform react-transform-hmr react-transform-catch-errors redbox-react webpack-dev-middleware webpack-hot-middleware
-{% endhighlight %}&lt;/p&gt;
-
-&lt;h4 id=&quot;babel-plugin-react-transform&quot;&gt;babel-plugin-react-transform&lt;/h4&gt;
-
-&lt;p&gt;This modifies your react components by applying all the transforms we configure in .babelrc.&lt;/p&gt;
-
-&lt;h4 id=&quot;react-transform-hmr-react-transform-catch-errors&quot;&gt;react-transform-hmr, react-transform-catch-errors&lt;/h4&gt;
-&lt;p&gt;The babel plugin above applies these transforms to our react components. Each transform modifies your react component in a specific way:&lt;/p&gt;
-
-&lt;p&gt;&lt;b&gt;react-transform-hmr&lt;/b&gt; - This transform enables hot reloading of components
-&lt;b&gt;react-transform-catch-errors&lt;/b&gt; - This transform catches errors inside the render() method and renders that error instead of your component.&lt;/p&gt;
-
-&lt;h4 id=&quot;redbox-react&quot;&gt;redbox-react&lt;/h4&gt;
-&lt;p&gt;Used by react-transform-catch-errors to display errors in a red screen of death in the browser.&lt;/p&gt;
-
-&lt;h4 id=&quot;webpack-dev-middleware-webpack-hot-middleware&quot;&gt;webpack-dev-middleware, webpack-hot-middleware&lt;/h4&gt;
-&lt;p&gt;&lt;b&gt;webpack-dev-middleware&lt;/b&gt; - bundles our js file on the fly, stores it in memory and serves it&lt;/p&gt;
-
-&lt;p&gt;&lt;b&gt;webpack-hot-middleware&lt;/b&gt; - enables hot reloading using webpack-dev-middleware above&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;step-32-configure-babel&quot;&gt;Step 3.2: Configure babel&lt;/h2&gt;
-
-&lt;p&gt;Your .babelrc file should look like this:&lt;/p&gt;
-
-&lt;p&gt;{% highlight js %}
-{
-    “presets”: [“es2015”, “react”],
-    “plugins”: [
-        [“react-transform”, {
-            “transforms”: [{
-                “transform”: “react-transform-hmr”,
-                “imports”: [“react”],
-                “locals”: [“module”]
-            }, {
-                “transform”: “react-transform-catch-errors”,
-                “imports”: [“react”, “redbox-react”]
-            }]
-        }]
-    ]
-}
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;This is the configuration that uses the transform packages above. In short, we instruct the
-react-transform plugin to apply 2 transforms: the hmr and catch-errors transforms to our react 
-components. In simple terms, transforms are just functions that accepts a react component as input and modifies it. For 
-example, &lt;b&gt;&lt;i&gt;react-transform-catch-errors&lt;/i&gt;&lt;/b&gt; adds a try catch block on the original render method to catch exceptions.&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;step-33-configure-webpack&quot;&gt;Step 3.3: Configure webpack&lt;/h2&gt;
-&lt;p&gt;Your webpack.config.dev.js should look like this:&lt;/p&gt;
-
-&lt;p&gt;{% highlight js %}
-var webpack = require(‘webpack’);
-var path = require(‘path’);&lt;/p&gt;
-
-&lt;p&gt;module.exports = {
-    // Add webpack-hot-middleware/client to our bundle so our app 
-    // subscribes to update notifications from the server
-    entry: [‘webpack-hot-middleware/client’, path.join(__dirname, ‘src/client/index’)],
-    output: {
-        path: path.join(__dirname, ‘dist’),
-        filename: ‘bundle.js’,&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    // Add a publicPath property. This is the path referenced in the 
-    // script tag in our html template to our bundle.js. We need 
-    // this to configure webpack-dev-middleware in server.js
-    publicPath: &#39;/dist/&#39; 
-},
-module: {
-    loaders:[{
-        test: /\.jsx?$/,
-        loader: &#39;babel&#39;,
-        include: path.join(__dirname, &#39;src&#39;)
-    }]
-},
-
-// Enables hot module replacement in webpack
-plugins: [
-    new webpack.HotModuleReplacementPlugin()
-] }; {% endhighlight %}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;step-34-modify-express-app-to-support-hmr&quot;&gt;Step 3.4: Modify express app to support hmr&lt;/h2&gt;
-&lt;p&gt;Almost there! Now we need to modify server.js to use webpack dev and hot middlewares.&lt;/p&gt;
-
-&lt;p&gt;{% highlight c# %}
-…&lt;/p&gt;
-
-&lt;p&gt;import Webpack from ‘webpack’;
-import WebpackConfig from ‘../../webpack.config.dev’;
-import WebpackDevMiddleware from ‘webpack-dev-middleware’;
-import WebPackHotMiddleware from ‘webpack-hot-middleware’;&lt;/p&gt;
-
-&lt;p&gt;…&lt;/p&gt;
-
-&lt;p&gt;// create a webpack instance from our dev config
-const webpackCompiler = Webpack(WebpackConfig);&lt;/p&gt;
-
-&lt;p&gt;// Use webpack dev middleware to bundle our app on the fly and serve it 
-// on publicPath. Turn off verbose webpack output in our server console
-// by setting noInfo: true
-app.use(WebpackDevMiddleware(webpackCompiler, {
-    publicPath: WebpackConfig.output.publicPath,
-    noInfo: true
-}));&lt;/p&gt;
-
-&lt;p&gt;// instruct our webpack instance to use webpack hot middleware
-app.use(WebPackHotMiddleware(webpackCompiler));&lt;/p&gt;
-
-&lt;p&gt;// NOTE: delete express static middleware for dist. We don’t need that
-// anymore because webpack-dev-middleware serves our bundle.js from memory&lt;/p&gt;
-
-&lt;p&gt;…
-{% endhighlight %}&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;step-35-run-the-app&quot;&gt;Step 3.5: Run the app!&lt;/h2&gt;
-&lt;p&gt;If you have been following my &lt;a href=&quot;http://www.reactjunkie.com/step-two-to-react-webpack-and-react/&quot;&gt;previous post&lt;/a&gt; up to this point, 
-note that you’ll need to delete the prestart command from package.json. We don’t need that anymore because we are using webpack
-dev middleware to bundle our app on the fly.&lt;/p&gt;
-
-&lt;p&gt;If you have the physical /dist/ folder, also delete that because
-again webpack dev middleware will serve bundle.js from memory.&lt;/p&gt;
-
-&lt;p&gt;At your root directory run “npm start” and browse to localhost:3000. Then make changes to appComponent.js; maybe change
-the h1 text. You’ll see your changes in the browser immediately without refresh.&lt;/p&gt;
-
-&lt;p&gt;Download the complete source code from &lt;a href=&quot;https://github.com/yusinto/reactStep3&quot;&gt;github&lt;/a&gt;.&lt;/p&gt;
-
-&lt;hr /&gt;
-</content>
-<category term="react" />
-<category term="hmr" />
-<category term="hot" />
-<category term="module" />
-<category term="replacement" />
-<category term="webpack" />
-<category term="babel" />
-<summary>In the previous post we started writing react codeand that was cool. However having to restart the app and refresh the browser everytime we make a change is a pain. There must be a better way to optimise our dev/debug cycle.</summary>
-</entry>
-<entry>
-<title>Step 2 to React: Webpack and React</title>
-<link href="http://www.reactjunkie.com/step-two-to-react-webpack-and-react/" rel="alternate" type="text/html" title="Step 2 to React: Webpack and React" />
-<published>2016-03-30T21:25:00-07:00</published>
-<updated>2016-03-30T21:25:00-07:00</updated>
-<id>http://www.reactjunkie.com/step-two-to-react-webpack-and-react</id>
-<content type="html" xml:base="http://www.reactjunkie.com/step-two-to-react-webpack-and-react/">&lt;p&gt;If you haven’t read my &lt;a href=&quot;http://www.reactjunkie.com/step-one-to-react-es-6-and-express/&quot;&gt;previous post&lt;/a&gt;, 
-it might be a good idea to have a quick read before reading this one. We’ll build this example based on that last post.
-Let’s get into it!&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;step-21-install-webpack-babel-and-react&quot;&gt;Step 2.1: Install webpack, babel and react&lt;/h2&gt;
-
-&lt;p&gt;{% highlight raw %}
-npm install –save-dev webpack babel-loader
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;{% highlight raw %}
-npm install –save react react-dom babel-preset-react
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;We use webpack to bundle all our javascript code into a single file. We then include this bundled file 
-in a script tag in our html just like any other js file. This single file alone will be sufficient to run our app in the browser.&lt;/p&gt;
-
-&lt;p&gt;Our code is in es6 and jsx (we’ll talk about jsx in detail a bit later) which are not (yet) natively understood by browsers. So
-we have to transpile (short for transform and compile) it into pure javascript which are understood by all browsers. We use
-babel to perform this transpilation.&lt;/p&gt;
-
-&lt;p&gt;react and react-dom are core react modules required to write react apps. babel-preset-react instructs babel (both
-babel-register and babel-loader) to transpile jsx into pure javascript.&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;step-22-configure-webpack&quot;&gt;Step 2.2: Configure webpack&lt;/h2&gt;
-&lt;p&gt;Create a new file called webpack.config.dev.js at the root directory of your project. The file contents should look like this:&lt;/p&gt;
-
-&lt;p&gt;{% highlight js %}
-var webpack = require(‘webpack’);
-var path = require(‘path’);&lt;/p&gt;
-
-&lt;p&gt;module.exports = {
-    entry: [path.join(__dirname, ‘src/client/index’)],
-    output: {
-        path: path.join(__dirname, ‘dist’),
-        filename: ‘bundle.js’
-    },
-    module: {
-        loaders:[{
-            test: /.jsx?$/,
-            loader: ‘babel’,
-            include: path.join(__dirname, ‘src’)
-        }]
-    }
-};
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;There are 3 main parts to this config:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;entry: tells webpack to start bundling from this file&lt;/li&gt;
-&lt;li&gt;output: write the resultant bundled file to the dist folder at root&lt;/li&gt;
-&lt;li&gt;module.loaders: For all js or jsx files under src folder, use babel-loader to transpile those files prior to bundling&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;step-23-add-a-build-command-to-packagejson&quot;&gt;Step 2.3: Add a build command to package.json&lt;/h2&gt;
-
-&lt;p&gt;In your package.json, add a scripts.prestart command. This is a natively supported npm command, just like start.
-When you run npm start, the prestart command will always get executed first, then the start command, followed by a
-poststart command which we don’t use here.&lt;/p&gt;
-
-&lt;p&gt;In prestart, we tell npm to run webpack with the config file above essentially
-bundling our app prior to running it.&lt;/p&gt;
-
-&lt;p&gt;{% highlight js %}
-{
-…
-      “scripts”: {
-        “prestart”: “webpack –config webpack.config.dev.js –progress”,
-        “start”: “node src/server/index.js”,
-      }
-…
-}
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;When the prestart command completes, a bundle.js file should exist in the dist folder.&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;step-24-write-some-react-code&quot;&gt;Step 2.4: Write some react code&lt;/h2&gt;
-&lt;p&gt;Finally we get to write some react code! This is the meatiest part, so it’s a bit longer than the other sections, but
-it’s worth it. Let’s create two new files:&lt;/p&gt;
-
-&lt;ul&gt;
-    &lt;li&gt;src/common/component/appComponent.js&lt;/li&gt;
-    &lt;li&gt;src/client/index.js&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Note about directory structure: All my code are in a src folder to separate it from other elements of the project
-like node_modules and dist. This allows me to target only src for transpilation in my webpack build. Under src, my files
-are further organised into client, server and common.&lt;/p&gt;
-
-&lt;p&gt;So what’s in common? This is in preparation for building a universal
-app (also known as isomorphic app) where the code being run on the client and server are one and the same ergo common
-code. But we’ll talk more about this in a later post.&lt;/p&gt;
-
-&lt;p&gt;If you come from an OO background like me, you should be familiar with the syntax here.&lt;/p&gt;
-
-&lt;h5 id=&quot;appcomponentjs&quot;&gt;appComponent.js&lt;/h5&gt;
-&lt;p&gt;{% highlight C# %}
-/*
- Import react’s default module and assign it to a variable named React. 
- Additionally we also import the Component module and assign it to a 
- variable named Component.
-*/
-import React, {Component} from ‘react’;&lt;/p&gt;
-
-&lt;p&gt;/*
- Subclass React.Component and implement the render method. This method 
- must return a single child element. A react component at minimum must 
- implement the render method. Also set this class as the default export 
- of this file so we can import it in other files.
-*/
-export default class App extends Component {
-    render() {
-        return (
-            // Nooo this looks like inline html! Are we back in the land
-            // of classic asp/php? Short answer is no we are not. See 
-            // below for details.
-            &amp;lt;div&amp;gt;
-                &amp;lt;h1&amp;gt;Hello world in React!&amp;lt;/h1&amp;gt;
-                &amp;lt;p&amp;gt;
-                    The time now is { (new Date()).toLocaleString() }
-                &amp;lt;/p&amp;gt;
-            &amp;lt;/div&amp;gt;
-        );
-    }
-}
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;It might look like we are writing literal html strings like old school asp/php, 
-but under the bonnet these are shorthand syntax to generate ReactElements.&lt;/p&gt;
-
-&lt;p&gt;A ReactElement is the primary basic type in React which constitutes the virtual DOM. In essence, you are
-writing virtual DOM. It’s called virtual because it’s not the real DOM. React keeps an in-memory copy
-of this “html” ergo virtual dom and only flushes changes to the real DOM in the browser if there is a props or state
-change. We’ll talk about props and state more in later posts.&lt;/p&gt;
-
-&lt;p&gt;For now, just understand that you are writing a html-like syntax called jsx which becomes part of the virtual dom.&lt;/p&gt;
-
-&lt;h5 id=&quot;indexjs&quot;&gt;index.js&lt;/h5&gt;
-&lt;p&gt;{% highlight C# %}
-// Import the render method from react-dom so we can mount our 
-// component onto an html element
-import React from ‘react’;
-import {render} from ‘react-dom’;
-import App from ‘../common/component/appComponent’;&lt;/p&gt;
-
-&lt;p&gt;// This is the entry point into our react app on the client side. Again 
-// we use jsx to create our ReactElement and mount it onto a div called 
-// reactDiv on the html template.
-render(&lt;app&gt;&lt;/app&gt;, document.getElementById(‘reactDiv’));
-{% endhighlight %}&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;step-25-modify-express-to-serve-react&quot;&gt;Step 2.5: Modify express to serve react&lt;/h2&gt;
-&lt;p&gt;Almost there! Now we need to modify server.js to serve a html page with a script reference to our dist/bundled.js generated by webpack.&lt;/p&gt;
-
-&lt;p&gt;We also need to add an express static middleware to serve that static bundle.js file. A middleware is just code that executes
-between a request and a response. In this example, a GET request comes in from the client asking for dist/bundled.js. Our
-middleware matches the route and executes our code. We use express’ built-in static middleware so we get this for free.&lt;/p&gt;
-
-&lt;p&gt;{% highlight c# %}&lt;/p&gt;
-
-&lt;p&gt;…&lt;/p&gt;
-
-&lt;p&gt;// This is our html template that contains our target mounting 
-// div id=”reactDiv”. Also note the script reference to /dist/bundle.js.
-const htmlString = &lt;code class=&quot;highlighter-rouge&quot;&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;!DOCTYPE html&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;html&amp;gt;&lt;/span&gt;
-         &lt;span class=&quot;nt&quot;&gt;&amp;lt;head&amp;gt;&lt;/span&gt;
-            &lt;span class=&quot;nt&quot;&gt;&amp;lt;title&amp;gt;&lt;/span&gt;Webpack and React&lt;span class=&quot;nt&quot;&gt;&amp;lt;/title&amp;gt;&lt;/span&gt;
-          &lt;span class=&quot;nt&quot;&gt;&amp;lt;/head&amp;gt;&lt;/span&gt;
-          &lt;span class=&quot;nt&quot;&gt;&amp;lt;body&amp;gt;&lt;/span&gt;
-            &lt;span class=&quot;nt&quot;&gt;&amp;lt;div&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;id=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;reactDiv&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
-            &lt;span class=&quot;nt&quot;&gt;&amp;lt;script &lt;/span&gt;&lt;span class=&quot;na&quot;&gt;src=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;/dist/bundle.js&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&amp;lt;/script&amp;gt;&lt;/span&gt;
-          &lt;span class=&quot;nt&quot;&gt;&amp;lt;/body&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/html&amp;gt;&lt;/span&gt;&lt;/code&gt;;&lt;/p&gt;
-
-&lt;p&gt;// Use express’ built-in static middleware to serve static files in 
-// the dist folder
-app.use(‘/dist’, Express.static(‘dist’));&lt;/p&gt;
-
-&lt;p&gt;…
-{% endhighlight %}&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;step-26-run-the-app&quot;&gt;Step 2.6: Run the app!&lt;/h2&gt;
-&lt;p&gt;At your root directory run “npm start” and browse to localhost:3000 to see the output.
-Download the complete source code from &lt;a href=&quot;https://github.com/yusinto/reactStep2&quot;&gt;github&lt;/a&gt;.&lt;/p&gt;
-
-&lt;hr /&gt;
-</content>
-<category term="react" />
-<category term="webpack" />
-<category term="babel" />
-<summary>If you haven’t read my previous post, it might be a good idea to have a quick read before reading this one. We’ll build this example based on that last post.Let’s get into it!</summary>
-</entry>
-<entry>
-<title>Step 1 to React: Using es6 with Express</title>
-<link href="http://www.reactjunkie.com/step-one-to-react-es-6-and-express/" rel="alternate" type="text/html" title="Step 1 to React: Using es6 with Express" />
-<published>2016-03-27T17:48:00-07:00</published>
-<updated>2016-03-27T17:48:00-07:00</updated>
-<id>http://www.reactjunkie.com/step-one-to-react-es-6-and-express</id>
-<content type="html" xml:base="http://www.reactjunkie.com/step-one-to-react-es-6-and-express/">&lt;p&gt;I came from a .Net background but I realised quickly how powerful and easy node is and I love it. The advent of es6 has
-bridged the gap even further. The introduction of arrow functions, classes and destructuring really make node programming
- that much more enjoyable and fun.&lt;/p&gt;
-
-&lt;p&gt;Enough of my rant! Let’s get to the point. This post is part one of a series of posts about react and the things I
- encountered in the process of learning it. One of the first steps that often get overlooked is how to get es6 to work
- with node on the server side. To me this is a very important step because I want my app to be in es6 as much as possible.&lt;/p&gt;
-
-&lt;p&gt;Note that this is a very basic example of a node app running es6 without any react elements. In my next post, I will
- add react. The following posts will gradually include react router, relay, hot module replacement (hmr), 
- redux, foundation (sass) and many other goodies!&lt;/p&gt;
-
-&lt;p&gt;But first thing first&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;step-11-install-babel&quot;&gt;Step 1.1: Install babel&lt;/h2&gt;
-&lt;p&gt;You’ll need to install express, babel-express and babel-preset-es2015:&lt;/p&gt;
-
-&lt;p&gt;{% highlight js %}
-npm install express babel-register babel-preset-es2015 –save
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;Where express is the standard web framework for node, babel-register will compile every file that is require’d with babel and
-babel-preset-es2015 tells babel to transpile es6 code to es5.&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;step-12-configure-babel---add-a-babelrc-file&quot;&gt;Step 1.2: Configure babel - add a .babelrc file&lt;/h2&gt;
-&lt;p&gt;Create a new file called .babelrc at the root directory of your project. The file contents should look like this:&lt;/p&gt;
-
-&lt;p&gt;{% highlight js %}
-{
-    “presets”: [“es2015”]
-}
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;This configures babel to transpile es6 code to es5.&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;step-13-configure-an-entry-point-in-packagejson&quot;&gt;Step 1.3: Configure an entry point in package.json&lt;/h2&gt;
-
-&lt;p&gt;In your package.json, add a scripts/start command which tells npm what to do when you run “npm start” in the command line:&lt;/p&gt;
-
-&lt;p&gt;{% highlight js %}
-{
-…
-      “scripts”: {
-        “start”: “node src/server/index.js”,
-      }
-…
-}
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;This tells npm to execute src/server/index.js when you run “npm start” at your root project folder. In this case, index.js 
-is the entry point to your app. The contents of this file should look like this:&lt;/p&gt;
-
-&lt;p&gt;{% highlight js %}
-require(‘babel-register’);
-require(‘./server’);
-{% endhighlight %}&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;step-14-write-es6-code&quot;&gt;Step 1.4: Write es6 code&lt;/h2&gt;
-&lt;p&gt;The file server.js contains all your es6 code for your app. It should look like this:&lt;/p&gt;
-
-&lt;p&gt;{% highlight js %}
-import Express from ‘express’;&lt;/p&gt;
-
-&lt;p&gt;const PORT = 3000;
-const app = Express();&lt;/p&gt;
-
-&lt;p&gt;app.use((req, res) =&amp;gt; {
-    res.end(‘hello world!’);
-});&lt;/p&gt;
-
-&lt;p&gt;app.listen(PORT, () =&amp;gt; {
-    console.log(&lt;code class=&quot;highlighter-rouge&quot;&gt;Listening at ${PORT}&lt;/code&gt;);
-});
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;Here we use import statements in place of the classic require statements, const keyword instead of var, 
-arrow functions instead of inline function declarations and es6 template strings instead of string concatenations.&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;step-15-run-your-app&quot;&gt;Step 1.5: Run your app!&lt;/h2&gt;
-&lt;p&gt;Run&lt;/p&gt;
-
-&lt;p&gt;{% highlight js %}
-npm start
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;at your root directory and browse to localhost:3000 to see the output of your app. Download the complete source code from
- &lt;a href=&quot;https://github.com/yusinto/reactStep1&quot;&gt;github&lt;/a&gt;.&lt;/p&gt;
-
-</content>
-<category term="react" />
-<category term="es6" />
-<category term="express" />
-<summary>I came from a .Net background but I realised quickly how powerful and easy node is and I love it. The advent of es6 hasbridged the gap even further. The introduction of arrow functions, classes and destructuring really make node programming that much more enjoyable and fun.</summary>
 </entry>
 </feed>
