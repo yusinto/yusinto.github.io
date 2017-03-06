@@ -1,144 +1,210 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
-<link href="http://www.reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
-<link href="http://www.reactjunkie.com/" rel="alternate" type="text/html" />
-<updated>2017-01-28T22:01:12+11:00</updated>
-<id>http://www.reactjunkie.com/</id>
+<link href="http://reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
+<link href="http://reactjunkie.com/" rel="alternate" type="text/html" />
+<updated>2017-03-06T21:47:43+11:00</updated>
+<id>http://reactjunkie.com/</id>
 <title>React Junkie</title>
 <entry>
-<title>Testing Connected Redux and Relay Components</title>
-<link href="http://www.reactjunkie.com/testing-connected-redux-relay-components/" rel="alternate" type="text/html" title="Testing Connected Redux and Relay Components" />
-<published>2017-01-28T08:30:00+11:00</published>
-<updated>2017-01-28T08:30:00+11:00</updated>
-<id>http://www.reactjunkie.com/testing-connected-redux-relay-components</id>
-<content type="html" xml:base="http://www.reactjunkie.com/testing-connected-redux-relay-components/">&lt;p&gt;Happy chinese new year everyone! In the spirit of the year of the cock, I shall write the rest of this post in chinese. 
-中国著名的大思想家、大教育家。孔子开创了私人讲学的风气，是儒家学派的创始人。孔子曾受业于老子 (roughly translates to… I don’t know).
-Did I say Cock? I mean Rooster. Apologies my dear chinese readers… I don’t think there’s a difference anyway?&lt;/p&gt;
+<title>Scheduling Feature Flag Deployment</title>
+<link href="http://reactjunkie.com/scheduling-feature-flag-deployment/" rel="alternate" type="text/html" title="Scheduling Feature Flag Deployment" />
+<published>2017-02-28T08:30:00+11:00</published>
+<updated>2017-02-28T08:30:00+11:00</updated>
+<id>http://reactjunkie.com/scheduling-feature-flag-deployment</id>
+<content type="html" xml:base="http://reactjunkie.com/scheduling-feature-flag-deployment/">&lt;p&gt;Use Launch Darkly? Love their feature flagging and a/b testing features? Like reading blog posts that sounds like an informercial? Umm…&lt;/p&gt;
 
-&lt;p&gt;I’m gonna talk about testing redux components today. If you use react-redux, you are probably connecting
-your components to redux using the connect method. If you do this in one file with a single default export (which is the connected component)
-you have a problem. You’ll find that you can’t test your component directly because the default export of your module is not the component
-itself, rather it’s the redux connected component. What you want to test is the presentational component, not the connected component. Redux
-itself is already tested!&lt;/p&gt;
+&lt;p&gt;Anyway I use Launch Darkly at my workplace (I work at an airline company spelt with a Q and I live in Sydney Australia) and I recently faced a
+challenge with zero dark thirty deployments.&lt;/p&gt;
 
-&lt;p&gt;You have two options at this point; you can either bite the bullet and test the redux component meaning mocking a lot of the redux stuff OR 
-you can modify your code to be testable by exporting the private presentational component. This second approach is the one recommended by the 
-&lt;a href=&quot;https://github.com/reactjs/redux/blob/master/docs/recipes/WritingTests.md&quot; target=&quot;_blank&quot;&gt;official redux documentation&lt;/a&gt;. I find that although 
-this works it does so at the expense of encapsulation. I believe code should be driven by design and requirements, not testing restrictions. 
-So I set out to find a better approach.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/tropic.jpg&quot; alt=&quot;Zero dark what?&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;There is a popular npm package &lt;a href=&quot;https://github.com/jhnns/rewire&quot; target=&quot;_blank&quot;&gt;rewire&lt;/a&gt; which seems to be promising. I failed to make it work
-quickly though, because it does not work with es6 so a little more googling reveals &lt;a href=&quot;https://github.com/speedskater/babel-plugin-rewire&quot; target=&quot;_blank&quot;&gt;babel-plugin-rewire&lt;/a&gt; 
-which is based on rewire and works with es6. Armed with this library, I embarked on a journey towards a better cock year oops I mean better unit tests.&lt;/p&gt;
+&lt;p&gt;No no what I meant was I had feature flagging in place in my app, and I had to turn flags on (and off) at unearthly hours like 12:01 AM. So being a hacker,
+I wasn’t going to lie down and wait for 12:01 AM to come by and turn on a switch. No sir! I am much much smarter than that. Instead, I spent sleepless nights
+doing 30 hour days to write a node app that will do it for me. Take that zero dark thirty deployments!&lt;/p&gt;
+
+&lt;h2 id=&quot;the-problem&quot;&gt;The problem&lt;/h2&gt;
+&lt;p&gt;Need to turn flags on/off automatically at a specified scheduled time.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-solution&quot;&gt;The solution&lt;/h2&gt;
+&lt;p&gt;A cron job that uses &lt;a href=&quot;http://apidocs.launchdarkly.com/docs/update-feature-flag&quot; target=&quot;_blank&quot;&gt;launch darkly apis&lt;/a&gt; to automatically turn on/off flags.&lt;/p&gt;
 
 &lt;h2 id=&quot;enough-talk-show-me-some-code&quot;&gt;Enough talk, show me some code&lt;/h2&gt;
-&lt;p&gt;Consider the following code (which you can see in entirety &lt;a href=&quot;https://github.com/yusinto/test-react/blob/master/src/universal/home/home.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;):&lt;/p&gt;
+&lt;p&gt;Using the rest apis, you can update your flag with something  like this:&lt;/p&gt;
 
-&lt;h4 id=&quot;homejs&quot;&gt;home.js&lt;/h4&gt;
 &lt;p&gt;{% highlight javascript %}
-import React, {Component} from ‘react’;
-import {connect} from ‘react-redux’;
-import * as Actions from ‘./homeAction’;&lt;/p&gt;
+const headers = {
+  Accept: ‘&lt;em&gt;/&lt;/em&gt;’,
+  ‘Content-Type’: ‘application/json’,
+  Authorization: ‘your-api-key’,
+  ‘accept-encoding’: ‘gzip, deflate’
+};
+const body = JSON.stringify([{
+  op: ‘replace’,
+  path: ‘/environments/test’;,
+  value: true,
+}]);
+const url = ‘https://app.launchdarkly.com/api/v2/flags/default/your-key’;
+const response = await fetch(url, {
+    method: ‘PATCH’,
+    headers,
+    body
+});&lt;/p&gt;
 
-&lt;p&gt;// private class
-class Home extends Component {
-  constructor(props) {
-    super(props);
-    this.onClickGenerateRandom = ::this.onClickGenerateRandom;
-  }&lt;/p&gt;
+&lt;p&gt;{% endhighlight %}&lt;/p&gt;
 
-&lt;p&gt;onClickGenerateRandom() {
-    this.props.generateRandom();
-  }&lt;/p&gt;
+&lt;p&gt;Of course you’ll need to add some defensive programming for error catching
+and retries plus configuration for test and production environments
+plus notifications when updates are successful/not successful, and the
+list goes on.&lt;/p&gt;
 
-&lt;p&gt;render() {
-    let homeText = ‘Click button below to generate a random number!’;&lt;/p&gt;
+&lt;p&gt;If you go down this path, you soon realise that this is not a trivial 
+task by any means. An ad-hoc solution like this involves hard coding
+flag names and continual updates which are almost as bad as waking up at 
+12:01 AM to do the deployments manually.&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;return (
-  &amp;lt;div&amp;gt;
-    &amp;lt;p&amp;gt;{ homeText }&amp;lt;/p&amp;gt;
-    &amp;lt;div&amp;gt;{this.props.randomNumber}&amp;lt;/div&amp;gt;
-    &amp;lt;button onClick={this.onClickGenerateRandom}&amp;gt;
-        Generate random number
-    &amp;lt;/button&amp;gt;
-  &amp;lt;/div&amp;gt;
-);   } }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;p&gt;Enter &lt;a href=&quot;https://github.com/yusinto/ld-scheduler&quot; target=&quot;_blank&quot;&gt;ld-scheduler&lt;/a&gt;.&lt;/p&gt;
 
-&lt;p&gt;const mapStateToProps = (state) =&amp;gt; {
-  const homeState = state.Home;&lt;/p&gt;
+&lt;h2 id=&quot;ld-scheduler&quot;&gt;ld-scheduler&lt;/h2&gt;
+&lt;p&gt;With ld-scheduler, you do this from your node app:&lt;/p&gt;
 
-&lt;p&gt;return {
-    randomNumber: homeState.randomNumber
-  };
-};&lt;/p&gt;
-
-&lt;p&gt;export default connect(mapStateToProps, Actions)(Home);
+&lt;p&gt;{% highlight js %}
+yarn add ld-scheduler
 {% endhighlight %}&lt;/p&gt;
 
-&lt;p&gt;The Home class is private and that’s what we want to test. It is not exported at all, so we can’t access it directly. 
-As mentioned above, the official redux documentation recommends exporting this class, but that breaks encapsulation.
-So what do we do? Enter &lt;a href=&quot;https://github.com/speedskater/babel-plugin-rewire&quot; target=&quot;_blank&quot;&gt;babel-plugin-rewire&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h2 id=&quot;using-rewire&quot;&gt;Using rewire&lt;/h2&gt;
-&lt;p&gt;You need to install the following npm packages:&lt;/p&gt;
+&lt;p&gt;then&lt;/p&gt;
 
 &lt;p&gt;{% highlight javascript %}
-yarn add –dev jest babel-plugin-rewire enzyme react-addons-test-utils
+import ldScheduler from ‘ld-scheduler’;&lt;/p&gt;
+
+&lt;p&gt;ldScheduler.runEveryXSeconds({
+  environment: ‘test’,
+  apiKey: ‘your-secret-api-key’,
+  slack: ‘your-slack-webhook-url’
+});
 {% endhighlight %}&lt;/p&gt;
 
-&lt;p&gt;I use &lt;a href=&quot;https://facebook.github.io/jest/&quot; target=&quot;_blank&quot;&gt;jest&lt;/a&gt; for my test framework and you should too, it kicks butt. 
-I also use &lt;a href=&quot;https://github.com/airbnb/enzyme&quot; target=&quot;_blank&quot;&gt;enzyme&lt;/a&gt; which is a utility library for testing react components. 
-Enzyme requires the official &lt;a href=&quot;https://facebook.github.io/react/docs/test-utils.html&quot; target=&quot;_blank&quot;&gt;react-addons-test-utils&lt;/a&gt; package.&lt;/p&gt;
+&lt;p&gt;and you schedule your flags through launch darkly’s dashboard:&lt;/p&gt;
 
-&lt;p&gt;In your .babelrc, add an “env” block to include babel-plugin-rewire when running tests:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/ld_flag_configuration.png&quot; alt=&quot;LaunchDarkly dashboard scheduling config&quot; /&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;babelrc&quot;&gt;.babelrc&lt;/h4&gt;
-&lt;p&gt;{% highlight javascript %}
+&lt;p&gt;&lt;strong&gt;HACK&lt;/strong&gt;: We hijack the description field to store our scheduling config as a json object where:&lt;/p&gt;
+&lt;ul&gt;
+    &lt;li&gt;taskType is killSwitch&lt;/li&gt;
+    &lt;li&gt;value is true (kill switch on) or false (kill switch off)&lt;/li&gt;
+    &lt;li&gt;targetDeploymentDateTime must be in the format of YYYY-MM-DD HH:mm&lt;/li&gt;
+    &lt;li&gt;description is a textual string for the purpose of human readability&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;AND&lt;/em&gt;&lt;/strong&gt; you need to set a tag called “scheduled”.&lt;/p&gt;
+
+&lt;p&gt;When ld-scheduler runs, it will set your flag on/off according the the json configuration. It will also remove the “scheduled” tag and set the “Description” of the flag
+to the json.description string, thereby deleting the json config replacing it with the description string.&lt;/p&gt;
+
+&lt;h2 id=&quot;extra&quot;&gt;Extra&lt;/h2&gt;
+&lt;p&gt;ld-scheduler supports a second taskType “fallThoughRollout” which you can use to set the default fallThrough rollout percentage:&lt;/p&gt;
+
+&lt;p&gt;{% highlight json %}
 {
-    “presets”: [“es2015”, “react”, “stage-0”],&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/* etc your other config */
-
-&quot;env&quot;: {
-  &quot;test&quot;: {
-    &quot;plugins&quot;: [&quot;babel-plugin-rewire&quot;]
-  }
-} } {% endhighlight %}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;h2 id=&quot;write-the-tests&quot;&gt;Write the tests!&lt;/h2&gt;
-&lt;p&gt;Now we can write the tests! The complete file is &lt;a href=&quot;https://github.com/yusinto/test-react/blob/master/src/universal/home/home.test.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;:&lt;/p&gt;
-
-&lt;h4 id=&quot;hometestjs&quot;&gt;home.test.js&lt;/h4&gt;
-&lt;p&gt;{% highlight javascript %}
-import React from ‘react’;
-import {shallow} from ‘enzyme’;
-import HomeRedux from ‘./home’;&lt;/p&gt;
-
-&lt;p&gt;describe(‘Home component tests’, () =&amp;gt; {
-  // rewire injects &lt;strong&gt;get&lt;/strong&gt; and &lt;strong&gt;set&lt;/strong&gt; methods to all our modules.
-  // These can then be used to extract and set top level private variables.
-  // In this instance, we extract the private Home class
-  const Home = HomeRedux.&lt;strong&gt;get&lt;/strong&gt;(‘Home’);&lt;/p&gt;
-
-&lt;p&gt;it(‘should render correctly’, () =&amp;gt; {
-    // Yayy! We can now render the presentational component directly! 
-    const output = shallow(&amp;lt;Home randomNumber={45}/&amp;gt;);&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// Use jest snapshot testing for convenience
-expect(output).toMatchSnapshot();   }); }); {% endhighlight %}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+    “taskType”: “fallThroughRollout”,
+    “targetDeploymentDateTime”: “2017-03-3 02:33”,
+    “description”: “Human readable flag description”,
+    “value”: [
+        {
+            “variation”: 0,
+            “weight”: 90000
+        },
+        {
+            “variation”: 1,
+            “weight”: 10000
+        }
+    ]
+}
+{% endhighlight %}
+where variation 0 is true and variation 1 is false. Weight is in mili-percentage (if there’s such a word) i.e. 90000 === 90% and 10000 === 10%.
+Of course you would enter this json object in the “Description” field of your flag settings in launch darkly’s dashboard
+&lt;strong&gt;&lt;em&gt;AND&lt;/em&gt;&lt;/strong&gt; set a “scheduled” tag.&lt;/p&gt;
 
 &lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
-&lt;p&gt;This approach incurs a little more time to setup, but I think it’s worth it. We leave the code fully testable, encapsulation intact. 
-This feels right for me. Also, you can apply the same technique to test react components wrapped in relay containers. It works!&lt;/p&gt;
+&lt;p&gt;Check out the &lt;a href=&quot;https://github.com/yusinto/ld-scheduler/tree/master/example&quot; target=&quot;_blank&quot;&gt;sample code&lt;/a&gt; for a working example and let me know if this is useful (or not)!&lt;/p&gt;
 
-&lt;p&gt;Check out the &lt;a href=&quot;https://github.com/yusinto/test-react&quot; target=&quot;_blank&quot;&gt;sample code&lt;/a&gt; for a working example and let me know if this is useful (or not)!&lt;/p&gt;
+&lt;hr /&gt;
+</content>
+<category term="schedule" />
+<category term="feature" />
+<category term="flag" />
+<category term="deployment" />
+<category term="ld" />
+<category term="scheduler" />
+<category term="automate" />
+<category term="automation" />
+<category term="scheduling" />
+<summary>Use Launch Darkly? Love their feature flagging and a/b testing features? Like reading blog posts that sounds like an informercial? Umm…</summary>
+</entry>
+<entry>
+<title>Testing Connected Redux and Relay Components</title>
+<link href="http://reactjunkie.com/testing-connected-redux-relay-components/" rel="alternate" type="text/html" title="Testing Connected Redux and Relay Components" />
+<published>2017-01-28T08:30:00+11:00</published>
+<updated>2017-01-28T08:30:00+11:00</updated>
+<id>http://reactjunkie.com/testing-connected-redux-relay-components</id>
+<content type="html" xml:base="http://reactjunkie.com/testing-connected-redux-relay-components/">&lt;p&gt;The &lt;a href=&quot;https://github.com/reactjs/redux/blob/master/docs/recipes/WritingTests.md&quot; target=&quot;_blank&quot;&gt;official redux documentation&lt;/a&gt; 
+recommends exporting private react components to make it testable. This works, at the expense of encapsulation. I believe
+code should be driven by design and requirements, not testing restrictions. So I set out to find a better approach.&lt;/p&gt;
+
+&lt;p&gt;I stumbled upon &lt;a href=&quot;https://github.com/jhnns/rewire&quot; target=&quot;_blank&quot;&gt;rewire&lt;/a&gt; which seems to be promising. I failed to make it work
+quickly though, because it does not work with es6 so a little more googling reveals &lt;a href=&quot;https://github.com/speedskater/babel-plugin-rewire&quot; target=&quot;_blank&quot;&gt;babel-plugin-rewire&lt;/a&gt; which 
+was promising.&lt;/p&gt;
+
+&lt;p&gt;Today I’ll be talking about how to test your connected redux and relay components without sacrificing encapsulation.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-problem&quot;&gt;The problem&lt;/h2&gt;
+
+&lt;p&gt;How do I test redux connected components or relay container wrapped components without exporting them?&lt;/p&gt;
+
+&lt;p&gt;However, babelRelayPlugin.js contains a reference to schema.json which is generated by babel-node &lt;a href=&quot;https://github.com/relayjs/relay-starter-kit/blob/master/scripts/updateSchema.js&quot; target=&quot;_blank&quot;&gt;updateSchema.js&lt;/a&gt; 
+which in turn uses .babelrc which has a dependency on babelRelayPlugin which is a cyclic dependency which gives me a 
+migraine.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-solution&quot;&gt;The solution&lt;/h2&gt;
+&lt;p&gt;We need to decouple graphql schema generation from app runtime. The standard .babelrc file is required for our app runtime so that stays.
+That means we cannot depend on .babelrc for our schema generation i.e. when running &lt;a href=&quot;https://github.com/relayjs/relay-starter-kit/blob/master/scripts/updateSchema.js&quot; target=&quot;_blank&quot;&gt;updateSchema.js&lt;/a&gt;
+we can’t use babel-node. Instead we use plain vanilla node in combination with babel-register with inline
+config when running updateSchema.&lt;/p&gt;
+
+&lt;h2 id=&quot;enough-talk-show-me-some-code&quot;&gt;Enough talk, show me some code&lt;/h2&gt;
+&lt;p&gt;You need the following babel packages:&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+sudo yarn add –dev babel-polyfill babel-preset-latest
+sudo yarn add babel-register babel-preset-stage-0
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;In your package.json, you declare an npm run command update-schema which points an index.js file:&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+“scripts”: {
+    “update-schema”: “node ./src/graphql/index.js”,
+    …
+}
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;Your src/graphql/index.js then looks like this:&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+require(‘babel-register’)({
+  babelrc: false,
+  presets: [
+    “latest”
+  ]
+});
+require(“babel-polyfill”); // required for async generators
+require(‘./updateSchema’);
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;where updateSchema.js is provided by facebook &lt;a href=&quot;https://github.com/relayjs/relay-starter-kit/blob/master/scripts/updateSchema.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;Check out the &lt;a href=&quot;https://github.com/yusinto/movie-time&quot; target=&quot;_blank&quot;&gt;sample code&lt;/a&gt; for a working example and let me know if this is useful (or not)!&lt;/p&gt;
 
 &lt;hr /&gt;
 </content>
@@ -151,15 +217,15 @@ This feels right for me. Also, you can apply the same technique to test react co
 <category term="encapsulation" />
 <category term="jest" />
 <category term="rewire" />
-<summary>Happy chinese new year everyone! In the spirit of the year of the cock, I shall write the rest of this post in chinese. 中国著名的大思想家、大教育家。孔子开创了私人讲学的风气，是儒家学派的创始人。孔子曾受业于老子 (roughly translates to… I don’t know).Did I say Cock? I mean Rooster. Apologies my dear chinese readers… I don’t think there’s a difference anyway?I’m gonna talk about testing redux components today. If you use react-redux, you are probably connectingyour components to redux using the connect method. If you do this in one file with a single default export (which is the connected component)you have a problem. You’ll find that you can’t test your component directly because the default export of your module is not the componentitself, rather it’s the redux connected component. What you want to test is the presentational component, not the connected component. Reduxitself is already tested!</summary>
+<summary>The official redux documentation recommends exporting private react components to make it testable. This works, at the expense of encapsulation. I believecode should be driven by design and requirements, not testing restrictions. So I set out to find a better approach.</summary>
 </entry>
 <entry>
 <title>Building graphql schema without babelrc</title>
-<link href="http://www.reactjunkie.com/build-graphql-schema-without-babelrc/" rel="alternate" type="text/html" title="Building graphql schema without babelrc" />
+<link href="http://reactjunkie.com/build-graphql-schema-without-babelrc/" rel="alternate" type="text/html" title="Building graphql schema without babelrc" />
 <published>2016-12-12T19:30:00+11:00</published>
 <updated>2016-12-12T19:30:00+11:00</updated>
-<id>http://www.reactjunkie.com/build-graphql-schema-without-babelrc</id>
-<content type="html" xml:base="http://www.reactjunkie.com/build-graphql-schema-without-babelrc/">&lt;p&gt;Man it has been a busy month! It’s been a while since I blogged, I have to say I miss it a lot. Almost as much as I 
+<id>http://reactjunkie.com/build-graphql-schema-without-babelrc</id>
+<content type="html" xml:base="http://reactjunkie.com/build-graphql-schema-without-babelrc/">&lt;p&gt;Man it has been a busy month! It’s been a while since I blogged, I have to say I miss it a lot. Almost as much as I 
 miss drinking..&lt;/p&gt;
 
 &lt;p&gt;Today I’ll be talking about graphql and relay, specifically about building the schema. Warning this is not a beginner’s
@@ -229,11 +295,11 @@ require(‘./updateSchema’);
 </entry>
 <entry>
 <title>Targeting users with React Redux and Launch Darkly</title>
-<link href="http://www.reactjunkie.com/launch-darkly-part-two/" rel="alternate" type="text/html" title="Targeting users with React Redux and Launch Darkly" />
+<link href="http://reactjunkie.com/launch-darkly-part-two/" rel="alternate" type="text/html" title="Targeting users with React Redux and Launch Darkly" />
 <published>2016-11-01T19:30:00+11:00</published>
 <updated>2016-11-01T19:30:00+11:00</updated>
-<id>http://www.reactjunkie.com/launch-darkly-part-two</id>
-<content type="html" xml:base="http://www.reactjunkie.com/launch-darkly-part-two/">&lt;p&gt;In my &lt;a href=&quot;http://www.reactjunkie.com/react-feature-toggle-launch-darkly/&quot; target=&quot;_blank&quot;&gt;previous previous post&lt;/a&gt; 
+<id>http://reactjunkie.com/launch-darkly-part-two</id>
+<content type="html" xml:base="http://reactjunkie.com/launch-darkly-part-two/">&lt;p&gt;In my &lt;a href=&quot;http://www.reactjunkie.com/react-feature-toggle-launch-darkly/&quot; target=&quot;_blank&quot;&gt;previous previous post&lt;/a&gt; 
 I introduced launch darkly as a feature toggling platform and how to use it with react redux. In this post I
 will explain how you can further leverage the power of feature toggling with user targeting.&lt;/p&gt;
 
@@ -363,11 +429,11 @@ new world of possibilities in regards to what you can do with your app. Someday 
 </entry>
 <entry>
 <title>Hot Reloading Universally Bundled Webpack Apps</title>
-<link href="http://www.reactjunkie.com/universal-hot-reload/" rel="alternate" type="text/html" title="Hot Reloading Universally Bundled Webpack Apps" />
+<link href="http://reactjunkie.com/universal-hot-reload/" rel="alternate" type="text/html" title="Hot Reloading Universally Bundled Webpack Apps" />
 <published>2016-10-22T10:52:00+11:00</published>
 <updated>2016-10-22T10:52:00+11:00</updated>
-<id>http://www.reactjunkie.com/universal-hot-reload</id>
-<content type="html" xml:base="http://www.reactjunkie.com/universal-hot-reload/">&lt;p&gt;I learnt quite a lot in the past week. Firstly there’s no substitute to good sleep. Secondly, you can actually eat a salmon steak raw! Thirdly, it’s really really hard
+<id>http://reactjunkie.com/universal-hot-reload</id>
+<content type="html" xml:base="http://reactjunkie.com/universal-hot-reload/">&lt;p&gt;I learnt quite a lot in the past week. Firstly there’s no substitute to good sleep. Secondly, you can actually eat a salmon steak raw! Thirdly, it’s really really hard
 to hot reload a server bundle if you are writing a universal app.&lt;/p&gt;
 
 &lt;p&gt;On the client side, &lt;a href=&quot;https://github.com/webpack/webpack-dev-middleware&quot; target=&quot;_blank&quot;&gt;webpack-dev-middleware&lt;/a&gt; and &lt;a href=&quot;https://github.com/gaearon/react-hot-loader&quot; target=&quot;_blank&quot;&gt;react-hot-loader&lt;/a&gt;
@@ -702,11 +768,11 @@ Check it out! Let me know if there’s any issues.&lt;/p&gt;
 </entry>
 <entry>
 <title>Implementing feature toggle with launch darkly and react redux</title>
-<link href="http://www.reactjunkie.com/react-feature-toggle-launch-darkly/" rel="alternate" type="text/html" title="Implementing feature toggle with launch darkly and react redux" />
+<link href="http://reactjunkie.com/react-feature-toggle-launch-darkly/" rel="alternate" type="text/html" title="Implementing feature toggle with launch darkly and react redux" />
 <published>2016-09-16T10:52:00+10:00</published>
 <updated>2016-09-16T10:52:00+10:00</updated>
-<id>http://www.reactjunkie.com/react-feature-toggle-launch-darkly</id>
-<content type="html" xml:base="http://www.reactjunkie.com/react-feature-toggle-launch-darkly/">&lt;h3 id=&quot;update-22-october-2016&quot;&gt;&lt;em&gt;Update: 22 October 2016&lt;/em&gt;&lt;/h3&gt;
+<id>http://reactjunkie.com/react-feature-toggle-launch-darkly</id>
+<content type="html" xml:base="http://reactjunkie.com/react-feature-toggle-launch-darkly/">&lt;h3 id=&quot;update-22-october-2016&quot;&gt;&lt;em&gt;Update: 22 October 2016&lt;/em&gt;&lt;/h3&gt;
 &lt;p&gt;&lt;em&gt;I have published an npm package called &lt;a href=&quot;https://github.com/yusinto/ld-redux&quot; target=&quot;_blank&quot;&gt;ld-redux&lt;/a&gt; which covers everything you need to integrate launch darkly with your react 
 redux app. It’s the contents of this blog in an npm package. If you use it, please give me some feedback. Thanks!&lt;/em&gt;&lt;/p&gt;
 
@@ -1059,11 +1125,11 @@ and launch darkly in the coming posts.&lt;/p&gt;
 </entry>
 <entry>
 <title>Deploying react apps on docker using ecs and terraform part 1</title>
-<link href="http://www.reactjunkie.com/docker-ecs-terraform-react/" rel="alternate" type="text/html" title="Deploying react apps on docker using ecs and terraform part 1" />
+<link href="http://reactjunkie.com/docker-ecs-terraform-react/" rel="alternate" type="text/html" title="Deploying react apps on docker using ecs and terraform part 1" />
 <published>2016-09-03T10:52:00+10:00</published>
 <updated>2016-09-03T10:52:00+10:00</updated>
-<id>http://www.reactjunkie.com/docker-ecs-terraform-react</id>
-<content type="html" xml:base="http://www.reactjunkie.com/docker-ecs-terraform-react/">&lt;p&gt;I was tinkering on blogging about Step 5 to React: Introduction to Redux, but I decided to write something closer to my heart: 
+<id>http://reactjunkie.com/docker-ecs-terraform-react</id>
+<content type="html" xml:base="http://reactjunkie.com/docker-ecs-terraform-react/">&lt;p&gt;I was tinkering on blogging about Step 5 to React: Introduction to Redux, but I decided to write something closer to my heart: 
 using ecs and terraform to deploy docker react apps (can I squeeze in anymore buzzwords?). This is not an intro to docker so 
 I assume you are familiar with the basics.&lt;/p&gt;
 
@@ -1249,11 +1315,11 @@ build systems and so on. Docker has dockerhub which does exactly that, but I use
 </entry>
 <entry>
 <title>Australia Brain Drain</title>
-<link href="http://www.reactjunkie.com/brain-drain-australia/" rel="alternate" type="text/html" title="Australia Brain Drain" />
+<link href="http://reactjunkie.com/brain-drain-australia/" rel="alternate" type="text/html" title="Australia Brain Drain" />
 <published>2016-08-05T01:19:00+10:00</published>
 <updated>2016-08-05T01:19:00+10:00</updated>
-<id>http://www.reactjunkie.com/brain-drain-australia</id>
-<content type="html" xml:base="http://www.reactjunkie.com/brain-drain-australia/">&lt;p&gt;My first NDC conference (anywhere) I have to say the whole event was very well planned, although there are a
+<id>http://reactjunkie.com/brain-drain-australia</id>
+<content type="html" xml:base="http://reactjunkie.com/brain-drain-australia/">&lt;p&gt;My first NDC conference (anywhere) I have to say the whole event was very well planned, although there are a
 couple of things which can be improved:&lt;/p&gt;
 &lt;ul&gt;
     &lt;li&gt;Wifi connection - the Hilton&#39;s wifi connection was so crap, all the guest speakers especially american and uk
@@ -1332,11 +1398,11 @@ States and the rest of the world as well.&lt;/p&gt;
 </entry>
 <entry>
 <title>Demistifying es6 class method and property initializer arrow function</title>
-<link href="http://www.reactjunkie.com/demistifying-es6-class-method-and-property-initializer-arrow-function/" rel="alternate" type="text/html" title="Demistifying es6 class method and property initializer arrow function" />
+<link href="http://reactjunkie.com/demistifying-es6-class-method-and-property-initializer-arrow-function/" rel="alternate" type="text/html" title="Demistifying es6 class method and property initializer arrow function" />
 <published>2016-07-30T14:52:00+10:00</published>
 <updated>2016-07-30T14:52:00+10:00</updated>
-<id>http://www.reactjunkie.com/demistifying-es6-class-method-and-property-initializer-arrow-function</id>
-<content type="html" xml:base="http://www.reactjunkie.com/demistifying-es6-class-method-and-property-initializer-arrow-function/">&lt;p&gt;Welcome back to another episode of react junkie’s blog post. Today I’ll be talking about meth crystal meth ice and how to
+<id>http://reactjunkie.com/demistifying-es6-class-method-and-property-initializer-arrow-function</id>
+<content type="html" xml:base="http://reactjunkie.com/demistifying-es6-class-method-and-property-initializer-arrow-function/">&lt;p&gt;Welcome back to another episode of react junkie’s blog post. Today I’ll be talking about meth crystal meth ice and how to
 replicate the perfect process to produce the most immaculate blue sky just like Jesse Pinkman.&lt;/p&gt;
 
 &lt;p&gt;Did that get your attention? :)&lt;/p&gt;
@@ -1485,11 +1551,11 @@ by Angus Croll&lt;/a&gt;. Please reach out to me if you would like to join!&lt;/
 </entry>
 <entry>
 <title>Step 4 to React: Intro to routing with react router</title>
-<link href="http://www.reactjunkie.com/step-four-to-react-routing-with-react-router/" rel="alternate" type="text/html" title="Step 4 to React: Intro to routing with react router" />
+<link href="http://reactjunkie.com/step-four-to-react-routing-with-react-router/" rel="alternate" type="text/html" title="Step 4 to React: Intro to routing with react router" />
 <published>2016-06-30T14:52:00+10:00</published>
 <updated>2016-06-30T14:52:00+10:00</updated>
-<id>http://www.reactjunkie.com/step-four-to-react-routing-with-react-router</id>
-<content type="html" xml:base="http://www.reactjunkie.com/step-four-to-react-routing-with-react-router/">&lt;p&gt;I am in LA for holidays! Yep, I’m blogging as I am holidaying; I don’t know why but I just can’t stop thinking about it.
+<id>http://reactjunkie.com/step-four-to-react-routing-with-react-router</id>
+<content type="html" xml:base="http://reactjunkie.com/step-four-to-react-routing-with-react-router/">&lt;p&gt;I am in LA for holidays! Yep, I’m blogging as I am holidaying; I don’t know why but I just can’t stop thinking about it.
 My wife says I’m addicted to work, I said no. We fight a lot but we love each other. Love is weird.&lt;/p&gt;
 
 &lt;p&gt;Anyway! This is a short and basic guide to implement routing with react router.
@@ -1682,62 +1748,5 @@ Download the complete source code from &lt;a href=&quot;https://github.com/yusin
 <category term="react router" />
 <category term="routing" />
 <summary>I am in LA for holidays! Yep, I’m blogging as I am holidaying; I don’t know why but I just can’t stop thinking about it.My wife says I’m addicted to work, I said no. We fight a lot but we love each other. Love is weird.</summary>
-</entry>
-<entry>
-<title>How React fits into the microservice team structure</title>
-<link href="http://www.reactjunkie.com/react-and-microservices/" rel="alternate" type="text/html" title="How React fits into the microservice team structure" />
-<published>2016-05-28T20:45:00+10:00</published>
-<updated>2016-05-28T20:45:00+10:00</updated>
-<id>http://www.reactjunkie.com/react-and-microservices</id>
-<content type="html" xml:base="http://www.reactjunkie.com/react-and-microservices/">&lt;p&gt;I am going to digress a little today and talk about how react fits into the microservice architectural style. Of course microservices and 
-react are two buzzwords we hear all the time these days. While it might look like I am just shamelessly meshing these two things 
-together to get more visitors to my site, you can’t be further than the truth (*cough).&lt;/p&gt;
-
-&lt;p&gt;Seriously though, I first learnt of microservices from &lt;a href=&quot;http://udidahan.com&quot;&gt;Udi Dahan&lt;/a&gt;. For those of you who don’t know him, he is the 
-creator of NServiceBus and founder of Particular Software. I have nothing but great respect and admiration for him. So you can 
-understand my jubilation and joy when I had the chance to meet him in person today at &lt;a href=&quot;http://dddsydney.com.au&quot;&gt;DDD Sydney&lt;/a&gt;. We talked
-about many a thing, one of them microservices and team structure. The two might seem unrelated but they actually are, more so than you think.&lt;/p&gt;
-
-&lt;p&gt;I was very starstruck. He seemed taller than in the videos. Maybe I was imagining things? Anyway I digress (again). So what is a service? 
-I am going to shamelessly rip off Udi’s quotes and say:&lt;/p&gt;
-
-&lt;p&gt;“A service is the technical authority for a specific business capability. It is autonomous. It has an explicit boundary. All data
-and business rules reside within the service.”&lt;/p&gt;
-
-&lt;p&gt;I used to think that a service is just a wcf or a webapi endpoint. For the longest time, I thought I was doing soa and microservices just
-because I expose wcf and webapi endpoints in my application for consumption by other applications. This is incorrect. A service is an autonomous 
-piece of your domain that is self contained. For example, you might have a product service and a customer service in your domain. The product
-service has its own aggregates and its own database schema separate and independent of the customer service. The two services have explicit
-boundaries and are autonomous. Each can use a completely different technology stack from the other. For example the product service might use
-a relational database like sql server whereas the customer service might use a nosql database like mongodb. This is a very big topic which deserves
-an entire blog post or technical course in its own right so I’m going to quit while I’m ahead and point you in the right direction more for information:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=Irlw-LGIJO4&quot;&gt;Martin Fowler - Microservices@Sydney Yow!&lt;/a&gt;
-&lt;a href=&quot;http://udidahan.com/training/&quot;&gt;Udi Dahan - Advanced Distributed Systems Design&lt;/a&gt; See below for free samples of his training videos.&lt;/p&gt;
-
-&lt;p&gt;Wait a minute, what’s all this got to do with React? And what the heck has it got to do with team structure? Why am I still reading this crap when I could 
-just easily watch a pirated copy of Game of Thrones?&lt;/p&gt;
-
-&lt;p&gt;When you write that react component that displays a product’s image, description, seller info, etc, you become, or I should say you ARE a part of
-the Product Service team. That team comprises of you plus the backend guys which implement the endpoint that talks to the product database. So you 
-the react developer and the backend guys are all in the same Product Service team.&lt;/p&gt;
-
-&lt;p&gt;Conway’s Law: Software follows the organisational structure of people who design it.&lt;/p&gt;
-
-&lt;p&gt;What does this mean? It means that if you are truly practising microservices, the react/angular guys and the backend .net/java guys are in the same team. 
-In reality though, this is often not the case. Companies continue to organise their teams by physical tiers i.e. front end team, back end services team, 
-mobile team, database team, etc irrespective of service orientation.&lt;/p&gt;
-
-&lt;p&gt;If you are inspired by this blog and want to know more about microservices or soa, I highly recommend you watch Udi’s training videos. He
-teaches a five day course on soa and for a limited time you can watch 2 full days of the course for free. Go &lt;a href=&quot;http://go.particular.net/DSY16&quot;&gt;here&lt;/a&gt;
-and use the access code DSYU. This free offer expires 12 June 2016.&lt;/p&gt;
-
-&lt;hr /&gt;
-</content>
-<category term="react" />
-<category term="microservices" />
-<category term="conway&#39;s law" />
-<category term="team structure" />
-<summary>I am going to digress a little today and talk about how react fits into the microservice architectural style. Of course microservices and react are two buzzwords we hear all the time these days. While it might look like I am just shamelessly meshing these two things together to get more visitors to my site, you can’t be further than the truth (*cough).</summary>
 </entry>
 </feed>

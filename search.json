@@ -1,6 +1,13 @@
 [
   
     {
+      "title"    : "Scheduling Feature Flag Deployment",
+      "tags"     : "schedule, feature, flag, deployment, ld, scheduler, automate, automation, and scheduling",
+      "url"      : "/scheduling-feature-flag-deployment/",
+      "date"     : "28 Feb 2017"
+    } ,
+  
+    {
       "title"    : "Testing Connected Redux and Relay Components",
       "tags"     : "redux, relay, connected, unit, tests, testing, encapsulation, jest, and rewire",
       "url"      : "/testing-connected-redux-relay-components/",
