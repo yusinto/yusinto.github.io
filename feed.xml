@@ -3,7 +3,7 @@
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
 <link href="http://reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
 <link href="http://reactjunkie.com/" rel="alternate" type="text/html" />
-<updated>2017-03-06T21:47:43+11:00</updated>
+<updated>2017-03-08T22:28:34+11:00</updated>
 <id>http://reactjunkie.com/</id>
 <title>React Junkie</title>
 <entry>
@@ -12,7 +12,9 @@
 <published>2017-02-28T08:30:00+11:00</published>
 <updated>2017-02-28T08:30:00+11:00</updated>
 <id>http://reactjunkie.com/scheduling-feature-flag-deployment</id>
-<content type="html" xml:base="http://reactjunkie.com/scheduling-feature-flag-deployment/">&lt;p&gt;Use Launch Darkly? Love their feature flagging and a/b testing features? Like reading blog posts that sounds like an informercial? Umm…&lt;/p&gt;
+<content type="html" xml:base="http://reactjunkie.com/scheduling-feature-flag-deployment/">&lt;h4 id=&quot;updated-wed-8-march-2017&quot;&gt;Updated Wed 8 March 2017&lt;/h4&gt;
+
+&lt;p&gt;Use Launch Darkly? Love their feature flagging and a/b testing features? Like reading blog posts that sounds like an informercial? Umm…&lt;/p&gt;
 
 &lt;p&gt;Anyway I use Launch Darkly at my workplace (I work at an airline company spelt with a Q and I live in Sydney Australia) and I recently faced a
 challenge with zero dark thirty deployments.&lt;/p&gt;
@@ -86,13 +88,20 @@ import ldScheduler from ‘ld-scheduler’;&lt;/p&gt;
 
 &lt;p&gt;and you schedule your flags through launch darkly’s dashboard:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/images/ld_flag_configuration.png&quot; alt=&quot;LaunchDarkly dashboard scheduling config&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/ld-scheduler-flag-settings-resized.png&quot; alt=&quot;LaunchDarkly dashboard scheduling config&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;HACK&lt;/strong&gt;: We hijack the description field to store our scheduling config as a json object where:&lt;/p&gt;
 &lt;ul&gt;
     &lt;li&gt;taskType is killSwitch&lt;/li&gt;
     &lt;li&gt;value is true (kill switch on) or false (kill switch off)&lt;/li&gt;
-    &lt;li&gt;targetDeploymentDateTime must be in the format of YYYY-MM-DD HH:mm&lt;/li&gt;
+    &lt;li&gt;
+        targetDeploymentDateTime must be in YYYY-MM-DD HH:mm Z
+        &lt;p&gt;
+            &lt;b&gt;NOTE:&lt;/b&gt; the UTC offset at the end is especially important because ld-scheduler uses moment which will use the host&#39;s timezone if it is not specified.
+             That means if you deploy ld-scheduler to the cloud say on aws lambda where the machine clock is set to UTC timezone, then your flag will be deployed at
+             UTC time, which is probably not what you want unless you are living in London!
+        &lt;/p&gt;
+    &lt;/li&gt;
     &lt;li&gt;description is a textual string for the purpose of human readability&lt;/li&gt;
 &lt;/ul&gt;
 
@@ -139,7 +148,7 @@ Of course you would enter this json object in the “Description” field of you
 <category term="automate" />
 <category term="automation" />
 <category term="scheduling" />
-<summary>Use Launch Darkly? Love their feature flagging and a/b testing features? Like reading blog posts that sounds like an informercial? Umm…</summary>
+<summary>Updated Wed 8 March 2017</summary>
 </entry>
 <entry>
 <title>Testing Connected Redux and Relay Components</title>
@@ -147,64 +156,133 @@ Of course you would enter this json object in the “Description” field of you
 <published>2017-01-28T08:30:00+11:00</published>
 <updated>2017-01-28T08:30:00+11:00</updated>
 <id>http://reactjunkie.com/testing-connected-redux-relay-components</id>
-<content type="html" xml:base="http://reactjunkie.com/testing-connected-redux-relay-components/">&lt;p&gt;The &lt;a href=&quot;https://github.com/reactjs/redux/blob/master/docs/recipes/WritingTests.md&quot; target=&quot;_blank&quot;&gt;official redux documentation&lt;/a&gt; 
-recommends exporting private react components to make it testable. This works, at the expense of encapsulation. I believe
-code should be driven by design and requirements, not testing restrictions. So I set out to find a better approach.&lt;/p&gt;
+<content type="html" xml:base="http://reactjunkie.com/testing-connected-redux-relay-components/">&lt;p&gt;Happy chinese new year everyone! In the spirit of the year of the cock, I shall write the rest of this post in chinese. 
+中国著名的大思想家、大教育家。孔子开创了私人讲学的风气，是儒家学派的创始人。孔子曾受业于老子 (roughly translates to… I don’t know).
+Did I say Cock? I mean Rooster. Apologies my dear chinese readers… I don’t think there’s a difference anyway?&lt;/p&gt;
 
-&lt;p&gt;I stumbled upon &lt;a href=&quot;https://github.com/jhnns/rewire&quot; target=&quot;_blank&quot;&gt;rewire&lt;/a&gt; which seems to be promising. I failed to make it work
-quickly though, because it does not work with es6 so a little more googling reveals &lt;a href=&quot;https://github.com/speedskater/babel-plugin-rewire&quot; target=&quot;_blank&quot;&gt;babel-plugin-rewire&lt;/a&gt; which 
-was promising.&lt;/p&gt;
+&lt;p&gt;I’m gonna talk about testing redux components today. If you use react-redux, you are probably connecting
+your components to redux using the connect method. If you do this in one file with a single default export (which is the connected component)
+you have a problem. You’ll find that you can’t test your component directly because the default export of your module is not the component
+itself, rather it’s the redux connected component. What you want to test is the presentational component, not the connected component. Redux
+itself is already tested!&lt;/p&gt;
 
-&lt;p&gt;Today I’ll be talking about how to test your connected redux and relay components without sacrificing encapsulation.&lt;/p&gt;
+&lt;p&gt;You have two options at this point; you can either bite the bullet and test the redux component meaning mocking a lot of the redux stuff OR 
+you can modify your code to be testable by exporting the private presentational component. This second approach is the one recommended by the 
+&lt;a href=&quot;https://github.com/reactjs/redux/blob/master/docs/recipes/WritingTests.md&quot; target=&quot;_blank&quot;&gt;official redux documentation&lt;/a&gt;. I find that although 
+this works it does so at the expense of encapsulation. I believe code should be driven by design and requirements, not testing restrictions. 
+So I set out to find a better approach.&lt;/p&gt;
 
-&lt;h2 id=&quot;the-problem&quot;&gt;The problem&lt;/h2&gt;
-
-&lt;p&gt;How do I test redux connected components or relay container wrapped components without exporting them?&lt;/p&gt;
-
-&lt;p&gt;However, babelRelayPlugin.js contains a reference to schema.json which is generated by babel-node &lt;a href=&quot;https://github.com/relayjs/relay-starter-kit/blob/master/scripts/updateSchema.js&quot; target=&quot;_blank&quot;&gt;updateSchema.js&lt;/a&gt; 
-which in turn uses .babelrc which has a dependency on babelRelayPlugin which is a cyclic dependency which gives me a 
-migraine.&lt;/p&gt;
-
-&lt;h2 id=&quot;the-solution&quot;&gt;The solution&lt;/h2&gt;
-&lt;p&gt;We need to decouple graphql schema generation from app runtime. The standard .babelrc file is required for our app runtime so that stays.
-That means we cannot depend on .babelrc for our schema generation i.e. when running &lt;a href=&quot;https://github.com/relayjs/relay-starter-kit/blob/master/scripts/updateSchema.js&quot; target=&quot;_blank&quot;&gt;updateSchema.js&lt;/a&gt;
-we can’t use babel-node. Instead we use plain vanilla node in combination with babel-register with inline
-config when running updateSchema.&lt;/p&gt;
+&lt;p&gt;There is a popular npm package &lt;a href=&quot;https://github.com/jhnns/rewire&quot; target=&quot;_blank&quot;&gt;rewire&lt;/a&gt; which seems to be promising. I failed to make it work
+quickly though, because it does not work with es6 so a little more googling reveals &lt;a href=&quot;https://github.com/speedskater/babel-plugin-rewire&quot; target=&quot;_blank&quot;&gt;babel-plugin-rewire&lt;/a&gt; 
+which is based on rewire and works with es6. Armed with this library, I embarked on a journey towards a better cock year oops I mean better unit tests.&lt;/p&gt;
 
 &lt;h2 id=&quot;enough-talk-show-me-some-code&quot;&gt;Enough talk, show me some code&lt;/h2&gt;
-&lt;p&gt;You need the following babel packages:&lt;/p&gt;
+&lt;p&gt;Consider the following code (which you can see in entirety &lt;a href=&quot;https://github.com/yusinto/test-react/blob/master/src/universal/home/home.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;):&lt;/p&gt;
 
+&lt;h4 id=&quot;homejs&quot;&gt;home.js&lt;/h4&gt;
 &lt;p&gt;{% highlight javascript %}
-sudo yarn add –dev babel-polyfill babel-preset-latest
-sudo yarn add babel-register babel-preset-stage-0
+import React, {Component} from ‘react’;
+import {connect} from ‘react-redux’;
+import * as Actions from ‘./homeAction’;&lt;/p&gt;
+
+&lt;p&gt;// private class
+class Home extends Component {
+  constructor(props) {
+    super(props);
+    this.onClickGenerateRandom = ::this.onClickGenerateRandom;
+  }&lt;/p&gt;
+
+&lt;p&gt;onClickGenerateRandom() {
+    this.props.generateRandom();
+  }&lt;/p&gt;
+
+&lt;p&gt;render() {
+    let homeText = ‘Click button below to generate a random number!’;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;return (
+  &amp;lt;div&amp;gt;
+    &amp;lt;p&amp;gt;{ homeText }&amp;lt;/p&amp;gt;
+    &amp;lt;div&amp;gt;{this.props.randomNumber}&amp;lt;/div&amp;gt;
+    &amp;lt;button onClick={this.onClickGenerateRandom}&amp;gt;
+        Generate random number
+    &amp;lt;/button&amp;gt;
+  &amp;lt;/div&amp;gt;
+);   } }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;const mapStateToProps = (state) =&amp;gt; {
+  const homeState = state.Home;&lt;/p&gt;
+
+&lt;p&gt;return {
+    randomNumber: homeState.randomNumber
+  };
+};&lt;/p&gt;
+
+&lt;p&gt;export default connect(mapStateToProps, Actions)(Home);
 {% endhighlight %}&lt;/p&gt;
 
-&lt;p&gt;In your package.json, you declare an npm run command update-schema which points an index.js file:&lt;/p&gt;
+&lt;p&gt;The Home class is private and that’s what we want to test. It is not exported at all, so we can’t access it directly. 
+As mentioned above, the official redux documentation recommends exporting this class, but that breaks encapsulation.
+So what do we do? Enter &lt;a href=&quot;https://github.com/speedskater/babel-plugin-rewire&quot; target=&quot;_blank&quot;&gt;babel-plugin-rewire&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;using-rewire&quot;&gt;Using rewire&lt;/h2&gt;
+&lt;p&gt;You need to install the following npm packages:&lt;/p&gt;
 
 &lt;p&gt;{% highlight javascript %}
-“scripts”: {
-    “update-schema”: “node ./src/graphql/index.js”,
-    …
-}
+yarn add –dev jest babel-plugin-rewire enzyme react-addons-test-utils
 {% endhighlight %}&lt;/p&gt;
 
-&lt;p&gt;Your src/graphql/index.js then looks like this:&lt;/p&gt;
+&lt;p&gt;I use &lt;a href=&quot;https://facebook.github.io/jest/&quot; target=&quot;_blank&quot;&gt;jest&lt;/a&gt; for my test framework and you should too, it kicks butt. 
+I also use &lt;a href=&quot;https://github.com/airbnb/enzyme&quot; target=&quot;_blank&quot;&gt;enzyme&lt;/a&gt; which is a utility library for testing react components. 
+Enzyme requires the official &lt;a href=&quot;https://facebook.github.io/react/docs/test-utils.html&quot; target=&quot;_blank&quot;&gt;react-addons-test-utils&lt;/a&gt; package.&lt;/p&gt;
 
+&lt;p&gt;In your .babelrc, add an “env” block to include babel-plugin-rewire when running tests:&lt;/p&gt;
+
+&lt;h4 id=&quot;babelrc&quot;&gt;.babelrc&lt;/h4&gt;
 &lt;p&gt;{% highlight javascript %}
-require(‘babel-register’)({
-  babelrc: false,
-  presets: [
-    “latest”
-  ]
-});
-require(“babel-polyfill”); // required for async generators
-require(‘./updateSchema’);
-{% endhighlight %}&lt;/p&gt;
+{
+    “presets”: [“es2015”, “react”, “stage-0”],&lt;/p&gt;
 
-&lt;p&gt;where updateSchema.js is provided by facebook &lt;a href=&quot;https://github.com/relayjs/relay-starter-kit/blob/master/scripts/updateSchema.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/* etc your other config */
+
+&quot;env&quot;: {
+  &quot;test&quot;: {
+    &quot;plugins&quot;: [&quot;babel-plugin-rewire&quot;]
+  }
+} } {% endhighlight %}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;write-the-tests&quot;&gt;Write the tests!&lt;/h2&gt;
+&lt;p&gt;Now we can write the tests! The complete file is &lt;a href=&quot;https://github.com/yusinto/test-react/blob/master/src/universal/home/home.test.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;:&lt;/p&gt;
+
+&lt;h4 id=&quot;hometestjs&quot;&gt;home.test.js&lt;/h4&gt;
+&lt;p&gt;{% highlight javascript %}
+import React from ‘react’;
+import {shallow} from ‘enzyme’;
+import HomeRedux from ‘./home’;&lt;/p&gt;
+
+&lt;p&gt;describe(‘Home component tests’, () =&amp;gt; {
+  // rewire injects &lt;strong&gt;get&lt;/strong&gt; and &lt;strong&gt;set&lt;/strong&gt; methods to all our modules.
+  // These can then be used to extract and set top level private variables.
+  // In this instance, we extract the private Home class
+  const Home = HomeRedux.&lt;strong&gt;get&lt;/strong&gt;(‘Home’);&lt;/p&gt;
+
+&lt;p&gt;it(‘should render correctly’, () =&amp;gt; {
+    // Yayy! We can now render the presentational component directly! 
+    const output = shallow(&amp;lt;Home randomNumber={45}/&amp;gt;);&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// Use jest snapshot testing for convenience
+expect(output).toMatchSnapshot();   }); }); {% endhighlight %}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
-&lt;p&gt;Check out the &lt;a href=&quot;https://github.com/yusinto/movie-time&quot; target=&quot;_blank&quot;&gt;sample code&lt;/a&gt; for a working example and let me know if this is useful (or not)!&lt;/p&gt;
+&lt;p&gt;This approach incurs a little more time to setup, but I think it’s worth it. We leave the code fully testable, encapsulation intact. 
+This feels right for me. Also, you can apply the same technique to test react components wrapped in relay containers. It works!&lt;/p&gt;
+
+&lt;p&gt;Check out the &lt;a href=&quot;https://github.com/yusinto/test-react&quot; target=&quot;_blank&quot;&gt;sample code&lt;/a&gt; for a working example and let me know if this is useful (or not)!&lt;/p&gt;
 
 &lt;hr /&gt;
 </content>
@@ -217,7 +295,7 @@ require(‘./updateSchema’);
 <category term="encapsulation" />
 <category term="jest" />
 <category term="rewire" />
-<summary>The official redux documentation recommends exporting private react components to make it testable. This works, at the expense of encapsulation. I believecode should be driven by design and requirements, not testing restrictions. So I set out to find a better approach.</summary>
+<summary>Happy chinese new year everyone! In the spirit of the year of the cock, I shall write the rest of this post in chinese. 中国著名的大思想家、大教育家。孔子开创了私人讲学的风气，是儒家学派的创始人。孔子曾受业于老子 (roughly translates to… I don’t know).Did I say Cock? I mean Rooster. Apologies my dear chinese readers… I don’t think there’s a difference anyway?I’m gonna talk about testing redux components today. If you use react-redux, you are probably connectingyour components to redux using the connect method. If you do this in one file with a single default export (which is the connected component)you have a problem. You’ll find that you can’t test your component directly because the default export of your module is not the componentitself, rather it’s the redux connected component. What you want to test is the presentational component, not the connected component. Reduxitself is already tested!</summary>
 </entry>
 <entry>
 <title>Building graphql schema without babelrc</title>
