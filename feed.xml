@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
-<link href="http://reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
-<link href="http://reactjunkie.com/" rel="alternate" type="text/html" />
-<updated>2017-03-08T22:28:34+11:00</updated>
-<id>http://reactjunkie.com/</id>
+<link href="http://www.reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
+<link href="http://www.reactjunkie.com/" rel="alternate" type="text/html" />
+<updated>2017-03-13T11:56:23+11:00</updated>
+<id>http://www.reactjunkie.com/</id>
 <title>React Junkie</title>
 <entry>
 <title>Scheduling Feature Flag Deployment</title>
-<link href="http://reactjunkie.com/scheduling-feature-flag-deployment/" rel="alternate" type="text/html" title="Scheduling Feature Flag Deployment" />
+<link href="http://www.reactjunkie.com/scheduling-feature-flag-deployment/" rel="alternate" type="text/html" title="Scheduling Feature Flag Deployment" />
 <published>2017-02-28T08:30:00+11:00</published>
 <updated>2017-02-28T08:30:00+11:00</updated>
-<id>http://reactjunkie.com/scheduling-feature-flag-deployment</id>
-<content type="html" xml:base="http://reactjunkie.com/scheduling-feature-flag-deployment/">&lt;h4 id=&quot;updated-wed-8-march-2017&quot;&gt;Updated Wed 8 March 2017&lt;/h4&gt;
+<id>http://www.reactjunkie.com/scheduling-feature-flag-deployment</id>
+<content type="html" xml:base="http://www.reactjunkie.com/scheduling-feature-flag-deployment/">&lt;h4 id=&quot;updated-mon-13-march-2017&quot;&gt;Updated Mon 13 March 2017&lt;/h4&gt;
 
 &lt;p&gt;Use Launch Darkly? Love their feature flagging and a/b testing features? Like reading blog posts that sounds like an informercial? Umm…&lt;/p&gt;
 
@@ -105,10 +105,14 @@ import ldScheduler from ‘ld-scheduler’;&lt;/p&gt;
     &lt;li&gt;description is a textual string for the purpose of human readability&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;&lt;strong&gt;&lt;em&gt;AND&lt;/em&gt;&lt;/strong&gt; you need to set a tag called “scheduled”.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;AND&lt;/em&gt;&lt;/strong&gt; you need to set a tag called “${yourEnv}-scheduled”. For example, if you are scheduling a flag in the test environment,
+your tag should be called “test-scheduled”. Likewise if you are scheduling it in production, you need to add a “production-scheduled” tag.&lt;/p&gt;
 
-&lt;p&gt;When ld-scheduler runs, it will set your flag on/off according the the json configuration. It will also remove the “scheduled” tag and set the “Description” of the flag
+&lt;p&gt;When ld-scheduler runs, it will set your flag on/off according the the json configuration. It will also remove the “${yourEnv}-scheduled” tag so
+it does not get reprocessed. If there’s no other scheduled tags, then ld-scheduler also sets the “Description” field
 to the json.description string, thereby deleting the json config replacing it with the description string.&lt;/p&gt;
+
+&lt;p&gt;This way, you can safely run 2 instances of ld-scheduler; one for each environment without having to worry about race conditions.&lt;/p&gt;
 
 &lt;h2 id=&quot;extra&quot;&gt;Extra&lt;/h2&gt;
 &lt;p&gt;ld-scheduler supports a second taskType “fallThoughRollout” which you can use to set the default fallThrough rollout percentage:&lt;/p&gt;
@@ -132,7 +136,7 @@ to the json.description string, thereby deleting the json config replacing it wi
 {% endhighlight %}
 where variation 0 is true and variation 1 is false. Weight is in mili-percentage (if there’s such a word) i.e. 90000 === 90% and 10000 === 10%.
 Of course you would enter this json object in the “Description” field of your flag settings in launch darkly’s dashboard
-&lt;strong&gt;&lt;em&gt;AND&lt;/em&gt;&lt;/strong&gt; set a “scheduled” tag.&lt;/p&gt;
+&lt;strong&gt;&lt;em&gt;AND&lt;/em&gt;&lt;/strong&gt; set a “${yourEnv}-scheduled” tag.&lt;/p&gt;
 
 &lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
 &lt;p&gt;Check out the &lt;a href=&quot;https://github.com/yusinto/ld-scheduler/tree/master/example&quot; target=&quot;_blank&quot;&gt;sample code&lt;/a&gt; for a working example and let me know if this is useful (or not)!&lt;/p&gt;
@@ -148,15 +152,15 @@ Of course you would enter this json object in the “Description” field of you
 <category term="automate" />
 <category term="automation" />
 <category term="scheduling" />
-<summary>Updated Wed 8 March 2017</summary>
+<summary>Updated Mon 13 March 2017</summary>
 </entry>
 <entry>
 <title>Testing Connected Redux and Relay Components</title>
-<link href="http://reactjunkie.com/testing-connected-redux-relay-components/" rel="alternate" type="text/html" title="Testing Connected Redux and Relay Components" />
+<link href="http://www.reactjunkie.com/testing-connected-redux-relay-components/" rel="alternate" type="text/html" title="Testing Connected Redux and Relay Components" />
 <published>2017-01-28T08:30:00+11:00</published>
 <updated>2017-01-28T08:30:00+11:00</updated>
-<id>http://reactjunkie.com/testing-connected-redux-relay-components</id>
-<content type="html" xml:base="http://reactjunkie.com/testing-connected-redux-relay-components/">&lt;p&gt;Happy chinese new year everyone! In the spirit of the year of the cock, I shall write the rest of this post in chinese. 
+<id>http://www.reactjunkie.com/testing-connected-redux-relay-components</id>
+<content type="html" xml:base="http://www.reactjunkie.com/testing-connected-redux-relay-components/">&lt;p&gt;Happy chinese new year everyone! In the spirit of the year of the cock, I shall write the rest of this post in chinese. 
 中国著名的大思想家、大教育家。孔子开创了私人讲学的风气，是儒家学派的创始人。孔子曾受业于老子 (roughly translates to… I don’t know).
 Did I say Cock? I mean Rooster. Apologies my dear chinese readers… I don’t think there’s a difference anyway?&lt;/p&gt;
 
@@ -299,11 +303,11 @@ This feels right for me. Also, you can apply the same technique to test react co
 </entry>
 <entry>
 <title>Building graphql schema without babelrc</title>
-<link href="http://reactjunkie.com/build-graphql-schema-without-babelrc/" rel="alternate" type="text/html" title="Building graphql schema without babelrc" />
+<link href="http://www.reactjunkie.com/build-graphql-schema-without-babelrc/" rel="alternate" type="text/html" title="Building graphql schema without babelrc" />
 <published>2016-12-12T19:30:00+11:00</published>
 <updated>2016-12-12T19:30:00+11:00</updated>
-<id>http://reactjunkie.com/build-graphql-schema-without-babelrc</id>
-<content type="html" xml:base="http://reactjunkie.com/build-graphql-schema-without-babelrc/">&lt;p&gt;Man it has been a busy month! It’s been a while since I blogged, I have to say I miss it a lot. Almost as much as I 
+<id>http://www.reactjunkie.com/build-graphql-schema-without-babelrc</id>
+<content type="html" xml:base="http://www.reactjunkie.com/build-graphql-schema-without-babelrc/">&lt;p&gt;Man it has been a busy month! It’s been a while since I blogged, I have to say I miss it a lot. Almost as much as I 
 miss drinking..&lt;/p&gt;
 
 &lt;p&gt;Today I’ll be talking about graphql and relay, specifically about building the schema. Warning this is not a beginner’s
@@ -373,11 +377,11 @@ require(‘./updateSchema’);
 </entry>
 <entry>
 <title>Targeting users with React Redux and Launch Darkly</title>
-<link href="http://reactjunkie.com/launch-darkly-part-two/" rel="alternate" type="text/html" title="Targeting users with React Redux and Launch Darkly" />
+<link href="http://www.reactjunkie.com/launch-darkly-part-two/" rel="alternate" type="text/html" title="Targeting users with React Redux and Launch Darkly" />
 <published>2016-11-01T19:30:00+11:00</published>
 <updated>2016-11-01T19:30:00+11:00</updated>
-<id>http://reactjunkie.com/launch-darkly-part-two</id>
-<content type="html" xml:base="http://reactjunkie.com/launch-darkly-part-two/">&lt;p&gt;In my &lt;a href=&quot;http://www.reactjunkie.com/react-feature-toggle-launch-darkly/&quot; target=&quot;_blank&quot;&gt;previous previous post&lt;/a&gt; 
+<id>http://www.reactjunkie.com/launch-darkly-part-two</id>
+<content type="html" xml:base="http://www.reactjunkie.com/launch-darkly-part-two/">&lt;p&gt;In my &lt;a href=&quot;http://www.reactjunkie.com/react-feature-toggle-launch-darkly/&quot; target=&quot;_blank&quot;&gt;previous previous post&lt;/a&gt; 
 I introduced launch darkly as a feature toggling platform and how to use it with react redux. In this post I
 will explain how you can further leverage the power of feature toggling with user targeting.&lt;/p&gt;
 
@@ -507,11 +511,11 @@ new world of possibilities in regards to what you can do with your app. Someday 
 </entry>
 <entry>
 <title>Hot Reloading Universally Bundled Webpack Apps</title>
-<link href="http://reactjunkie.com/universal-hot-reload/" rel="alternate" type="text/html" title="Hot Reloading Universally Bundled Webpack Apps" />
+<link href="http://www.reactjunkie.com/universal-hot-reload/" rel="alternate" type="text/html" title="Hot Reloading Universally Bundled Webpack Apps" />
 <published>2016-10-22T10:52:00+11:00</published>
 <updated>2016-10-22T10:52:00+11:00</updated>
-<id>http://reactjunkie.com/universal-hot-reload</id>
-<content type="html" xml:base="http://reactjunkie.com/universal-hot-reload/">&lt;p&gt;I learnt quite a lot in the past week. Firstly there’s no substitute to good sleep. Secondly, you can actually eat a salmon steak raw! Thirdly, it’s really really hard
+<id>http://www.reactjunkie.com/universal-hot-reload</id>
+<content type="html" xml:base="http://www.reactjunkie.com/universal-hot-reload/">&lt;p&gt;I learnt quite a lot in the past week. Firstly there’s no substitute to good sleep. Secondly, you can actually eat a salmon steak raw! Thirdly, it’s really really hard
 to hot reload a server bundle if you are writing a universal app.&lt;/p&gt;
 
 &lt;p&gt;On the client side, &lt;a href=&quot;https://github.com/webpack/webpack-dev-middleware&quot; target=&quot;_blank&quot;&gt;webpack-dev-middleware&lt;/a&gt; and &lt;a href=&quot;https://github.com/gaearon/react-hot-loader&quot; target=&quot;_blank&quot;&gt;react-hot-loader&lt;/a&gt;
@@ -846,11 +850,11 @@ Check it out! Let me know if there’s any issues.&lt;/p&gt;
 </entry>
 <entry>
 <title>Implementing feature toggle with launch darkly and react redux</title>
-<link href="http://reactjunkie.com/react-feature-toggle-launch-darkly/" rel="alternate" type="text/html" title="Implementing feature toggle with launch darkly and react redux" />
+<link href="http://www.reactjunkie.com/react-feature-toggle-launch-darkly/" rel="alternate" type="text/html" title="Implementing feature toggle with launch darkly and react redux" />
 <published>2016-09-16T10:52:00+10:00</published>
 <updated>2016-09-16T10:52:00+10:00</updated>
-<id>http://reactjunkie.com/react-feature-toggle-launch-darkly</id>
-<content type="html" xml:base="http://reactjunkie.com/react-feature-toggle-launch-darkly/">&lt;h3 id=&quot;update-22-october-2016&quot;&gt;&lt;em&gt;Update: 22 October 2016&lt;/em&gt;&lt;/h3&gt;
+<id>http://www.reactjunkie.com/react-feature-toggle-launch-darkly</id>
+<content type="html" xml:base="http://www.reactjunkie.com/react-feature-toggle-launch-darkly/">&lt;h3 id=&quot;update-22-october-2016&quot;&gt;&lt;em&gt;Update: 22 October 2016&lt;/em&gt;&lt;/h3&gt;
 &lt;p&gt;&lt;em&gt;I have published an npm package called &lt;a href=&quot;https://github.com/yusinto/ld-redux&quot; target=&quot;_blank&quot;&gt;ld-redux&lt;/a&gt; which covers everything you need to integrate launch darkly with your react 
 redux app. It’s the contents of this blog in an npm package. If you use it, please give me some feedback. Thanks!&lt;/em&gt;&lt;/p&gt;
 
@@ -1203,11 +1207,11 @@ and launch darkly in the coming posts.&lt;/p&gt;
 </entry>
 <entry>
 <title>Deploying react apps on docker using ecs and terraform part 1</title>
-<link href="http://reactjunkie.com/docker-ecs-terraform-react/" rel="alternate" type="text/html" title="Deploying react apps on docker using ecs and terraform part 1" />
+<link href="http://www.reactjunkie.com/docker-ecs-terraform-react/" rel="alternate" type="text/html" title="Deploying react apps on docker using ecs and terraform part 1" />
 <published>2016-09-03T10:52:00+10:00</published>
 <updated>2016-09-03T10:52:00+10:00</updated>
-<id>http://reactjunkie.com/docker-ecs-terraform-react</id>
-<content type="html" xml:base="http://reactjunkie.com/docker-ecs-terraform-react/">&lt;p&gt;I was tinkering on blogging about Step 5 to React: Introduction to Redux, but I decided to write something closer to my heart: 
+<id>http://www.reactjunkie.com/docker-ecs-terraform-react</id>
+<content type="html" xml:base="http://www.reactjunkie.com/docker-ecs-terraform-react/">&lt;p&gt;I was tinkering on blogging about Step 5 to React: Introduction to Redux, but I decided to write something closer to my heart: 
 using ecs and terraform to deploy docker react apps (can I squeeze in anymore buzzwords?). This is not an intro to docker so 
 I assume you are familiar with the basics.&lt;/p&gt;
 
@@ -1393,11 +1397,11 @@ build systems and so on. Docker has dockerhub which does exactly that, but I use
 </entry>
 <entry>
 <title>Australia Brain Drain</title>
-<link href="http://reactjunkie.com/brain-drain-australia/" rel="alternate" type="text/html" title="Australia Brain Drain" />
+<link href="http://www.reactjunkie.com/brain-drain-australia/" rel="alternate" type="text/html" title="Australia Brain Drain" />
 <published>2016-08-05T01:19:00+10:00</published>
 <updated>2016-08-05T01:19:00+10:00</updated>
-<id>http://reactjunkie.com/brain-drain-australia</id>
-<content type="html" xml:base="http://reactjunkie.com/brain-drain-australia/">&lt;p&gt;My first NDC conference (anywhere) I have to say the whole event was very well planned, although there are a
+<id>http://www.reactjunkie.com/brain-drain-australia</id>
+<content type="html" xml:base="http://www.reactjunkie.com/brain-drain-australia/">&lt;p&gt;My first NDC conference (anywhere) I have to say the whole event was very well planned, although there are a
 couple of things which can be improved:&lt;/p&gt;
 &lt;ul&gt;
     &lt;li&gt;Wifi connection - the Hilton&#39;s wifi connection was so crap, all the guest speakers especially american and uk
@@ -1476,11 +1480,11 @@ States and the rest of the world as well.&lt;/p&gt;
 </entry>
 <entry>
 <title>Demistifying es6 class method and property initializer arrow function</title>
-<link href="http://reactjunkie.com/demistifying-es6-class-method-and-property-initializer-arrow-function/" rel="alternate" type="text/html" title="Demistifying es6 class method and property initializer arrow function" />
+<link href="http://www.reactjunkie.com/demistifying-es6-class-method-and-property-initializer-arrow-function/" rel="alternate" type="text/html" title="Demistifying es6 class method and property initializer arrow function" />
 <published>2016-07-30T14:52:00+10:00</published>
 <updated>2016-07-30T14:52:00+10:00</updated>
-<id>http://reactjunkie.com/demistifying-es6-class-method-and-property-initializer-arrow-function</id>
-<content type="html" xml:base="http://reactjunkie.com/demistifying-es6-class-method-and-property-initializer-arrow-function/">&lt;p&gt;Welcome back to another episode of react junkie’s blog post. Today I’ll be talking about meth crystal meth ice and how to
+<id>http://www.reactjunkie.com/demistifying-es6-class-method-and-property-initializer-arrow-function</id>
+<content type="html" xml:base="http://www.reactjunkie.com/demistifying-es6-class-method-and-property-initializer-arrow-function/">&lt;p&gt;Welcome back to another episode of react junkie’s blog post. Today I’ll be talking about meth crystal meth ice and how to
 replicate the perfect process to produce the most immaculate blue sky just like Jesse Pinkman.&lt;/p&gt;
 
 &lt;p&gt;Did that get your attention? :)&lt;/p&gt;
@@ -1629,11 +1633,11 @@ by Angus Croll&lt;/a&gt;. Please reach out to me if you would like to join!&lt;/
 </entry>
 <entry>
 <title>Step 4 to React: Intro to routing with react router</title>
-<link href="http://reactjunkie.com/step-four-to-react-routing-with-react-router/" rel="alternate" type="text/html" title="Step 4 to React: Intro to routing with react router" />
+<link href="http://www.reactjunkie.com/step-four-to-react-routing-with-react-router/" rel="alternate" type="text/html" title="Step 4 to React: Intro to routing with react router" />
 <published>2016-06-30T14:52:00+10:00</published>
 <updated>2016-06-30T14:52:00+10:00</updated>
-<id>http://reactjunkie.com/step-four-to-react-routing-with-react-router</id>
-<content type="html" xml:base="http://reactjunkie.com/step-four-to-react-routing-with-react-router/">&lt;p&gt;I am in LA for holidays! Yep, I’m blogging as I am holidaying; I don’t know why but I just can’t stop thinking about it.
+<id>http://www.reactjunkie.com/step-four-to-react-routing-with-react-router</id>
+<content type="html" xml:base="http://www.reactjunkie.com/step-four-to-react-routing-with-react-router/">&lt;p&gt;I am in LA for holidays! Yep, I’m blogging as I am holidaying; I don’t know why but I just can’t stop thinking about it.
 My wife says I’m addicted to work, I said no. We fight a lot but we love each other. Love is weird.&lt;/p&gt;
 
 &lt;p&gt;Anyway! This is a short and basic guide to implement routing with react router.
