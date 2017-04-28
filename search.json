@@ -8,13 +8,6 @@
     } ,
   
     {
-      "title"    : "Feature driven development",
-      "tags"     : "feature, flag, driven, development, git, model, agile, scrum, and sprint",
-      "url"      : "/feature-driven-development/",
-      "date"     : "22 Mar 2017"
-    } ,
-  
-    {
       "title"    : "Scheduling Feature Flag Deployment",
       "tags"     : "schedule, feature, flag, deployment, ld, scheduler, automate, automation, and scheduling",
       "url"      : "/scheduling-feature-flag-deployment/",
