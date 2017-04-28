@@ -1,6 +1,20 @@
 [
   
     {
+      "title"    : "Change marker image onPress in react-native-maps",
+      "tags"     : "react, native, maps, change, marker, image, and onpress",
+      "url"      : "/react-native-maps-change-marker-image-onpress/",
+      "date"     : "25 Apr 2017"
+    } ,
+  
+    {
+      "title"    : "Feature driven development",
+      "tags"     : "feature, flag, driven, development, git, model, agile, scrum, and sprint",
+      "url"      : "/feature-driven-development/",
+      "date"     : "22 Mar 2017"
+    } ,
+  
+    {
       "title"    : "Scheduling Feature Flag Deployment",
       "tags"     : "schedule, feature, flag, deployment, ld, scheduler, automate, automation, and scheduling",
       "url"      : "/scheduling-feature-flag-deployment/",

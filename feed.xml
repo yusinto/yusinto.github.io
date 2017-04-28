@@ -1,18 +1,413 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
-<link href="http://www.reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
-<link href="http://www.reactjunkie.com/" rel="alternate" type="text/html" />
-<updated>2017-03-13T11:56:23+11:00</updated>
-<id>http://www.reactjunkie.com/</id>
+<link href="http://reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
+<link href="http://reactjunkie.com/" rel="alternate" type="text/html" />
+<updated>2017-04-28T22:21:06+10:00</updated>
+<id>http://reactjunkie.com/</id>
 <title>React Junkie</title>
 <entry>
+<title>Change marker image onPress in react-native-maps</title>
+<link href="http://reactjunkie.com/react-native-maps-change-marker-image-onpress/" rel="alternate" type="text/html" title="Change marker image onPress in react-native-maps" />
+<published>2017-04-25T09:30:00+10:00</published>
+<updated>2017-04-25T09:30:00+10:00</updated>
+<id>http://reactjunkie.com/react-native-maps-change-marker-image-onpress</id>
+<content type="html" xml:base="http://reactjunkie.com/react-native-maps-change-marker-image-onpress/">&lt;p&gt;Recently I started a new pet project which involves maps and markers on ios and android. Of course I started
+this new project in react native. I was expecting a somewhat challenging times ahead because it has been
+a few months since I last did react native development. The landscape has definitely improved, and I feel
+so fortunate to be a javascript developer at this present moment because of awesome tools like react-native
+at our disposal. The possibilities are truly endless.&lt;/p&gt;
+
+&lt;p&gt;Airbnb has open sourced &lt;a href=&quot;https://github.com/airbnb/react-native-maps&quot; target=&quot;_blank&quot;&gt;react-native-maps&lt;/a&gt; which 
+made it so easy to integrate mapping capabilities with your app. There are steps to follow to set it all up but 
+it’s not that hard.&lt;/p&gt;
+
+&lt;p&gt;All the code in this blog are available on &lt;a href=&quot;https://github.com/yusinto/react-native-map-markers&quot; target=&quot;_blank&quot;&gt;github&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-problem&quot;&gt;The problem&lt;/h2&gt;
+&lt;p&gt;Need to display custom map markers on react-native-maps. Then, onPress of a 
+marker, change that marker image so the user can see it has 
+been selected. The problem is there is no direct way to get the ref of 
+the selected marker. Even if there is, there is no setImage method to
+change the marker image.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-solution&quot;&gt;The solution&lt;/h2&gt;
+&lt;p&gt;Out of the box, there’s already an onPress event handler with MapView.Marker
+which is a good starting point. We will use this along with the ref and 
+image props (also supported out of the box) to solve our problem.&lt;/p&gt;
+
+&lt;h2 id=&quot;are-you-done-talking-show-me-some-code&quot;&gt;Are you done talking? Show me some code!&lt;/h2&gt;
+&lt;p&gt;So first things first, you need to install and link react-native-maps:&lt;/p&gt;
+
+&lt;p&gt;{% highlight shell %}
+# stick with 0.13.0 to avoid unresolved issues in ^0.14.0
+yarn add react-native-maps@0.13.0
+{% endhighlight %}
+then link it
+{% highlight shell %}
+react-native link react-native-maps
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;&lt;b&gt;GOTCHA&lt;/b&gt; react-native-maps requires babel-plugin-module-resolver as well
+otherwise you’ll get this error: Unknown plugin module-resolver. This is a bug
+which should be fixed in a later version.&lt;/p&gt;
+
+&lt;p&gt;{% highlight shell %}
+yarn add babel-plugin-module-resolver
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;Then we can write some code to render a basic map like this:&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+import React, { Component } from ‘react’;
+import {AppRegistry, StyleSheet, View} from ‘react-native’;
+import MapView from ‘react-native-maps’;&lt;/p&gt;
+
+&lt;p&gt;export default class MapMarkers extends Component {
+  state = {
+    region: {
+      latitude: 1,
+      longitude: 1,
+      latitudeDelta: 0.0043, // hardcode zoom levels just for example
+      longitudeDelta: 0.0034,
+    },
+  };&lt;/p&gt;
+
+&lt;p&gt;componentDidMount() {
+    navigator.geolocation.getCurrentPosition(
+      position =&amp;gt; this.setState({
+        region: {
+          …this.state.region,
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        }
+      }),
+      error =&amp;gt; alert(JSON.stringify(error)), {
+        enableHighAccuracy: true,
+        timeout: 20000,
+        maximumAge: 1000
+      }
+    );
+  }&lt;/p&gt;
+
+&lt;p&gt;// note that you need to style the map, otherwise you’ll get
+  // a blank screen
+  render() {
+    return (
+      &amp;lt;View style={styles.root}&amp;gt;
+        &amp;lt;MapView style={styles.map}
+                 showsUserLocation={true}
+                 followsUserLocation={true}
+                 initialRegion={this.state.region}
+        /&amp;gt;
+      &amp;lt;/View&amp;gt;
+    );
+  }
+}&lt;/p&gt;
+
+&lt;p&gt;const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    justifyContent: ‘center’,
+    alignItems: ‘center’,
+  },
+  map: {
+    position: ‘absolute’,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+});&lt;/p&gt;
+
+&lt;p&gt;AppRegistry.registerComponent(‘mapMarkers’, () =&amp;gt; MapMarkers);&lt;/p&gt;
+
+&lt;p&gt;{% endhighlight %}&lt;/p&gt;
+
+&lt;h2 id=&quot;ios-simulator-setup&quot;&gt;iOS Simulator Setup&lt;/h2&gt;
+&lt;p&gt;Before you run this in the simulator, you’ll need to set a custom location
+in the ios simulator. We’ll only be demoing on ios only for this blog.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/simulator_location_menu.png&quot; alt=&quot;Simulator Location Menu&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Set the custom location to Cafe Sydney -33.861924, 151.210891. If you haven’t
+been, you have to! It’s an awesome restaurant!&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/custom_location.png&quot; alt=&quot;Set Custom Location&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;run-the-project&quot;&gt;Run the project&lt;/h2&gt;
+
+&lt;p&gt;{% highlight shell %}
+react-native run-ios
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;You should see a map view with the user location set to Cafe Sydney in Australia.
+Now let’s add a few markers.&lt;/p&gt;
+
+&lt;p&gt;{% highlight js%}
+// Add these at the top of the file, straight after the imports
+const RESTAURANTS = [
+  {
+    key: ‘Cafe Sydney’,
+    title: ‘Cafe Sydney’,
+    description: ‘Customs House, 31 Alfred St, Sydney NSW 2000’,
+    latLong: {
+      latitude: -33.861924,
+      longitude: 151.210891,
+    },
+  },
+  {
+    key: ‘Four Frogs Creperie’,
+    title: ‘Four Frogs Creperie’,
+    description: ‘1 Macquarie Pl, Sydney NSW 2000’,
+    latLong: {
+      latitude: -33.861755,
+      longitude: 151.209941,
+    },
+  },
+  {
+    key: ‘Tapavino’,
+    title: ‘Tapavino’,
+    description: ‘6 Bulletin Pl, Sydney NSW 2000’,
+    latLong: {
+      latitude: -33.862512,
+      longitude: 151.209490,
+    },
+  },
+];&lt;/p&gt;
+
+&lt;p&gt;// then modify your render method to look like this
+  render() {
+    return (
+      &amp;lt;View style={styles.root}&amp;gt;
+        &amp;lt;MapView style={styles.map}
+                 showsUserLocation={true}
+                 followsUserLocation={true}
+                 initialRegion={this.state.region}
+        &amp;gt;
+          {
+            RESTAURANTS.map((m, i) =&amp;gt;
+              &amp;lt;MapView.Marker
+                coordinate={m.latLong}
+                title={m.title}
+                description={m.description}
+                key={&lt;code class=&quot;highlighter-rouge&quot;&gt;marker-${i}&lt;/code&gt;}
+              /&amp;gt;
+            )
+          }
+        &amp;lt;/MapView&amp;gt;
+      &amp;lt;/View&amp;gt;
+    );
+  }
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;You should see 3 markers on the map. Now we want to use a custom image 
+for our marker. MapView has an image prop we can set so that’s easy. 
+Then onPress of a marker, we want to change this image to a different 
+one to show the user that it has been selected. Again MapView has an 
+onPress prop which we can use to set a custom callback when a marker gets pressed.&lt;/p&gt;
+
+&lt;p&gt;Here’s the trick, onpress of a marker, we have to pass the index of the selected
+marker and save that to state. Then on the image prop, we can inspect
+if the marker being rendered matches the selected index in state, and use
+a different image if so.&lt;/p&gt;
+
+&lt;p&gt;{% highlight js%}
+// At the top of the file after imports, we require our marker images
+const marker = require(‘./assets/images/marker.png’);
+const selectedMarker = require(‘./assets/images/marker-selected.png’);&lt;/p&gt;
+
+&lt;p&gt;// Then in our class
+onPressMarker(e, index) {
+    this.setState({selectedMarkerIndex: index});
+}&lt;/p&gt;
+
+&lt;p&gt;// Then in our render method, we specify onPress and image props.
+// For brevity, I only include the relevant bits of code here
+RESTAURANTS.map((m, i) =&amp;gt;
+  &amp;lt;MapView.Marker
+    coordinate={m.latLong}
+    title={m.title}
+    description={m.description}
+    key={&lt;code class=&quot;highlighter-rouge&quot;&gt;marker-${i}&lt;/code&gt;}
+    onPress={(e) =&amp;gt; this.onPressMarker(e, i)}
+    image={this.state.selectedMarkerIndex === i ? selectedMarker : marker} // this is the crux of the blog
+  /&amp;gt;
+)
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;That’s it!&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;Check out the &lt;a href=&quot;https://github.com/yusinto/react-native-map-markers&quot; target=&quot;_blank&quot;&gt;complete code&lt;/a&gt; on 
+github. Let me know if this helps!&lt;/p&gt;
+
+&lt;hr /&gt;
+</content>
+<category term="react" />
+<category term="native" />
+<category term="maps" />
+<category term="change" />
+<category term="marker" />
+<category term="image" />
+<category term="onpress" />
+<summary>Recently I started a new pet project which involves maps and markers on ios and android. Of course I startedthis new project in react native. I was expecting a somewhat challenging times ahead because it has beena few months since I last did react native development. The landscape has definitely improved, and I feelso fortunate to be a javascript developer at this present moment because of awesome tools like react-nativeat our disposal. The possibilities are truly endless.</summary>
+</entry>
+<entry>
+<title>Feature driven development</title>
+<link href="http://reactjunkie.com/feature-driven-development/" rel="alternate" type="text/html" title="Feature driven development" />
+<published>2017-03-22T08:30:00+11:00</published>
+<updated>2017-03-22T08:30:00+11:00</updated>
+<id>http://reactjunkie.com/feature-driven-development</id>
+<content type="html" xml:base="http://reactjunkie.com/feature-driven-development/">&lt;p&gt;I’m writing this onboard of a plane, en route to my holidays in Vietnam. I was fortunate enough to get a business class upgrade (bucket list item
+checked) which made it possible for me to even think of blogging.&lt;/p&gt;
+
+&lt;p&gt;I didn’t know they get real cutlery in business class?! Plus face moisturiser and lip
+balm?! And that flatbed with built-in massager.. my god I’ve been missing out all this time. And the food! They get real food! I had pan fried
+barramundi with steamed vegetables with unlimited hard liquors enough to inspire burnt out devs to start a blog.&lt;/p&gt;
+
+&lt;p&gt;I digressed. I want to talk about development cycles in this post. At work, I use scrum with a 2 week sprint, standups every morning, grooming etc. In my previous
+job, I use the same. There’s nothing wrong with this, but with the introduction of new tools like launch darkly (feature toggling), docker and aws ecr, there’s
+been a bit of a quiet evolution (or should I say revolution?) towards the inevitable: continuous feature driven delivery.&lt;/p&gt;
+
+&lt;p&gt;What does that mean? It means you develop
+a feature, test it, and as soon as its ready for production you deploy it. Each feature is treated the same way, so there could be many deployments in a week
+or even in a day. What does this further mean? This means the scrum is dead my friend!&lt;/p&gt;
+
+&lt;h2 id=&quot;scrum-is-dead-again&quot;&gt;Scrum is dead.. again?&lt;/h2&gt;
+&lt;p&gt;I’m quoting Dave Thomas’ infamous blog post “&lt;a href=&quot;http://davethomas.org&quot;&gt;Agile is dead&lt;/a&gt;”. The idea of an x-nightly sprint at the end of which a prod deployment occurs
+ is outdated, just as the waterfall model became outdated when agile was introduced. Some elements of the scrum are still useful e.g. standups and grooming, but the 
+ notion of an end of sprint delivery is outdated.&lt;/p&gt;
+
+&lt;p&gt;##&lt;/p&gt;
+
+&lt;p&gt;Consider the following code (which you can see in entirety &lt;a href=&quot;https://github.com/yusinto/test-react/blob/master/src/universal/home/home.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;):&lt;/p&gt;
+
+&lt;h4 id=&quot;homejs&quot;&gt;home.js&lt;/h4&gt;
+&lt;p&gt;{% highlight javascript %}
+import React, {Component} from ‘react’;
+import {connect} from ‘react-redux’;
+import * as Actions from ‘./homeAction’;&lt;/p&gt;
+
+&lt;p&gt;// private class
+class Home extends Component {
+  constructor(props) {
+    super(props);
+    this.onClickGenerateRandom = ::this.onClickGenerateRandom;
+  }&lt;/p&gt;
+
+&lt;p&gt;onClickGenerateRandom() {
+    this.props.generateRandom();
+  }&lt;/p&gt;
+
+&lt;p&gt;render() {
+    let homeText = ‘Click button below to generate a random number!’;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;return (
+  &amp;lt;div&amp;gt;
+    &amp;lt;p&amp;gt;{ homeText }&amp;lt;/p&amp;gt;
+    &amp;lt;div&amp;gt;{this.props.randomNumber}&amp;lt;/div&amp;gt;
+    &amp;lt;button onClick={this.onClickGenerateRandom}&amp;gt;
+        Generate random number
+    &amp;lt;/button&amp;gt;
+  &amp;lt;/div&amp;gt;
+);   } }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;const mapStateToProps = (state) =&amp;gt; {
+  const homeState = state.Home;&lt;/p&gt;
+
+&lt;p&gt;return {
+    randomNumber: homeState.randomNumber
+  };
+};&lt;/p&gt;
+
+&lt;p&gt;export default connect(mapStateToProps, Actions)(Home);
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;The Home class is private and that’s what we want to test. It is not exported at all, so we can’t access it directly. 
+As mentioned above, the official redux documentation recommends exporting this class, but that breaks encapsulation.
+So what do we do? Enter &lt;a href=&quot;https://github.com/speedskater/babel-plugin-rewire&quot; target=&quot;_blank&quot;&gt;babel-plugin-rewire&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;using-rewire&quot;&gt;Using rewire&lt;/h2&gt;
+&lt;p&gt;You need to install the following npm packages:&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+yarn add –dev jest babel-plugin-rewire enzyme react-addons-test-utils
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;I use &lt;a href=&quot;https://facebook.github.io/jest/&quot; target=&quot;_blank&quot;&gt;jest&lt;/a&gt; for my test framework and you should too, it kicks butt. 
+I also use &lt;a href=&quot;https://github.com/airbnb/enzyme&quot; target=&quot;_blank&quot;&gt;enzyme&lt;/a&gt; which is a utility library for testing react components. 
+Enzyme requires the official &lt;a href=&quot;https://facebook.github.io/react/docs/test-utils.html&quot; target=&quot;_blank&quot;&gt;react-addons-test-utils&lt;/a&gt; package.&lt;/p&gt;
+
+&lt;p&gt;In your .babelrc, add an “env” block to include babel-plugin-rewire when running tests:&lt;/p&gt;
+
+&lt;h4 id=&quot;babelrc&quot;&gt;.babelrc&lt;/h4&gt;
+&lt;p&gt;{% highlight javascript %}
+{
+    “presets”: [“es2015”, “react”, “stage-0”],&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/* etc your other config */
+
+&quot;env&quot;: {
+  &quot;test&quot;: {
+    &quot;plugins&quot;: [&quot;babel-plugin-rewire&quot;]
+  }
+} } {% endhighlight %}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;write-the-tests&quot;&gt;Write the tests!&lt;/h2&gt;
+&lt;p&gt;Now we can write the tests! The complete file is &lt;a href=&quot;https://github.com/yusinto/test-react/blob/master/src/universal/home/home.test.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;:&lt;/p&gt;
+
+&lt;h4 id=&quot;hometestjs&quot;&gt;home.test.js&lt;/h4&gt;
+&lt;p&gt;{% highlight javascript %}
+import React from ‘react’;
+import {shallow} from ‘enzyme’;
+import HomeRedux from ‘./home’;&lt;/p&gt;
+
+&lt;p&gt;describe(‘Home component tests’, () =&amp;gt; {
+  // rewire injects &lt;strong&gt;get&lt;/strong&gt; and &lt;strong&gt;set&lt;/strong&gt; methods to all our modules.
+  // These can then be used to extract and set top level private variables.
+  // In this instance, we extract the private Home class
+  const Home = HomeRedux.&lt;strong&gt;get&lt;/strong&gt;(‘Home’);&lt;/p&gt;
+
+&lt;p&gt;it(‘should render correctly’, () =&amp;gt; {
+    // Yayy! We can now render the presentational component directly! 
+    const output = shallow(&amp;lt;Home randomNumber={45}/&amp;gt;);&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// Use jest snapshot testing for convenience
+expect(output).toMatchSnapshot();   }); }); {% endhighlight %}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;This approach incurs a little more time to setup, but I think it’s worth it. We leave the code fully testable, encapsulation intact. 
+This feels right for me. Also, you can apply the same technique to test react components wrapped in relay containers. It works!&lt;/p&gt;
+
+&lt;p&gt;Check out the &lt;a href=&quot;https://github.com/yusinto/test-react&quot; target=&quot;_blank&quot;&gt;sample code&lt;/a&gt; for a working example and let me know if this is useful (or not)!&lt;/p&gt;
+
+&lt;hr /&gt;
+</content>
+<category term="feature" />
+<category term="flag" />
+<category term="driven" />
+<category term="development" />
+<category term="git" />
+<category term="model" />
+<category term="agile" />
+<category term="scrum" />
+<category term="sprint" />
+<summary>I’m writing this onboard of a plane, en route to my holidays in Vietnam. I was fortunate enough to get a business class upgrade (bucket list itemchecked) which made it possible for me to even think of blogging.</summary>
+</entry>
+<entry>
 <title>Scheduling Feature Flag Deployment</title>
-<link href="http://www.reactjunkie.com/scheduling-feature-flag-deployment/" rel="alternate" type="text/html" title="Scheduling Feature Flag Deployment" />
+<link href="http://reactjunkie.com/scheduling-feature-flag-deployment/" rel="alternate" type="text/html" title="Scheduling Feature Flag Deployment" />
 <published>2017-02-28T08:30:00+11:00</published>
 <updated>2017-02-28T08:30:00+11:00</updated>
-<id>http://www.reactjunkie.com/scheduling-feature-flag-deployment</id>
-<content type="html" xml:base="http://www.reactjunkie.com/scheduling-feature-flag-deployment/">&lt;h4 id=&quot;updated-mon-13-march-2017&quot;&gt;Updated Mon 13 March 2017&lt;/h4&gt;
+<id>http://reactjunkie.com/scheduling-feature-flag-deployment</id>
+<content type="html" xml:base="http://reactjunkie.com/scheduling-feature-flag-deployment/">&lt;h4 id=&quot;updated-mon-13-march-2017&quot;&gt;Updated Mon 13 March 2017&lt;/h4&gt;
 
 &lt;p&gt;Use Launch Darkly? Love their feature flagging and a/b testing features? Like reading blog posts that sounds like an informercial? Umm…&lt;/p&gt;
 
@@ -156,11 +551,11 @@ Of course you would enter this json object in the “Description” field of you
 </entry>
 <entry>
 <title>Testing Connected Redux and Relay Components</title>
-<link href="http://www.reactjunkie.com/testing-connected-redux-relay-components/" rel="alternate" type="text/html" title="Testing Connected Redux and Relay Components" />
+<link href="http://reactjunkie.com/testing-connected-redux-relay-components/" rel="alternate" type="text/html" title="Testing Connected Redux and Relay Components" />
 <published>2017-01-28T08:30:00+11:00</published>
 <updated>2017-01-28T08:30:00+11:00</updated>
-<id>http://www.reactjunkie.com/testing-connected-redux-relay-components</id>
-<content type="html" xml:base="http://www.reactjunkie.com/testing-connected-redux-relay-components/">&lt;p&gt;Happy chinese new year everyone! In the spirit of the year of the cock, I shall write the rest of this post in chinese. 
+<id>http://reactjunkie.com/testing-connected-redux-relay-components</id>
+<content type="html" xml:base="http://reactjunkie.com/testing-connected-redux-relay-components/">&lt;p&gt;Happy chinese new year everyone! In the spirit of the year of the cock, I shall write the rest of this post in chinese. 
 中国著名的大思想家、大教育家。孔子开创了私人讲学的风气，是儒家学派的创始人。孔子曾受业于老子 (roughly translates to… I don’t know).
 Did I say Cock? I mean Rooster. Apologies my dear chinese readers… I don’t think there’s a difference anyway?&lt;/p&gt;
 
@@ -303,11 +698,11 @@ This feels right for me. Also, you can apply the same technique to test react co
 </entry>
 <entry>
 <title>Building graphql schema without babelrc</title>
-<link href="http://www.reactjunkie.com/build-graphql-schema-without-babelrc/" rel="alternate" type="text/html" title="Building graphql schema without babelrc" />
+<link href="http://reactjunkie.com/build-graphql-schema-without-babelrc/" rel="alternate" type="text/html" title="Building graphql schema without babelrc" />
 <published>2016-12-12T19:30:00+11:00</published>
 <updated>2016-12-12T19:30:00+11:00</updated>
-<id>http://www.reactjunkie.com/build-graphql-schema-without-babelrc</id>
-<content type="html" xml:base="http://www.reactjunkie.com/build-graphql-schema-without-babelrc/">&lt;p&gt;Man it has been a busy month! It’s been a while since I blogged, I have to say I miss it a lot. Almost as much as I 
+<id>http://reactjunkie.com/build-graphql-schema-without-babelrc</id>
+<content type="html" xml:base="http://reactjunkie.com/build-graphql-schema-without-babelrc/">&lt;p&gt;Man it has been a busy month! It’s been a while since I blogged, I have to say I miss it a lot. Almost as much as I 
 miss drinking..&lt;/p&gt;
 
 &lt;p&gt;Today I’ll be talking about graphql and relay, specifically about building the schema. Warning this is not a beginner’s
@@ -377,11 +772,11 @@ require(‘./updateSchema’);
 </entry>
 <entry>
 <title>Targeting users with React Redux and Launch Darkly</title>
-<link href="http://www.reactjunkie.com/launch-darkly-part-two/" rel="alternate" type="text/html" title="Targeting users with React Redux and Launch Darkly" />
+<link href="http://reactjunkie.com/launch-darkly-part-two/" rel="alternate" type="text/html" title="Targeting users with React Redux and Launch Darkly" />
 <published>2016-11-01T19:30:00+11:00</published>
 <updated>2016-11-01T19:30:00+11:00</updated>
-<id>http://www.reactjunkie.com/launch-darkly-part-two</id>
-<content type="html" xml:base="http://www.reactjunkie.com/launch-darkly-part-two/">&lt;p&gt;In my &lt;a href=&quot;http://www.reactjunkie.com/react-feature-toggle-launch-darkly/&quot; target=&quot;_blank&quot;&gt;previous previous post&lt;/a&gt; 
+<id>http://reactjunkie.com/launch-darkly-part-two</id>
+<content type="html" xml:base="http://reactjunkie.com/launch-darkly-part-two/">&lt;p&gt;In my &lt;a href=&quot;http://www.reactjunkie.com/react-feature-toggle-launch-darkly/&quot; target=&quot;_blank&quot;&gt;previous previous post&lt;/a&gt; 
 I introduced launch darkly as a feature toggling platform and how to use it with react redux. In this post I
 will explain how you can further leverage the power of feature toggling with user targeting.&lt;/p&gt;
 
@@ -511,11 +906,11 @@ new world of possibilities in regards to what you can do with your app. Someday 
 </entry>
 <entry>
 <title>Hot Reloading Universally Bundled Webpack Apps</title>
-<link href="http://www.reactjunkie.com/universal-hot-reload/" rel="alternate" type="text/html" title="Hot Reloading Universally Bundled Webpack Apps" />
+<link href="http://reactjunkie.com/universal-hot-reload/" rel="alternate" type="text/html" title="Hot Reloading Universally Bundled Webpack Apps" />
 <published>2016-10-22T10:52:00+11:00</published>
 <updated>2016-10-22T10:52:00+11:00</updated>
-<id>http://www.reactjunkie.com/universal-hot-reload</id>
-<content type="html" xml:base="http://www.reactjunkie.com/universal-hot-reload/">&lt;p&gt;I learnt quite a lot in the past week. Firstly there’s no substitute to good sleep. Secondly, you can actually eat a salmon steak raw! Thirdly, it’s really really hard
+<id>http://reactjunkie.com/universal-hot-reload</id>
+<content type="html" xml:base="http://reactjunkie.com/universal-hot-reload/">&lt;p&gt;I learnt quite a lot in the past week. Firstly there’s no substitute to good sleep. Secondly, you can actually eat a salmon steak raw! Thirdly, it’s really really hard
 to hot reload a server bundle if you are writing a universal app.&lt;/p&gt;
 
 &lt;p&gt;On the client side, &lt;a href=&quot;https://github.com/webpack/webpack-dev-middleware&quot; target=&quot;_blank&quot;&gt;webpack-dev-middleware&lt;/a&gt; and &lt;a href=&quot;https://github.com/gaearon/react-hot-loader&quot; target=&quot;_blank&quot;&gt;react-hot-loader&lt;/a&gt;
@@ -850,11 +1245,11 @@ Check it out! Let me know if there’s any issues.&lt;/p&gt;
 </entry>
 <entry>
 <title>Implementing feature toggle with launch darkly and react redux</title>
-<link href="http://www.reactjunkie.com/react-feature-toggle-launch-darkly/" rel="alternate" type="text/html" title="Implementing feature toggle with launch darkly and react redux" />
+<link href="http://reactjunkie.com/react-feature-toggle-launch-darkly/" rel="alternate" type="text/html" title="Implementing feature toggle with launch darkly and react redux" />
 <published>2016-09-16T10:52:00+10:00</published>
 <updated>2016-09-16T10:52:00+10:00</updated>
-<id>http://www.reactjunkie.com/react-feature-toggle-launch-darkly</id>
-<content type="html" xml:base="http://www.reactjunkie.com/react-feature-toggle-launch-darkly/">&lt;h3 id=&quot;update-22-october-2016&quot;&gt;&lt;em&gt;Update: 22 October 2016&lt;/em&gt;&lt;/h3&gt;
+<id>http://reactjunkie.com/react-feature-toggle-launch-darkly</id>
+<content type="html" xml:base="http://reactjunkie.com/react-feature-toggle-launch-darkly/">&lt;h3 id=&quot;update-22-october-2016&quot;&gt;&lt;em&gt;Update: 22 October 2016&lt;/em&gt;&lt;/h3&gt;
 &lt;p&gt;&lt;em&gt;I have published an npm package called &lt;a href=&quot;https://github.com/yusinto/ld-redux&quot; target=&quot;_blank&quot;&gt;ld-redux&lt;/a&gt; which covers everything you need to integrate launch darkly with your react 
 redux app. It’s the contents of this blog in an npm package. If you use it, please give me some feedback. Thanks!&lt;/em&gt;&lt;/p&gt;
 
@@ -1207,11 +1602,11 @@ and launch darkly in the coming posts.&lt;/p&gt;
 </entry>
 <entry>
 <title>Deploying react apps on docker using ecs and terraform part 1</title>
-<link href="http://www.reactjunkie.com/docker-ecs-terraform-react/" rel="alternate" type="text/html" title="Deploying react apps on docker using ecs and terraform part 1" />
+<link href="http://reactjunkie.com/docker-ecs-terraform-react/" rel="alternate" type="text/html" title="Deploying react apps on docker using ecs and terraform part 1" />
 <published>2016-09-03T10:52:00+10:00</published>
 <updated>2016-09-03T10:52:00+10:00</updated>
-<id>http://www.reactjunkie.com/docker-ecs-terraform-react</id>
-<content type="html" xml:base="http://www.reactjunkie.com/docker-ecs-terraform-react/">&lt;p&gt;I was tinkering on blogging about Step 5 to React: Introduction to Redux, but I decided to write something closer to my heart: 
+<id>http://reactjunkie.com/docker-ecs-terraform-react</id>
+<content type="html" xml:base="http://reactjunkie.com/docker-ecs-terraform-react/">&lt;p&gt;I was tinkering on blogging about Step 5 to React: Introduction to Redux, but I decided to write something closer to my heart: 
 using ecs and terraform to deploy docker react apps (can I squeeze in anymore buzzwords?). This is not an intro to docker so 
 I assume you are familiar with the basics.&lt;/p&gt;
 
@@ -1397,11 +1792,11 @@ build systems and so on. Docker has dockerhub which does exactly that, but I use
 </entry>
 <entry>
 <title>Australia Brain Drain</title>
-<link href="http://www.reactjunkie.com/brain-drain-australia/" rel="alternate" type="text/html" title="Australia Brain Drain" />
+<link href="http://reactjunkie.com/brain-drain-australia/" rel="alternate" type="text/html" title="Australia Brain Drain" />
 <published>2016-08-05T01:19:00+10:00</published>
 <updated>2016-08-05T01:19:00+10:00</updated>
-<id>http://www.reactjunkie.com/brain-drain-australia</id>
-<content type="html" xml:base="http://www.reactjunkie.com/brain-drain-australia/">&lt;p&gt;My first NDC conference (anywhere) I have to say the whole event was very well planned, although there are a
+<id>http://reactjunkie.com/brain-drain-australia</id>
+<content type="html" xml:base="http://reactjunkie.com/brain-drain-australia/">&lt;p&gt;My first NDC conference (anywhere) I have to say the whole event was very well planned, although there are a
 couple of things which can be improved:&lt;/p&gt;
 &lt;ul&gt;
     &lt;li&gt;Wifi connection - the Hilton&#39;s wifi connection was so crap, all the guest speakers especially american and uk
@@ -1477,358 +1872,5 @@ States and the rest of the world as well.&lt;/p&gt;
 <category term="brain" />
 <category term="drain" />
 <summary>My first NDC conference (anywhere) I have to say the whole event was very well planned, although there are acouple of things which can be improved:    Wifi connection - the Hilton&#39;s wifi connection was so crap, all the guest speakers especially american and uk    speakers think that Australia as a whole are running on a 56k modem. I actually attended a session where the speaker had    to tether from an Android 4G connection just to demo his stuff (Peter Myers, please forgive us). If you are from overseas     speaking/spoke at NDC Sydney, please accept our sincerest apology, and please don&#39;t misunderstand. Our internet connection     in Australia is pretty good, it&#39;s just at Hilton&#39;s, so please forgive us.        Pricing was a bit steep. I understand Sydney is one of the most expensive cities in the world, yes yes. It&#39;s such     a shame though many developers are left out of NDC because of pricing/cost. Personally I know many a great    developer that missed out on NDC Sydney purely due to financial reasons. I believe an event such as this should be more    accessible and affordable to the community in general, because it&#39;s a symbiosis. The more people attending these events,    the more aware they are of the current technologies on offer today, the higher the adoption rate and awareness, and    the whole thing propagates in a vicious cycle that can only benefit the development world.    </summary>
-</entry>
-<entry>
-<title>Demistifying es6 class method and property initializer arrow function</title>
-<link href="http://www.reactjunkie.com/demistifying-es6-class-method-and-property-initializer-arrow-function/" rel="alternate" type="text/html" title="Demistifying es6 class method and property initializer arrow function" />
-<published>2016-07-30T14:52:00+10:00</published>
-<updated>2016-07-30T14:52:00+10:00</updated>
-<id>http://www.reactjunkie.com/demistifying-es6-class-method-and-property-initializer-arrow-function</id>
-<content type="html" xml:base="http://www.reactjunkie.com/demistifying-es6-class-method-and-property-initializer-arrow-function/">&lt;p&gt;Welcome back to another episode of react junkie’s blog post. Today I’ll be talking about meth crystal meth ice and how to
-replicate the perfect process to produce the most immaculate blue sky just like Jesse Pinkman.&lt;/p&gt;
-
-&lt;p&gt;Did that get your attention? :)&lt;/p&gt;
-
-&lt;p&gt;Actually no. Today I’ll be talking about a much more exciting topic: the difference between es6 class methods and arrow functions.&lt;/p&gt;
-
-&lt;p&gt;I encountered this at work when two of my colleagues (let’s call them Lill and Woic to preserve anonymity) implemented class methods
-in two different styles. Compare the printQuality method in the following code snippets:&lt;/p&gt;
-
-&lt;h4 id=&quot;lill-standard-es6-class-method&quot;&gt;Lill: Standard es6 class method&lt;/h4&gt;
-&lt;p&gt;{% highlight c# %}
-import React, {Component} from ‘react’;&lt;/p&gt;
-
-&lt;p&gt;export default class MethLab extends Component {&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;constructor(props) {
-    super(props);
-    
-    this.state = {
-        methQuality: &#39;blueSky&#39;
-    };
-    
-    // manually bind &quot;this&quot; context of printQuality function
-    // to the instance of MethLab being constructed
-    this.printQuality = ::this.printQuality;
-}
-
-// Use the standard es6 class method syntax
-printQuality() {
-    console.log(`${this.state.methQuality}`);
-} } {% endhighlight %}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;h4 id=&quot;woic-property-initializer-with-arrow-function&quot;&gt;Woic: Property initializer with arrow function&lt;/h4&gt;
-&lt;p&gt;{% highlight c# %}
-import React, {Component} from ‘react’;&lt;/p&gt;
-
-&lt;p&gt;export default class MethLab extends Component {&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;constructor(props) {
-    super(props);
-    
-    this.state = {
-       methQuality: &#39;blueSky&#39;
-    };
-}
-
-// Use property initializer combined with arrow function
-printQuality = () =&amp;gt; {
-    console.log(`${this.state.methQuality}`);
-}; } {% endhighlight %}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;Can you guess the output of each implementation? If you’ve been using react
-for a while, you would guess that they would both output ‘bluesky’ and you would be
-right. Based on that guess, you would further extrapolate that they are both
-doing the same thing and are indifferent from each other. It’s a fair and logical guess, but you would be wrong.&lt;/p&gt;
-
-&lt;p&gt;The answer lies in the es5 translation of these syntactic sugar. Let me explain through code:&lt;/p&gt;
-
-&lt;h4 id=&quot;lill-standard-es6-class-method-in-es5&quot;&gt;Lill: Standard es6 class method in es5&lt;/h4&gt;
-&lt;p&gt;{% highlight c# %}
-function MethLab(props) {
-    …&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// manually bind &quot;this&quot; context of printQuality function
-// to the instance of MethLab being constructed
-this.printQuality = this.printQuality.bind(this);
-
-... }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;MethLab.prototype.printQuality = function printQuality() {
-    console.log(this.state.methQuality);
-};
-{% endhighlight %}&lt;/p&gt;
-
-&lt;h4 id=&quot;woic-property-initializer-with-arrow-function-in-es5&quot;&gt;Woic: Property initializer with arrow function in es5&lt;/h4&gt;
-&lt;p&gt;{% highlight c# %}
-function MethLab(props) {
-    …&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;this.printQuality = function () {
-    console.log(this.state.methQuality);
-};
-
-... }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;The above are simplified versions of the actual babel6 output (you can see 
-the full translations using the kick-ass babel6 repl editor 
-&lt;a href=&quot;https://babeljs.io/repl/&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;)&lt;/p&gt;
-
-&lt;p&gt;The key point here is that the standard es6 class method translates to
-a method on the function prototype, whereas the arrow function translates
-to a method in the constructor function.&lt;/p&gt;
-
-&lt;p&gt;What does this mean? Traditionally in es5, you would only declare instance 
-properties in the constructor function. These are properties that are 
-specific to the instance and are not shared across instances. For example constructor arguments. 
-These are created every time for each instance and hence are not very efficient.&lt;/p&gt;
-
-&lt;p&gt;To improve performance, you would declare shared properties and methods on the
-function prototype. These will be created once for the function and then shared across all
-instances. I would normally declare methods on the function prototype; properties not so much.&lt;/p&gt;
-
-&lt;p&gt;It makes sense to share methods across instances for performance reasons and keep instance properties
-in the constructor function. This leads to the conclusion that the es6 standard class method syntax
-(Lill’s way) is preferable to the property initializer arrow function syntax.&lt;/p&gt;
-
-&lt;p&gt;Hopefully by understanding what es6 does under the hood you can now better decide
-how to declare your class methods. I know many developers are using the property
-initializer arrow function syntax because it’s convenient, albeit unaware of what’s 
-really happening under the hood.&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;other-news&quot;&gt;Other news&lt;/h2&gt;
-&lt;p&gt;I’ll be attending &lt;a href=&quot;http://ndcsydney.com/&quot; target=&quot;_blank&quot;&gt;NDC Sydney&lt;/a&gt; on 3-5 August. If you are around, please say hello otherwise
-it will be quite a lonely conference for me :(&lt;/p&gt;
-
-&lt;p&gt;I have also organised a reading group which will take place on Thu 25 Aug. The pick is &lt;a href=&quot;https://www.nostarch.com/hemingway&quot; target=&quot;_blank&quot;&gt;“If Hemingway Wrote Javascript”
-by Angus Croll&lt;/a&gt;. Please reach out to me if you would like to join!&lt;/p&gt;
-
-&lt;p&gt;Until next time, cowabunga.&lt;/p&gt;
-
-&lt;hr /&gt;
-</content>
-<category term="react" />
-<category term="es6" />
-<category term="es 6" />
-<category term="class" />
-<category term="classes" />
-<category term="method" />
-<category term="property" />
-<category term="initializer" />
-<category term="arrow" />
-<category term="function" />
-<summary>Welcome back to another episode of react junkie’s blog post. Today I’ll be talking about meth crystal meth ice and how toreplicate the perfect process to produce the most immaculate blue sky just like Jesse Pinkman.</summary>
-</entry>
-<entry>
-<title>Step 4 to React: Intro to routing with react router</title>
-<link href="http://www.reactjunkie.com/step-four-to-react-routing-with-react-router/" rel="alternate" type="text/html" title="Step 4 to React: Intro to routing with react router" />
-<published>2016-06-30T14:52:00+10:00</published>
-<updated>2016-06-30T14:52:00+10:00</updated>
-<id>http://www.reactjunkie.com/step-four-to-react-routing-with-react-router</id>
-<content type="html" xml:base="http://www.reactjunkie.com/step-four-to-react-routing-with-react-router/">&lt;p&gt;I am in LA for holidays! Yep, I’m blogging as I am holidaying; I don’t know why but I just can’t stop thinking about it.
-My wife says I’m addicted to work, I said no. We fight a lot but we love each other. Love is weird.&lt;/p&gt;
-
-&lt;p&gt;Anyway! This is a short and basic guide to implement routing with react router.
-If you haven’t read my &lt;a href=&quot;http://www.reactjunkie.com/step-three-to-react-speed-dev-with-hot-module-replacement/&quot;&gt;previous post&lt;/a&gt;, 
-it might be a good idea to have a quick read before reading this one. We’ll build this example based on that last post.
-Let’s get into it!&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;step-41-install-react-router&quot;&gt;Step 4.1: Install react-router&lt;/h2&gt;
-
-&lt;p&gt;{% highlight raw %}
-npm install –save react-router
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;The latest version of react-router at the time of writing is 2.5.1. This single npm package is sufficient for 
-all our routing needs.&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;step-42-initialise-routes&quot;&gt;Step 4.2: Initialise routes&lt;/h2&gt;
-&lt;p&gt;You set up react router routes in jsx. What does that mean? That means you set up your routes
-the same way you write jsx; in an xml-like format with nested parent-child structure.&lt;/p&gt;
-
-&lt;p&gt;{% highlight xml %}
-import React from ‘react’;
-import {Route, IndexRoute} from ‘react-router’;
-import App from ‘./component/appComponent’;
-import Home from ‘./component/homeComponent’;
-import Contact from ‘./component/contactComponent’;&lt;/p&gt;
-
-&lt;p&gt;const routes =
-  &amp;lt;Route path=”/” component={App}&amp;gt;
-    &amp;lt;IndexRoute component={Home}/&amp;gt;
-    &amp;lt;Route path=”/contact” component={Contact}/&amp;gt;
-  &amp;lt;/Route&amp;gt;;&lt;/p&gt;
-
-&lt;p&gt;export default routes;
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;Setting up routes like this maybe confusing to someone who is new to react router and perhaps even more confusing
-for .NET developers who are used to setting up MVC routes. Let me explain how this works in react router:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Each &quot;Route&quot; element must specify a path and a component attribute.&lt;/li&gt;
-&lt;li&gt;Incoming urls will be matched to a path. When matched, the corresponding component will be rendered.&lt;/li&gt;
-&lt;li&gt;The previous point means that a path like &quot;/contact&quot; is actually a nested path which 
-matches &lt;b&gt;two&lt;/b&gt; components at &quot;/&quot; and &quot;/contact&quot;. That means &lt;b&gt;both&lt;/b&gt; the App and Contact components will be rendered.
-&lt;/li&gt;
-&lt;li&gt;IndexRoute is the default component which gets rendered when no nested route is specified i.e. when only &quot;/&quot; or &quot;&quot; is specified.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;step-43-add-react-router-links&quot;&gt;Step 4.3: Add react router links&lt;/h2&gt;
-&lt;p&gt;You need to use the Link component from react-router package instead of the standard html anchor tags to 
-be able to route across pages SPA style.&lt;/p&gt;
-
-&lt;p&gt;{% highlight xml %}&lt;/p&gt;
-&lt;link to=&quot;/&quot; /&gt;
-&lt;p&gt;Home&amp;lt;/Link&amp;gt;&lt;/p&gt;
-&lt;link to=&quot;/contact&quot; /&gt;
-&lt;p&gt;Contact Us&amp;lt;/Link&amp;gt;
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;Each Link component needs to have a “to” attribute specified. The value of each “to” attribute must match a route specified in the route.js 
-file in the previous section.&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;step-44-reactdom-render-router&quot;&gt;Step 4.4: ReactDom render Router&lt;/h2&gt;
-&lt;p&gt;Instead of rendering your root component directly on the client side, you render the Router component (from react-router package) with the routes attribute
-specified. This is so we can match urls and render matching components using the routes declared in common/route.js
-The history attribute tells react router to use html5 history api as opposed to hash history. If you don’t specify this attribute,
- you will get this warning: 
- {% highlight xml %}
- [react-router] &lt;code class=&quot;highlighter-rouge&quot;&gt;Router&lt;/code&gt; no longer defaults the history prop to 
- hash history. Please use the &lt;code class=&quot;highlighter-rouge&quot;&gt;hashHistory&lt;/code&gt; singleton instead.”
- {% endhighlight %}
-Html5 history api is preferable to hash history because it keeps the url clean:&lt;/p&gt;
-
-&lt;p&gt;“/contact”&lt;/p&gt;
-
-&lt;p&gt;as opposed to:&lt;/p&gt;
-
-&lt;p&gt;”/#/contact”&lt;/p&gt;
-
-&lt;p&gt;The whole client/index.js looks like this:
-{% highlight xml %}
-// Import the render method from react-dom so we can mount our
-// component onto an html element
-import React from ‘react’;
-import {render} from ‘react-dom’;
-import {Router, browserHistory} from ‘react-router’;
-import routes from ‘../common/route’;&lt;/p&gt;
-
-&lt;p&gt;/**
- * Render the Router component with routes attribute so we can match urls 
- * and render matching components using the routes declared in common/route.js.
- * The history attribute tells react router to use html5 history api as 
- * opposed to hash history. Html5 history api is preferable to hash history 
- * because it keeps the url clean e.g. “/contact” as opposed to “/#/contact”
- */
-render(&amp;lt;Router routes={routes} history={browserHistory} /&amp;gt;, document.getElementById(‘reactDiv’));
-{% endhighlight %}&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;step-45-write-child-react-components&quot;&gt;Step 4.5: Write child React components!&lt;/h2&gt;
-&lt;p&gt;Almost there! Now we create the actual Home and Contact components that
-get rendered when matched. These are pretty simple:&lt;/p&gt;
-
-&lt;h4 id=&quot;homecomponentjs&quot;&gt;homeComponent.js&lt;/h4&gt;
-&lt;p&gt;{% highlight c# %}
-import React, {Component} from ‘react’;&lt;/p&gt;
-
-&lt;p&gt;export default class Home extends Component {
-  render() {
-    return (
-      &amp;lt;div&amp;gt;
-        &amp;lt;p&amp;gt;React junkie will rock ndc 2016 in Sydney!&amp;lt;/p&amp;gt;
-      &amp;lt;/div&amp;gt;
-    );
-  }
-}
-{% endhighlight %}
-#### contactComponent.js
-{% highlight c# %}
-import React, {Component} from ‘react’;&lt;/p&gt;
-
-&lt;p&gt;export default class Contact extends Component {
-  render() {
-    return (
-      &amp;lt;div&amp;gt;
-        &amp;lt;p&amp;gt;Contact us! 555-6969&amp;lt;/p&amp;gt;
-      &amp;lt;/div&amp;gt;
-    );
-  }
-}
-{% endhighlight %}&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;step-46-some-finishing-touches-on-styling-and-run-the-app&quot;&gt;Step 4.6: Some finishing touches on styling and run the app!&lt;/h2&gt;
-&lt;p&gt;We’ll prettify our app by deactivating the current active link so users get a feedback on where they are on the website.
-The whole appComponent.js looks like this:&lt;/p&gt;
-
-&lt;h4 id=&quot;appcomponentjs&quot;&gt;appComponent.js&lt;/h4&gt;
-&lt;p&gt;{% highlight xml %}
-import React, {Component} from ‘react’;
-import {Link} from ‘react-router’;&lt;/p&gt;
-
-&lt;p&gt;export default class App extends Component {
-  render() {
-    return (
-      &amp;lt;div&amp;gt;
-        &amp;lt;h1&amp;gt;React Router Demo&amp;lt;/h1&amp;gt;
-        &lt;span&gt;
-          {
-            /* Activate or deactivate link depending on current route */
-            this.props.location.pathname === ‘/’ || this.props.location.pathname === ‘/home’ ?
-              &lt;span&gt;Home&lt;/span&gt; : &lt;link to=&quot;/&quot; /&gt;Home&amp;lt;/Link&amp;gt;
-          }
-        &lt;/span&gt; | 
-        &lt;span&gt;
-          {
-            this.props.location.pathname === ‘/contact’ ?
-              &lt;span&gt;Contact Us&lt;/span&gt; : &lt;link to=&quot;/contact&quot; /&gt;Contact Us&amp;lt;/Link&amp;gt;
-          }
-        &lt;/span&gt;
-        &amp;lt;div&amp;gt;{this.props.children}&amp;lt;/div&amp;gt;
-      &amp;lt;/div&amp;gt;
-    );
-  }
-}
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;Notes:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;You render child components from your routes by calling {this.props.children}&lt;/li&gt;
-&lt;li&gt;You can access the current location through &quot;this.props.location&quot;. This contains a &quot;pathname&quot; property which will tell you the current path
-that&#39;s matched.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;At your root directory run “npm start” and browse to localhost:3000 to see the output.
-Download the complete source code from &lt;a href=&quot;https://github.com/yusinto/reactStep4&quot;&gt;github&lt;/a&gt;.&lt;/p&gt;
-
-&lt;hr /&gt;
-</content>
-<category term="react" />
-<category term="react router" />
-<category term="routing" />
-<summary>I am in LA for holidays! Yep, I’m blogging as I am holidaying; I don’t know why but I just can’t stop thinking about it.My wife says I’m addicted to work, I said no. We fight a lot but we love each other. Love is weird.</summary>
 </entry>
 </feed>
