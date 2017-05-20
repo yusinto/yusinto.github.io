@@ -3,14 +3,141 @@
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
 <link href="http://reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
 <link href="http://reactjunkie.com/" rel="alternate" type="text/html" />
-<updated>2017-04-28T22:25:45+10:00</updated>
+<updated>2017-05-20T20:37:40+02:00</updated>
 <id>http://reactjunkie.com/</id>
 <title>React Junkie</title>
 <entry>
+<title>React Europe</title>
+<link href="http://reactjunkie.com/react-europe/" rel="alternate" type="text/html" title="React Europe" />
+<published>2017-05-20T09:30:00+02:00</published>
+<updated>2017-05-20T09:30:00+02:00</updated>
+<id>http://reactjunkie.com/react-europe</id>
+<content type="html" xml:base="http://reactjunkie.com/react-europe/">&lt;p&gt;As I stared at the partially cloudy Parisian sky from my seat at Gare du Nord, 
+I had a chance to reflect on the week that was. 4 days jam packed with 
+javascript and react from morning till night followed by socialising afterwards 
+(my fave), it’s definitely not for the faint-hearted. I admit I was a little 
+overwhelmed by the intensity of the schedule.&lt;/p&gt;
+
+&lt;h2 id=&quot;workshops&quot;&gt;Workshops&lt;/h2&gt;
+&lt;p&gt;I attended a 2-day advanced react workshop with &lt;a href=&quot;https://github.com/nikgraf&quot; target=&quot;_blank&quot;&gt;Nik Graf (serverless)&lt;/a&gt;
+and &lt;a href=&quot;https://github.com/mxstbr&quot; target=&quot;_blank&quot;&gt;Max Stoiber (styled components)&lt;/a&gt;. 
+I learnt loads about the react children api which I never really used before from Max and about
+the apollo graphql client for react from both Nik and Max. The exercises were very hands-on and realistic.
+In one exercise we had to implement a graphql backend and apollo front end for a recipe application.
+This involves setting up the graphql types, queries and mutations.&lt;/p&gt;
+
+&lt;p&gt;I am already using graphql and relay at work (qantasassure.com) so I thought this would be a piece of cake.
+Not exactly. It turns out the tools for graphql in the backend and frontend have
+evolved so much since I set it up 6 months ago, it was almost foreign to me. In a good way.
+I learnt it’s so much easier and simpler now to setup a graphql server with types and queries and mutations.
+Apollo really has done a lot of work to simplify the integration of graphql into react.&lt;/p&gt;
+
+&lt;p&gt;It’s so good to finally see the face behind the code! I am both a fan and user of serverless
+and styled components, so thanks for teaching me so much guys!&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/max_nik.png&quot; alt=&quot;Max Stoiber and Nik Graf&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;the-main-event&quot;&gt;The main event&lt;/h2&gt;
+&lt;p&gt;Prior to the start of the conference we heard word that Dan Abramov will not make it to Paris.
+He had some visa issues which didn’t allow him to enter Paris. Fuck. I should really ask for
+a refund.&lt;/p&gt;
+
+&lt;p&gt;Anyway the conference started with Andrew Clark (recompose) announcing the imminent release
+of react fiber (eta end of year). He’s one of the better speakers in the conference. I tend to
+pay more attention to people who use the stage and are comfortable moving about on the stage.
+The delivery style of the presentation is also important. Some speakers tend to just read off
+the screen and narrate, just the recipe to put people to sleep. Think kids and bedtime 
+story time. I expected more from all the speakers in this regard.&lt;/p&gt;
+
+&lt;p&gt;Andrew and a few others like Lee Byron, Kevin Lacker, Sunil Pai were excellent though. Part improvised 
+part narratted, I really enjoy their presentations. Sunil in particular is my favourite speaker,
+he’s really funny. His name reminds of the movie Life of Pi (of course his name is Pai, not Pi).&lt;/p&gt;
+
+&lt;p&gt;My picks:&lt;/p&gt;
+
+&lt;p&gt;&lt;b&gt;Lee Byron&lt;/b&gt; - released &lt;a href=&quot;https://facebook.github.io/relay/docs/relay-modern.html&quot; target=&quot;_blank&quot;&gt;Relay Modern v1.0&lt;/a&gt; 
+live on stage. Relay Modern now supports static queries, client side only fields and subscriptions. 
+Client side only fields mean that you can use relay to replace redux. Relay classic will still be supported in npm under
+react-relay/classic.&lt;/p&gt;
+
+&lt;p&gt;&lt;b&gt;Sunil Pai&lt;/b&gt; - author of glamour, glam and rakt. Rakt is an ambitious project which aims to umm do everything. By everything I mean
+taking care of code splitting, data fetching, inline styling (via glamour) and more. It is still not finished yet, so check
+&lt;a href=&quot;https://github.com/threepointone/rakt&quot; target=&quot;_blank&quot;&gt;Sunil’s page&lt;/a&gt; often. Sunil is my favourite speaker at the conference, he’s
+engaging, impromptu and funny. All ingredients for a captivating talk.&lt;/p&gt;
+
+&lt;p&gt;&lt;b&gt;Andrew Clarke&lt;/b&gt; - talks about React Fiber which will be released with React 16 at the end of the year. He also
+briefly talked about react portals, which are components which don’t quite fit in the dom tree like modals
+and overlays.&lt;/p&gt;
+
+&lt;p&gt;&lt;b&gt;Sarah Drasner&lt;/b&gt; - shows really cool css animations/transforms using &lt;a href=&quot;https://greensock.com/get-started-js&quot; target=&quot;_blank&quot;&gt;GreenSock&lt;/a&gt;. 
+It’s so cool and easy to use.&lt;/p&gt;
+
+&lt;p&gt;&lt;b&gt;Wix lightning talk&lt;/b&gt; - introduces &lt;a href=&quot;https://github.com/wix/detox&quot; target=&quot;_blank&quot;&gt;detox&lt;/a&gt; which is a functional 
+testing framework for react native. It’s super cool! It does grey box e2e testing of your react native apps automatically and it’s super fast!
+If you use react native you must check it out.&lt;/p&gt;
+
+&lt;p&gt;&lt;b&gt;Apollo lightning talk&lt;/b&gt; - Apollo has released a &lt;a href=&quot;https://github.com/apollographql/apollo-client-devtools&quot; target=&quot;_blank&quot;&gt;chrome devtool plugin&lt;/a&gt;
+for graphql. It runs graphiql in chrome devtools! It also has a query inspector and a store inspector. Check it out!&lt;/p&gt;
+
+&lt;p&gt;&lt;b&gt;Expo lightning talk&lt;/b&gt; - Expo has created a playground for react native at &lt;a href=&quot;http://snack.expo.io&quot; target=&quot;_blank&quot;&gt;snack.expo.io&lt;/a&gt;.
+You can run your react native code on the web without the simulator! It’s like jsfiddle for react native.&lt;/p&gt;
+
+&lt;p&gt;&lt;b&gt;Sasha Aickin&lt;/b&gt; - talks about streaming react dom to the client in chunks to boost performance. This involves chunk rendering, which is a
+technique involving breaking up a page into different chunks, each with its own html, js, css and data. Each chunk
+gets flushed to the client side separately, increasing parallelism and hence performance. Check out his github package 
+&lt;a href=&quot;https://github.com/aickin/react-dom-stream&quot; target=&quot;_blank&quot;&gt;react-dom-stream&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;social-insights&quot;&gt;Social Insights&lt;/h2&gt;
+&lt;p&gt;Perhaps the best lessons I learnt from the conference are not from the speakers, but from the people I met. There
+were many like me, all keen to share their views, opinions and experience and also to listen. Talking to these
+developers gave me a chance to validate some of the assumptions I make in my projects and to see the tools and 
+techniques others use in their apps.&lt;/p&gt;
+
+&lt;p&gt;These are some of the people I met and the insights I gathered from them:&lt;/p&gt;
+
+&lt;p&gt;&lt;b&gt;Dafeng Guo cofounder of strikingly&lt;/b&gt; - started strikingly with 2 other founders in YCombinator in 2012. They had 0 paying customers
+in 2012, now they have over 130 employees and a lot more customers :). I am a user of strikingly and I can’t recommend it enough. He also
+showed me strikingly’s latest wechat feature where strikingly websites now are automatically converted to wechat apps. That’s super cool!
+&lt;img src=&quot;/assets/images/dafeng.png&quot; alt=&quot;Dafeng&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;b&gt;Griffith Tchen Pan&lt;/b&gt; - works at myworkpapers.com. Started in Gold Coast Australia and now has offices in USA and London. 8 years of
+ dedication and commitment to a product pays off. That’s what I learned from him.
+ &lt;img src=&quot;/assets/images/griffith.png&quot; alt=&quot;Griffith&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;b&gt;Brian Christensen&lt;/b&gt; Danish guy I met at the workshop. Arguably the smartest guy in Denmark, he knows everything from docker to glam to
+elm, and does not have a CI in place at his workplace. Just kidding Brian :). He drinks a lot.
+&lt;img src=&quot;/assets/images/brian.png&quot; alt=&quot;Brian&quot; /&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+&lt;p&gt;It’s not the best organised conference I’ve been for a few reasons.&lt;/p&gt;
+
+&lt;p&gt;Firstly as I mentioned above, some of the speakers weren’t really very engaging. 
+It was really tough to keep awake at times. Second the food was really really bad. 
+During the workshops, there was no protein whatsoever for lunch. It was only 
+salad, quinoa, rice, pasta. Where’s the meat!!?! Or fish??!? Thirdly the cancellation of Dan Abramov was 
+disappointing. Even Max Stoiber didn’t stick around to give his presentation (no reason given). 
+Maybe they were put off by the food…&lt;/p&gt;
+
+&lt;p&gt;I travelled 26 hours from Sydney Australia, stopping at 3 different countries en route to Paris, 
+and then back. Is it worth it? Yes. I definitely won’t forget it. Here are more pics from all
+the great people I met. Till next time!&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/react_conference_collage.png&quot; alt=&quot;Brian&quot; /&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+</content>
+<category term="react" />
+<category term="europe" />
+<category term="conference" />
+<category term="paris" />
+<category term="france" />
+<summary>As I stared at the partially cloudy Parisian sky from my seat at Gare du Nord, I had a chance to reflect on the week that was. 4 days jam packed with javascript and react from morning till night followed by socialising afterwards (my fave), it’s definitely not for the faint-hearted. I admit I was a little overwhelmed by the intensity of the schedule.</summary>
+</entry>
+<entry>
 <title>Change marker image onPress in react-native-maps</title>
 <link href="http://reactjunkie.com/react-native-maps-change-marker-image-onpress/" rel="alternate" type="text/html" title="Change marker image onPress in react-native-maps" />
-<published>2017-04-25T09:30:00+10:00</published>
-<updated>2017-04-25T09:30:00+10:00</updated>
+<published>2017-04-25T09:30:00+02:00</published>
+<updated>2017-04-25T09:30:00+02:00</updated>
 <id>http://reactjunkie.com/react-native-maps-change-marker-image-onpress</id>
 <content type="html" xml:base="http://reactjunkie.com/react-native-maps-change-marker-image-onpress/">&lt;p&gt;Recently I started a new pet project which involves maps and markers on ios and android. Of course I started
 this new project in react native. I was expecting a somewhat challenging times ahead because it has been
@@ -256,8 +383,8 @@ github. Let me know if this helps!&lt;/p&gt;
 <entry>
 <title>Scheduling Feature Flag Deployment</title>
 <link href="http://reactjunkie.com/scheduling-feature-flag-deployment/" rel="alternate" type="text/html" title="Scheduling Feature Flag Deployment" />
-<published>2017-02-28T08:30:00+11:00</published>
-<updated>2017-02-28T08:30:00+11:00</updated>
+<published>2017-02-28T08:30:00+01:00</published>
+<updated>2017-02-28T08:30:00+01:00</updated>
 <id>http://reactjunkie.com/scheduling-feature-flag-deployment</id>
 <content type="html" xml:base="http://reactjunkie.com/scheduling-feature-flag-deployment/">&lt;h4 id=&quot;updated-mon-13-march-2017&quot;&gt;Updated Mon 13 March 2017&lt;/h4&gt;
 
@@ -404,8 +531,8 @@ Of course you would enter this json object in the “Description” field of you
 <entry>
 <title>Testing Connected Redux and Relay Components</title>
 <link href="http://reactjunkie.com/testing-connected-redux-relay-components/" rel="alternate" type="text/html" title="Testing Connected Redux and Relay Components" />
-<published>2017-01-28T08:30:00+11:00</published>
-<updated>2017-01-28T08:30:00+11:00</updated>
+<published>2017-01-28T08:30:00+01:00</published>
+<updated>2017-01-28T08:30:00+01:00</updated>
 <id>http://reactjunkie.com/testing-connected-redux-relay-components</id>
 <content type="html" xml:base="http://reactjunkie.com/testing-connected-redux-relay-components/">&lt;p&gt;Happy chinese new year everyone! In the spirit of the year of the cock, I shall write the rest of this post in chinese. 
 中国著名的大思想家、大教育家。孔子开创了私人讲学的风气，是儒家学派的创始人。孔子曾受业于老子 (roughly translates to… I don’t know).
@@ -551,8 +678,8 @@ This feels right for me. Also, you can apply the same technique to test react co
 <entry>
 <title>Building graphql schema without babelrc</title>
 <link href="http://reactjunkie.com/build-graphql-schema-without-babelrc/" rel="alternate" type="text/html" title="Building graphql schema without babelrc" />
-<published>2016-12-12T19:30:00+11:00</published>
-<updated>2016-12-12T19:30:00+11:00</updated>
+<published>2016-12-12T19:30:00+01:00</published>
+<updated>2016-12-12T19:30:00+01:00</updated>
 <id>http://reactjunkie.com/build-graphql-schema-without-babelrc</id>
 <content type="html" xml:base="http://reactjunkie.com/build-graphql-schema-without-babelrc/">&lt;p&gt;Man it has been a busy month! It’s been a while since I blogged, I have to say I miss it a lot. Almost as much as I 
 miss drinking..&lt;/p&gt;
@@ -625,8 +752,8 @@ require(‘./updateSchema’);
 <entry>
 <title>Targeting users with React Redux and Launch Darkly</title>
 <link href="http://reactjunkie.com/launch-darkly-part-two/" rel="alternate" type="text/html" title="Targeting users with React Redux and Launch Darkly" />
-<published>2016-11-01T19:30:00+11:00</published>
-<updated>2016-11-01T19:30:00+11:00</updated>
+<published>2016-11-01T19:30:00+01:00</published>
+<updated>2016-11-01T19:30:00+01:00</updated>
 <id>http://reactjunkie.com/launch-darkly-part-two</id>
 <content type="html" xml:base="http://reactjunkie.com/launch-darkly-part-two/">&lt;p&gt;In my &lt;a href=&quot;http://www.reactjunkie.com/react-feature-toggle-launch-darkly/&quot; target=&quot;_blank&quot;&gt;previous previous post&lt;/a&gt; 
 I introduced launch darkly as a feature toggling platform and how to use it with react redux. In this post I
@@ -759,8 +886,8 @@ new world of possibilities in regards to what you can do with your app. Someday 
 <entry>
 <title>Hot Reloading Universally Bundled Webpack Apps</title>
 <link href="http://reactjunkie.com/universal-hot-reload/" rel="alternate" type="text/html" title="Hot Reloading Universally Bundled Webpack Apps" />
-<published>2016-10-22T10:52:00+11:00</published>
-<updated>2016-10-22T10:52:00+11:00</updated>
+<published>2016-10-22T10:52:00+02:00</published>
+<updated>2016-10-22T10:52:00+02:00</updated>
 <id>http://reactjunkie.com/universal-hot-reload</id>
 <content type="html" xml:base="http://reactjunkie.com/universal-hot-reload/">&lt;p&gt;I learnt quite a lot in the past week. Firstly there’s no substitute to good sleep. Secondly, you can actually eat a salmon steak raw! Thirdly, it’s really really hard
 to hot reload a server bundle if you are writing a universal app.&lt;/p&gt;
@@ -1098,8 +1225,8 @@ Check it out! Let me know if there’s any issues.&lt;/p&gt;
 <entry>
 <title>Implementing feature toggle with launch darkly and react redux</title>
 <link href="http://reactjunkie.com/react-feature-toggle-launch-darkly/" rel="alternate" type="text/html" title="Implementing feature toggle with launch darkly and react redux" />
-<published>2016-09-16T10:52:00+10:00</published>
-<updated>2016-09-16T10:52:00+10:00</updated>
+<published>2016-09-16T10:52:00+02:00</published>
+<updated>2016-09-16T10:52:00+02:00</updated>
 <id>http://reactjunkie.com/react-feature-toggle-launch-darkly</id>
 <content type="html" xml:base="http://reactjunkie.com/react-feature-toggle-launch-darkly/">&lt;h3 id=&quot;update-22-october-2016&quot;&gt;&lt;em&gt;Update: 22 October 2016&lt;/em&gt;&lt;/h3&gt;
 &lt;p&gt;&lt;em&gt;I have published an npm package called &lt;a href=&quot;https://github.com/yusinto/ld-redux&quot; target=&quot;_blank&quot;&gt;ld-redux&lt;/a&gt; which covers everything you need to integrate launch darkly with your react 
@@ -1455,8 +1582,8 @@ and launch darkly in the coming posts.&lt;/p&gt;
 <entry>
 <title>Deploying react apps on docker using ecs and terraform part 1</title>
 <link href="http://reactjunkie.com/docker-ecs-terraform-react/" rel="alternate" type="text/html" title="Deploying react apps on docker using ecs and terraform part 1" />
-<published>2016-09-03T10:52:00+10:00</published>
-<updated>2016-09-03T10:52:00+10:00</updated>
+<published>2016-09-03T10:52:00+02:00</published>
+<updated>2016-09-03T10:52:00+02:00</updated>
 <id>http://reactjunkie.com/docker-ecs-terraform-react</id>
 <content type="html" xml:base="http://reactjunkie.com/docker-ecs-terraform-react/">&lt;p&gt;I was tinkering on blogging about Step 5 to React: Introduction to Redux, but I decided to write something closer to my heart: 
 using ecs and terraform to deploy docker react apps (can I squeeze in anymore buzzwords?). This is not an intro to docker so 
@@ -1645,8 +1772,8 @@ build systems and so on. Docker has dockerhub which does exactly that, but I use
 <entry>
 <title>Australia Brain Drain</title>
 <link href="http://reactjunkie.com/brain-drain-australia/" rel="alternate" type="text/html" title="Australia Brain Drain" />
-<published>2016-08-05T01:19:00+10:00</published>
-<updated>2016-08-05T01:19:00+10:00</updated>
+<published>2016-08-05T01:19:00+02:00</published>
+<updated>2016-08-05T01:19:00+02:00</updated>
 <id>http://reactjunkie.com/brain-drain-australia</id>
 <content type="html" xml:base="http://reactjunkie.com/brain-drain-australia/">&lt;p&gt;My first NDC conference (anywhere) I have to say the whole event was very well planned, although there are a
 couple of things which can be improved:&lt;/p&gt;
@@ -1724,158 +1851,5 @@ States and the rest of the world as well.&lt;/p&gt;
 <category term="brain" />
 <category term="drain" />
 <summary>My first NDC conference (anywhere) I have to say the whole event was very well planned, although there are acouple of things which can be improved:    Wifi connection - the Hilton&#39;s wifi connection was so crap, all the guest speakers especially american and uk    speakers think that Australia as a whole are running on a 56k modem. I actually attended a session where the speaker had    to tether from an Android 4G connection just to demo his stuff (Peter Myers, please forgive us). If you are from overseas     speaking/spoke at NDC Sydney, please accept our sincerest apology, and please don&#39;t misunderstand. Our internet connection     in Australia is pretty good, it&#39;s just at Hilton&#39;s, so please forgive us.        Pricing was a bit steep. I understand Sydney is one of the most expensive cities in the world, yes yes. It&#39;s such     a shame though many developers are left out of NDC because of pricing/cost. Personally I know many a great    developer that missed out on NDC Sydney purely due to financial reasons. I believe an event such as this should be more    accessible and affordable to the community in general, because it&#39;s a symbiosis. The more people attending these events,    the more aware they are of the current technologies on offer today, the higher the adoption rate and awareness, and    the whole thing propagates in a vicious cycle that can only benefit the development world.    </summary>
-</entry>
-<entry>
-<title>Demistifying es6 class method and property initializer arrow function</title>
-<link href="http://reactjunkie.com/demistifying-es6-class-method-and-property-initializer-arrow-function/" rel="alternate" type="text/html" title="Demistifying es6 class method and property initializer arrow function" />
-<published>2016-07-30T14:52:00+10:00</published>
-<updated>2016-07-30T14:52:00+10:00</updated>
-<id>http://reactjunkie.com/demistifying-es6-class-method-and-property-initializer-arrow-function</id>
-<content type="html" xml:base="http://reactjunkie.com/demistifying-es6-class-method-and-property-initializer-arrow-function/">&lt;p&gt;Welcome back to another episode of react junkie’s blog post. Today I’ll be talking about meth crystal meth ice and how to
-replicate the perfect process to produce the most immaculate blue sky just like Jesse Pinkman.&lt;/p&gt;
-
-&lt;p&gt;Did that get your attention? :)&lt;/p&gt;
-
-&lt;p&gt;Actually no. Today I’ll be talking about a much more exciting topic: the difference between es6 class methods and arrow functions.&lt;/p&gt;
-
-&lt;p&gt;I encountered this at work when two of my colleagues (let’s call them Lill and Woic to preserve anonymity) implemented class methods
-in two different styles. Compare the printQuality method in the following code snippets:&lt;/p&gt;
-
-&lt;h4 id=&quot;lill-standard-es6-class-method&quot;&gt;Lill: Standard es6 class method&lt;/h4&gt;
-&lt;p&gt;{% highlight c# %}
-import React, {Component} from ‘react’;&lt;/p&gt;
-
-&lt;p&gt;export default class MethLab extends Component {&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;constructor(props) {
-    super(props);
-    
-    this.state = {
-        methQuality: &#39;blueSky&#39;
-    };
-    
-    // manually bind &quot;this&quot; context of printQuality function
-    // to the instance of MethLab being constructed
-    this.printQuality = ::this.printQuality;
-}
-
-// Use the standard es6 class method syntax
-printQuality() {
-    console.log(`${this.state.methQuality}`);
-} } {% endhighlight %}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;h4 id=&quot;woic-property-initializer-with-arrow-function&quot;&gt;Woic: Property initializer with arrow function&lt;/h4&gt;
-&lt;p&gt;{% highlight c# %}
-import React, {Component} from ‘react’;&lt;/p&gt;
-
-&lt;p&gt;export default class MethLab extends Component {&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;constructor(props) {
-    super(props);
-    
-    this.state = {
-       methQuality: &#39;blueSky&#39;
-    };
-}
-
-// Use property initializer combined with arrow function
-printQuality = () =&amp;gt; {
-    console.log(`${this.state.methQuality}`);
-}; } {% endhighlight %}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;Can you guess the output of each implementation? If you’ve been using react
-for a while, you would guess that they would both output ‘bluesky’ and you would be
-right. Based on that guess, you would further extrapolate that they are both
-doing the same thing and are indifferent from each other. It’s a fair and logical guess, but you would be wrong.&lt;/p&gt;
-
-&lt;p&gt;The answer lies in the es5 translation of these syntactic sugar. Let me explain through code:&lt;/p&gt;
-
-&lt;h4 id=&quot;lill-standard-es6-class-method-in-es5&quot;&gt;Lill: Standard es6 class method in es5&lt;/h4&gt;
-&lt;p&gt;{% highlight c# %}
-function MethLab(props) {
-    …&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// manually bind &quot;this&quot; context of printQuality function
-// to the instance of MethLab being constructed
-this.printQuality = this.printQuality.bind(this);
-
-... }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;MethLab.prototype.printQuality = function printQuality() {
-    console.log(this.state.methQuality);
-};
-{% endhighlight %}&lt;/p&gt;
-
-&lt;h4 id=&quot;woic-property-initializer-with-arrow-function-in-es5&quot;&gt;Woic: Property initializer with arrow function in es5&lt;/h4&gt;
-&lt;p&gt;{% highlight c# %}
-function MethLab(props) {
-    …&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;this.printQuality = function () {
-    console.log(this.state.methQuality);
-};
-
-... }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;The above are simplified versions of the actual babel6 output (you can see 
-the full translations using the kick-ass babel6 repl editor 
-&lt;a href=&quot;https://babeljs.io/repl/&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;)&lt;/p&gt;
-
-&lt;p&gt;The key point here is that the standard es6 class method translates to
-a method on the function prototype, whereas the arrow function translates
-to a method in the constructor function.&lt;/p&gt;
-
-&lt;p&gt;What does this mean? Traditionally in es5, you would only declare instance 
-properties in the constructor function. These are properties that are 
-specific to the instance and are not shared across instances. For example constructor arguments. 
-These are created every time for each instance and hence are not very efficient.&lt;/p&gt;
-
-&lt;p&gt;To improve performance, you would declare shared properties and methods on the
-function prototype. These will be created once for the function and then shared across all
-instances. I would normally declare methods on the function prototype; properties not so much.&lt;/p&gt;
-
-&lt;p&gt;It makes sense to share methods across instances for performance reasons and keep instance properties
-in the constructor function. This leads to the conclusion that the es6 standard class method syntax
-(Lill’s way) is preferable to the property initializer arrow function syntax.&lt;/p&gt;
-
-&lt;p&gt;Hopefully by understanding what es6 does under the hood you can now better decide
-how to declare your class methods. I know many developers are using the property
-initializer arrow function syntax because it’s convenient, albeit unaware of what’s 
-really happening under the hood.&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;other-news&quot;&gt;Other news&lt;/h2&gt;
-&lt;p&gt;I’ll be attending &lt;a href=&quot;http://ndcsydney.com/&quot; target=&quot;_blank&quot;&gt;NDC Sydney&lt;/a&gt; on 3-5 August. If you are around, please say hello otherwise
-it will be quite a lonely conference for me :(&lt;/p&gt;
-
-&lt;p&gt;I have also organised a reading group which will take place on Thu 25 Aug. The pick is &lt;a href=&quot;https://www.nostarch.com/hemingway&quot; target=&quot;_blank&quot;&gt;“If Hemingway Wrote Javascript”
-by Angus Croll&lt;/a&gt;. Please reach out to me if you would like to join!&lt;/p&gt;
-
-&lt;p&gt;Until next time, cowabunga.&lt;/p&gt;
-
-&lt;hr /&gt;
-</content>
-<category term="react" />
-<category term="es6" />
-<category term="es 6" />
-<category term="class" />
-<category term="classes" />
-<category term="method" />
-<category term="property" />
-<category term="initializer" />
-<category term="arrow" />
-<category term="function" />
-<summary>Welcome back to another episode of react junkie’s blog post. Today I’ll be talking about meth crystal meth ice and how toreplicate the perfect process to produce the most immaculate blue sky just like Jesse Pinkman.</summary>
 </entry>
 </feed>

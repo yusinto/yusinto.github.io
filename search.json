@@ -1,6 +1,13 @@
 [
   
     {
+      "title"    : "React Europe",
+      "tags"     : "react, europe, conference, paris, and france",
+      "url"      : "/react-europe/",
+      "date"     : "20 May 2017"
+    } ,
+  
+    {
       "title"    : "Change marker image onPress in react-native-maps",
       "tags"     : "react, native, maps, change, marker, image, and onpress",
       "url"      : "/react-native-maps-change-marker-image-onpress/",
