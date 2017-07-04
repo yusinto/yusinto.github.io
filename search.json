@@ -1,6 +1,13 @@
 [
   
     {
+      "title"    : "Writing Graphcool functions in es6 with async await and jest",
+      "tags"     : "graphcool, functions, server, side, subscription, async, await, es6, graphql, and jest",
+      "url"      : "/graphcool-functions-in-es6-with-async-await/",
+      "date"     : "30 Jun 2017"
+    } ,
+  
+    {
       "title"    : "React Europe",
       "tags"     : "react, europe, conference, paris, and france",
       "url"      : "/react-europe/",

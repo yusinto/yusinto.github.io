@@ -3,14 +3,328 @@
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
 <link href="http://reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
 <link href="http://reactjunkie.com/" rel="alternate" type="text/html" />
-<updated>2017-05-20T21:14:27+02:00</updated>
+<updated>2017-07-05T08:43:20+10:00</updated>
 <id>http://reactjunkie.com/</id>
 <title>React Junkie</title>
 <entry>
+<title>Writing Graphcool functions in es6 with async await and jest</title>
+<link href="http://reactjunkie.com/graphcool-functions-in-es6-with-async-await/" rel="alternate" type="text/html" title="Writing Graphcool functions in es6 with async await and jest" />
+<published>2017-06-30T08:30:00+10:00</published>
+<updated>2017-06-30T08:30:00+10:00</updated>
+<id>http://reactjunkie.com/graphcool-functions-in-es6-with-async-await</id>
+<content type="html" xml:base="http://reactjunkie.com/graphcool-functions-in-es6-with-async-await/">&lt;p&gt;Graphcool is cool. Graphcool functions are even cooler. There are two types of functions:
+request pipeline and server side subscription. Request pipeline functions get triggered
+at a specified stage of a crud request. You write custom business logic you want to execute
+as part of your api requests. It is synchronous.&lt;/p&gt;
+
+&lt;p&gt;The second type of function is server side subscription. These get triggered
+&lt;b&gt;after&lt;/b&gt; crud operations. Your write custom business logic here to
+react to crud events in your database after the fact. Server side subscriptions are
+asynchronous.&lt;/p&gt;
+
+&lt;p&gt;In this blog, I will talk about server side subscriptions. A crud occurs
+on the server and we want to execute some business logic after that happens.
+The traditional solution is to do it in our own backend in node/java/.net
+probably in the business logic layer. But that means we need to host our
+own backend server which means we have to worry about infrastructure.
+Can we do better?&lt;/p&gt;
+
+&lt;p&gt;Yes we can. Enter Graphcool server side subscriptions. You write your business logic directly in
+the Graphcool console and specify the event which will trigger this logic.&lt;/p&gt;
+
+&lt;h2 id=&quot;goal&quot;&gt;Goal&lt;/h2&gt;
+&lt;p&gt;The goal is to create a stripe customer when a Graphcool customer is created. It’s a very common
+use case. The complete code is &lt;a href=&quot;https://github.com/graphcool-examples/functions/tree/master/stripe-create-customer-es6&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Enough talk, let’s code!&lt;/p&gt;
+
+&lt;h2 id=&quot;step-1-create-graphcool-schema&quot;&gt;Step 1: Create Graphcool schema&lt;/h2&gt;
+&lt;p&gt;Create a Customer type in your Graphcool backend so we have something to crud with.&lt;/p&gt;
+
+&lt;h4 id=&quot;customergraphql&quot;&gt;customer.graphql&lt;/h4&gt;
+&lt;p&gt;{% highlight javascript %}
+type Customer implements Node {
+  email: String!
+  stripeCustomerId: String
+  id: ID! @isUnique
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;Use the graphcool cli to create a new Graphcool project and create the Customer type.&lt;/p&gt;
+
+&lt;p&gt;{% highlight bash %}
+npm -g install graphcool
+graphcool init –schema customer.graphql
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h2 id=&quot;step-2-create-graphcool-server-side-subscription&quot;&gt;Step 2: Create Graphcool server side subscription&lt;/h2&gt;
+&lt;p&gt;The cli is powerful but it is still work in progress. You can’t create functions
+via the cli at this stage (yet). We’ll create our ssr function via the console
+for now. You can open the console using the cli:&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+graphcool console
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;Go to functions -&amp;gt; new function -&amp;gt; server-side subscription -&amp;gt; select Customer type
+as the trigger and click define function. Copy paste the subscription query
+below into the left window pane under subscription query.&lt;/p&gt;
+
+&lt;h4 id=&quot;subscriptiongraphql&quot;&gt;subscription.graphql&lt;/h4&gt;
+&lt;p&gt;{% highlight C# %}
+subscription {
+  Customer(filter: {
+    mutation_in: [CREATED]
+  }) {
+    node {
+      id
+      email
+    }
+  }
+}
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;Let’s look at this in detail:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+The &lt;b&gt;&lt;i&gt;subscription&lt;/i&gt;&lt;/b&gt; keyword is a third operation recently added to
+graphql in addition to query and mutation.
+&lt;/li&gt;
+&lt;li&gt;The subscription above means we are subscribing only to Customer create events.
+You can also listen to UPDATED and DELETED events but we don&#39;t need those here.
+&lt;/li&gt;
+&lt;li&gt;When a Customer is created, return the id and email of that newly created customer.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Back in the console click “Create Function”. Leave inline code on the right pane
+for now, we’ll write the code for this in the next section.&lt;/p&gt;
+
+&lt;h2 id=&quot;step-3-write-code&quot;&gt;Step 3: Write code!&lt;/h2&gt;
+&lt;p&gt;Finally we get to write some code! You can code directly
+in the console inline editor, but doing so forgoes a lot of the benefit
+of your IDE. Furthermore, behind the scenes inline functions are deployed
+to &lt;a href=&quot;https://webtask.io/&quot;&gt;webtask&lt;/a&gt; which is cool
+but does not support async await.&lt;/p&gt;
+
+&lt;p&gt;Optionally you can also write and deploy your code elsewhere (like aws lambda or even directly in webtask) and
+specify that as a webhook. But this means you have to worry about hosting
+your code elsewhere.&lt;/p&gt;
+
+&lt;p&gt;In this blog, we want to be able to write es6 code with async await, linting, unit tests,
+strong typing, etc in the comfort of our favourite IDE and be able to
+deploy that to graphcool. To do this we have to bite the bullet and use
+webpack to transpile our code. Luckily for you fellow js devs, readers and
+oss fans, I’ve done all the hard work! I have worked out the minimal webpack
+config to support async await and the latest es6 features to write Graphcool
+functions. There’s a &lt;a href=&quot;#bonus-webpack-configuration&quot;&gt;bonus section&lt;/a&gt; at the
+end of this blog if you are interested in how the webpack config works.&lt;/p&gt;
+
+&lt;h3 id=&quot;step-31-cheat-and-setup-webpack-and-dependencies&quot;&gt;Step 3.1: Cheat and setup webpack and dependencies&lt;/h3&gt;
+&lt;p&gt;This is not a webpack tutorial so we’re gonna cheat and copy all the required
+config. Copy package.json, webpack.config.js and .babelrc from
+&lt;a href=&quot;https://github.com/graphcool-examples/functions/tree/master/stripe-create-customer-es6&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;
+to your root directory.&lt;/p&gt;
+
+&lt;p&gt;Also at the root of your project, create a src directory for all your code. Then do yarn.&lt;/p&gt;
+
+&lt;p&gt;{% highlight bash %}
+yarn
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;Note the dependencies in package.json. We need stripe and a fetch library
+so those are included. In Graphcool, our code runs in a webtask container which has these
+npm packages available. Therefore we don’t include third party npm
+packages in our bundle. This keeps our bundle size small so we can easily deploy it.
+You can see the libraries available in webtask &lt;a href=&quot;https://tehsis.github.io/webtaskio-canirequire/&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;There also devDependencies which are mostly used by webpack to transpile our code.
+You can safely acknowledge that it’s there and ignore this for now. We
+also use jest for unit tests so that’s in there too. Check the
+&lt;a href=&quot;#bonus-webpack-configuration&quot;&gt;bonus section&lt;/a&gt; below if you want to
+dig into the webpack config.&lt;/p&gt;
+
+&lt;h2 id=&quot;step-32&quot;&gt;Step 3.2:&lt;/h2&gt;
+&lt;p&gt;Create a file called src/createStripeCustomer.js. This file contains all
+of our function code. Note that the webpack config you copied is hardcoded to
+look for this file under src/createStripeCustomer.js. You can change this
+in webpack.config.js if you wish. Let’s go ahead and define our main method.&lt;/p&gt;
+
+&lt;h4 id=&quot;main&quot;&gt;main&lt;/h4&gt;
+&lt;p&gt;{% highlight javascript %}
+const main = event =&amp;gt; {
+  // event.data contains the shape of the object returned by your
+  // subscription query in step 2
+  const {id, email} = event.data.Customer.node;&lt;/p&gt;
+
+&lt;p&gt;// we have to return a promise from this method if there are asynchronous
+  // logic involved. Otherwise the webtask process completes and exits.
+  return new Promise(async (resolve, reject) =&amp;gt; {
+    try {
+      // Look ma! async await! yayy
+      const stripeCustomer = await createStripeCustomer(email);
+      const graphCoolCustomer = await updateGraphCoolCustomer(id, stripeCustomer.id);
+      console.log(&lt;code class=&quot;highlighter-rouge&quot;&gt;Successfully updated GraphCool customer: ${JSON.stringify(graphCoolCustomer)}&lt;/code&gt;);
+      resolve(event);
+    }
+    catch (err) {
+      console.log(err);
+      reject(err);
+    }
+  });
+};&lt;/p&gt;
+
+&lt;p&gt;module.exports = main;
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;The business logic goes like this:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+When a Graphcool customer is created, create a stripe customer. This is done
+via the &lt;i&gt;createStripeCustomer&lt;/i&gt; which we wil define below.
+&lt;/li&gt;
+&lt;li&gt;
+When a stripe customer is created, update the existing Graphcool customer
+record with the stripe customer id.
+&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;createstripecustomer-method&quot;&gt;createStripeCustomer method&lt;/h4&gt;
+&lt;p&gt;{% highlight javascript %}
+const createStripeCustomer = async email =&amp;gt; {
+  console.log(&lt;code class=&quot;highlighter-rouge&quot;&gt;Creating stripe customer for ${email}&lt;/code&gt;);
+  let stripeCustomer;&lt;/p&gt;
+
+&lt;p&gt;try {
+    // invoke stripe api
+    stripeCustomer = await stripe.customers.create({email});
+    console.log(&lt;code class=&quot;highlighter-rouge&quot;&gt;Successfully created Stripe customer: ${stripeCustomer.id}&lt;/code&gt;);
+    return stripeCustomer;
+  }
+  catch (err) {
+    console.log(&lt;code class=&quot;highlighter-rouge&quot;&gt;Error creating Stripe customer: ${JSON.stringify(err)}&lt;/code&gt;);
+    throw err;
+  }
+};
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h4 id=&quot;updategraphcoolcustomer-method&quot;&gt;updateGraphCoolCustomer method&lt;/h4&gt;
+&lt;p&gt;{% highlight javascript %}
+const updateGraphCoolCustomer = async (id, stripeCustomerId) =&amp;gt; {
+  // prepare our mutation to send to Graphcool
+  const updateCustomer = JSON.stringify({
+    query: `
+        mutation {
+          updateCustomer(
+            id: “${id}”,
+            stripeCustomerId: “${stripeCustomerId}”,
+          ) {
+            id
+            stripeCustomerId
+            email
+          }
+        }
+      `
+  });&lt;/p&gt;
+
+&lt;p&gt;try {
+    // post the mutation to Graphcool
+    const response = await fetch(graphCoolEndpoint, {
+      headers: {‘content-type’: ‘application/json’},
+      method: ‘POST’,
+      body: updateCustomer,
+    });
+    return await response.json();
+  }
+  catch (err) {
+    console.log(&lt;code class=&quot;highlighter-rouge&quot;&gt;Error updating GraphCool customer: ${JSON.stringify(err)}&lt;/code&gt;);
+    throw err;
+  }
+};
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;These methods are quite self-explanatory, but some notes:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;I left out import statements for brevity, but you need to import isomorphic-fetch
+and stripe at the top of the file.&lt;/li&gt;
+  &lt;li&gt;I placed my stripe key and Graphcool endpoint in a constants file for code
+cleanliness.&lt;/li&gt;
+  &lt;li&gt;It would have been cleaner to use &lt;a href=&quot;https://github.com/graphcool/graphql-request&quot; target=&quot;_blank&quot;&gt;graphql-request&lt;/a&gt;
+instead of isomorphic-fetch. However webtask does not support that yet.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The full code is available &lt;a href=&quot;https://github.com/graphcool-examples/functions/blob/master/stripe-create-customer-es6/src/createStripeCustomer.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;step-4-build--deploy&quot;&gt;Step 4: Build &amp;amp; deploy&lt;/h2&gt;
+&lt;p&gt;{% highlight bash %}
+npm run build
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;This should produce an uglified js file under build/createStripeCustomer.js. To deploy,
+we’ll use a sophisticated method which you might not be familiar with: copy &amp;amp; paste.
+I know I know it sucks. In the future Graphcool cli should support function creation and updates
+so hopefully at that time, someone can post a PR to this github repo.&lt;/p&gt;
+
+&lt;p&gt;In the meantime, open the uglified file, copy the contents and paste that into the inline editor
+in the Graphcool console. Remember to save by clicking the Update Function.&lt;/p&gt;
+
+&lt;p&gt;Test the function by creating a customer in the playground. Note that stripeCustomerId
+is null initially. Then query that customer again and
+if everything works, you should see a stripe customer id!&lt;/p&gt;
+
+&lt;h2 id=&quot;bonus-webpack-configuration&quot;&gt;Bonus: webpack configuration&lt;/h2&gt;
+&lt;p&gt;This is not a webpack tutorial but I want to share a few interesting things I
+discovered while working on this:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;We export our function by setting module.exports so we need to set
+output.libraryTarget to commonjs2.&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;DO NOT BUNDLE THIRD PARTY LIBRARIES!&lt;/b&gt; This will blow up your code size, and it’s
+not necessary. Your Graphcool function is executed in webtask
+and it supports most of the npm packages you’ll need. Check &lt;a href=&quot;https://tehsis.github.io/webtaskio-canirequire/&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;
+for packages webtask supports.&lt;/li&gt;
+  &lt;li&gt;As a result of the point above, use
+&lt;a href=&quot;https://github.com/liady/webpack-node-externals&quot; target=&quot;_blank&quot;&gt;webpack-node-externals&lt;/a&gt; to exclude all npm packages.&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;GOTCHA&lt;/b&gt;: oops actually not &lt;i&gt;all&lt;/i&gt;. To enable latest es6
+features and async await, we have to include two npm packages: babel-polyfill and regenerator-runtime/runtime&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;If you are interested, you can check the complete webpack config &lt;a href=&quot;https://github.com/graphcool-examples/functions/blob/master/stripe-create-customer-es6/webpack.config.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;whats-next&quot;&gt;What’s next?&lt;/h2&gt;
+&lt;p&gt;Part 2 of this blog will cover unit testing your functions with jest. I’ll
+also attempt to cover client side subscriptions separate to this.&lt;/p&gt;
+
+&lt;p&gt;With client side subscriptions, you use apollo with
+the &lt;a href=&quot;https://github.com/apollographql/subscriptions-transport-ws&quot; target=&quot;_blank&quot;&gt;subscriptions-transport-ws&lt;/a&gt;
+to enable your js client app to “hot listen” to server changes. The server pushes notifications
+to the client, which reacts to these notifications in real-time. It’s super cool!&lt;/p&gt;
+
+&lt;p&gt;As usual the full project is available &lt;a href=&quot;https://github.com/graphcool-examples/functions/tree/master/stripe-create-customer-es6&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Please let me know if this is helpful!&lt;/p&gt;
+
+&lt;hr /&gt;
+</content>
+<category term="graphcool" />
+<category term="functions" />
+<category term="server" />
+<category term="side" />
+<category term="subscription" />
+<category term="async" />
+<category term="await" />
+<category term="es6" />
+<category term="graphql" />
+<category term="jest" />
+<summary>Graphcool is cool. Graphcool functions are even cooler. There are two types of functions:request pipeline and server side subscription. Request pipeline functions get triggeredat a specified stage of a crud request. You write custom business logic you want to executeas part of your api requests. It is synchronous.</summary>
+</entry>
+<entry>
 <title>React Europe</title>
 <link href="http://reactjunkie.com/react-europe/" rel="alternate" type="text/html" title="React Europe" />
-<published>2017-05-20T09:30:00+02:00</published>
-<updated>2017-05-20T09:30:00+02:00</updated>
+<published>2017-05-20T09:30:00+10:00</published>
+<updated>2017-05-20T09:30:00+10:00</updated>
 <id>http://reactjunkie.com/react-europe</id>
 <content type="html" xml:base="http://reactjunkie.com/react-europe/">&lt;p&gt;As I stared at the partially cloudy Parisian sky from my seat at Gare du Nord, 
 I had a chance to reflect on the week that was. 4 days jam packed with 
@@ -136,8 +450,8 @@ the great people I met. Till next time!&lt;/p&gt;
 <entry>
 <title>Change marker image onPress in react-native-maps</title>
 <link href="http://reactjunkie.com/react-native-maps-change-marker-image-onpress/" rel="alternate" type="text/html" title="Change marker image onPress in react-native-maps" />
-<published>2017-04-25T09:30:00+02:00</published>
-<updated>2017-04-25T09:30:00+02:00</updated>
+<published>2017-04-25T09:30:00+10:00</published>
+<updated>2017-04-25T09:30:00+10:00</updated>
 <id>http://reactjunkie.com/react-native-maps-change-marker-image-onpress</id>
 <content type="html" xml:base="http://reactjunkie.com/react-native-maps-change-marker-image-onpress/">&lt;p&gt;Recently I started a new pet project which involves maps and markers on ios and android. Of course I started
 this new project in react native. I was expecting a somewhat challenging times ahead because it has been
@@ -383,8 +697,8 @@ github. Let me know if this helps!&lt;/p&gt;
 <entry>
 <title>Scheduling Feature Flag Deployment</title>
 <link href="http://reactjunkie.com/scheduling-feature-flag-deployment/" rel="alternate" type="text/html" title="Scheduling Feature Flag Deployment" />
-<published>2017-02-28T08:30:00+01:00</published>
-<updated>2017-02-28T08:30:00+01:00</updated>
+<published>2017-02-28T08:30:00+11:00</published>
+<updated>2017-02-28T08:30:00+11:00</updated>
 <id>http://reactjunkie.com/scheduling-feature-flag-deployment</id>
 <content type="html" xml:base="http://reactjunkie.com/scheduling-feature-flag-deployment/">&lt;h4 id=&quot;updated-mon-13-march-2017&quot;&gt;Updated Mon 13 March 2017&lt;/h4&gt;
 
@@ -531,8 +845,8 @@ Of course you would enter this json object in the “Description” field of you
 <entry>
 <title>Testing Connected Redux and Relay Components</title>
 <link href="http://reactjunkie.com/testing-connected-redux-relay-components/" rel="alternate" type="text/html" title="Testing Connected Redux and Relay Components" />
-<published>2017-01-28T08:30:00+01:00</published>
-<updated>2017-01-28T08:30:00+01:00</updated>
+<published>2017-01-28T08:30:00+11:00</published>
+<updated>2017-01-28T08:30:00+11:00</updated>
 <id>http://reactjunkie.com/testing-connected-redux-relay-components</id>
 <content type="html" xml:base="http://reactjunkie.com/testing-connected-redux-relay-components/">&lt;p&gt;Happy chinese new year everyone! In the spirit of the year of the cock, I shall write the rest of this post in chinese. 
 中国著名的大思想家、大教育家。孔子开创了私人讲学的风气，是儒家学派的创始人。孔子曾受业于老子 (roughly translates to… I don’t know).
@@ -678,8 +992,8 @@ This feels right for me. Also, you can apply the same technique to test react co
 <entry>
 <title>Building graphql schema without babelrc</title>
 <link href="http://reactjunkie.com/build-graphql-schema-without-babelrc/" rel="alternate" type="text/html" title="Building graphql schema without babelrc" />
-<published>2016-12-12T19:30:00+01:00</published>
-<updated>2016-12-12T19:30:00+01:00</updated>
+<published>2016-12-12T19:30:00+11:00</published>
+<updated>2016-12-12T19:30:00+11:00</updated>
 <id>http://reactjunkie.com/build-graphql-schema-without-babelrc</id>
 <content type="html" xml:base="http://reactjunkie.com/build-graphql-schema-without-babelrc/">&lt;p&gt;Man it has been a busy month! It’s been a while since I blogged, I have to say I miss it a lot. Almost as much as I 
 miss drinking..&lt;/p&gt;
@@ -752,8 +1066,8 @@ require(‘./updateSchema’);
 <entry>
 <title>Targeting users with React Redux and Launch Darkly</title>
 <link href="http://reactjunkie.com/launch-darkly-part-two/" rel="alternate" type="text/html" title="Targeting users with React Redux and Launch Darkly" />
-<published>2016-11-01T19:30:00+01:00</published>
-<updated>2016-11-01T19:30:00+01:00</updated>
+<published>2016-11-01T19:30:00+11:00</published>
+<updated>2016-11-01T19:30:00+11:00</updated>
 <id>http://reactjunkie.com/launch-darkly-part-two</id>
 <content type="html" xml:base="http://reactjunkie.com/launch-darkly-part-two/">&lt;p&gt;In my &lt;a href=&quot;http://www.reactjunkie.com/react-feature-toggle-launch-darkly/&quot; target=&quot;_blank&quot;&gt;previous previous post&lt;/a&gt; 
 I introduced launch darkly as a feature toggling platform and how to use it with react redux. In this post I
@@ -886,8 +1200,8 @@ new world of possibilities in regards to what you can do with your app. Someday 
 <entry>
 <title>Hot Reloading Universally Bundled Webpack Apps</title>
 <link href="http://reactjunkie.com/universal-hot-reload/" rel="alternate" type="text/html" title="Hot Reloading Universally Bundled Webpack Apps" />
-<published>2016-10-22T10:52:00+02:00</published>
-<updated>2016-10-22T10:52:00+02:00</updated>
+<published>2016-10-22T10:52:00+11:00</published>
+<updated>2016-10-22T10:52:00+11:00</updated>
 <id>http://reactjunkie.com/universal-hot-reload</id>
 <content type="html" xml:base="http://reactjunkie.com/universal-hot-reload/">&lt;p&gt;I learnt quite a lot in the past week. Firstly there’s no substitute to good sleep. Secondly, you can actually eat a salmon steak raw! Thirdly, it’s really really hard
 to hot reload a server bundle if you are writing a universal app.&lt;/p&gt;
@@ -1225,8 +1539,8 @@ Check it out! Let me know if there’s any issues.&lt;/p&gt;
 <entry>
 <title>Implementing feature toggle with launch darkly and react redux</title>
 <link href="http://reactjunkie.com/react-feature-toggle-launch-darkly/" rel="alternate" type="text/html" title="Implementing feature toggle with launch darkly and react redux" />
-<published>2016-09-16T10:52:00+02:00</published>
-<updated>2016-09-16T10:52:00+02:00</updated>
+<published>2016-09-16T10:52:00+10:00</published>
+<updated>2016-09-16T10:52:00+10:00</updated>
 <id>http://reactjunkie.com/react-feature-toggle-launch-darkly</id>
 <content type="html" xml:base="http://reactjunkie.com/react-feature-toggle-launch-darkly/">&lt;h3 id=&quot;update-22-october-2016&quot;&gt;&lt;em&gt;Update: 22 October 2016&lt;/em&gt;&lt;/h3&gt;
 &lt;p&gt;&lt;em&gt;I have published an npm package called &lt;a href=&quot;https://github.com/yusinto/ld-redux&quot; target=&quot;_blank&quot;&gt;ld-redux&lt;/a&gt; which covers everything you need to integrate launch darkly with your react 
@@ -1582,8 +1896,8 @@ and launch darkly in the coming posts.&lt;/p&gt;
 <entry>
 <title>Deploying react apps on docker using ecs and terraform part 1</title>
 <link href="http://reactjunkie.com/docker-ecs-terraform-react/" rel="alternate" type="text/html" title="Deploying react apps on docker using ecs and terraform part 1" />
-<published>2016-09-03T10:52:00+02:00</published>
-<updated>2016-09-03T10:52:00+02:00</updated>
+<published>2016-09-03T10:52:00+10:00</published>
+<updated>2016-09-03T10:52:00+10:00</updated>
 <id>http://reactjunkie.com/docker-ecs-terraform-react</id>
 <content type="html" xml:base="http://reactjunkie.com/docker-ecs-terraform-react/">&lt;p&gt;I was tinkering on blogging about Step 5 to React: Introduction to Redux, but I decided to write something closer to my heart: 
 using ecs and terraform to deploy docker react apps (can I squeeze in anymore buzzwords?). This is not an intro to docker so 
@@ -1768,88 +2082,5 @@ build systems and so on. Docker has dockerhub which does exactly that, but I use
 <category term="integration" />
 <category term="deployment" />
 <summary>I was tinkering on blogging about Step 5 to React: Introduction to Redux, but I decided to write something closer to my heart: using ecs and terraform to deploy docker react apps (can I squeeze in anymore buzzwords?). This is not an intro to docker so I assume you are familiar with the basics.My plan was to use docker to achieve continuous integration and ultimately continuous delivery and then deployment. But I like tostart things small so the plan was to firstly create a docker image on every master merge and save that image.</summary>
-</entry>
-<entry>
-<title>Australia Brain Drain</title>
-<link href="http://reactjunkie.com/brain-drain-australia/" rel="alternate" type="text/html" title="Australia Brain Drain" />
-<published>2016-08-05T01:19:00+02:00</published>
-<updated>2016-08-05T01:19:00+02:00</updated>
-<id>http://reactjunkie.com/brain-drain-australia</id>
-<content type="html" xml:base="http://reactjunkie.com/brain-drain-australia/">&lt;p&gt;My first NDC conference (anywhere) I have to say the whole event was very well planned, although there are a
-couple of things which can be improved:&lt;/p&gt;
-&lt;ul&gt;
-    &lt;li&gt;Wifi connection - the Hilton&#39;s wifi connection was so crap, all the guest speakers especially american and uk
-    speakers think that Australia as a whole are running on a 56k modem. I actually attended a session where the speaker had
-    to tether from an Android 4G connection just to demo his stuff (Peter Myers, please forgive us). If you are from overseas 
-    speaking/spoke at NDC Sydney, please accept our sincerest apology, and please don&#39;t misunderstand. Our internet connection 
-    in Australia is pretty good, it&#39;s just at Hilton&#39;s, so please forgive us.&lt;/li&gt;
-    &lt;br /&gt;
-    &lt;li&gt;Pricing was a bit steep. I understand Sydney is one of the most expensive cities in the world, yes yes. It&#39;s such 
-    a shame though many developers are left out of NDC because of pricing/cost. Personally I know many a great
-    developer that missed out on NDC Sydney purely due to financial reasons. I believe an event such as this should be more
-    accessible and affordable to the community in general, because it&#39;s a symbiosis. The more people attending these events,
-    the more aware they are of the current technologies on offer today, the higher the adoption rate and awareness, and
-    the whole thing propagates in a vicious cycle that can only benefit the development world.
-    &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Enough of my rant and angst, I want to emphasise on a more pressing issue at hand; which is the title of this blog today “Brain Drain”.
-Not for the first time in recent years/months, I heard a colleague/friend saying “Oh I used to work in &lt;b&gt;{insert iconic aussie company here}&lt;/b&gt;,
-but I’m moving to Seattle to work for Amazon now”.&lt;/p&gt;
-
-&lt;p&gt;I have to admit, I have attended more than one interviews with
-Amazon, Facebook, Google you name it and the lure of working for these mammoth companies is irresistible. Not only the prospect
- of living and working overseas attractive for Australians, imagine how your resume will look after working for
- Facebook or Amazon. You can pretty much quit after 2 years, come back to Australia or go anywhere in the world and
- get a job based on the premise that “Oh by the way I worked for Aws/Facebook for a couple of years”. It’s definitely a legit reason
- to quit your job in Australia and move to the States.&lt;/p&gt;
-
-&lt;p&gt;I want to challenge that temptation right now. Australia is facing a severe “brain drain” at the moment. What I mean by that
-is our talent is being poached by Amazon/Facebook/Google; they are leaving Australia for the States because these are the
-leading innovative tech companies at the moment. Or so people assume.&lt;/p&gt;
-
-&lt;p&gt;Think about it for a second. If you are a developer in Australia and you are offered by Facebook to join their engineering team,
-would you turn it down? Would you give up your lifestyle, your kids’ lifestyle, your wife’s career, pack up and go to Sillicon Valley
-and live happily ever after in Santa Clara? Probably. Instinctively I think most people would say yes. However, I would 
-implore you to consider more carefully.&lt;/p&gt;
-
-&lt;p&gt;For one, food. I’m an avid food lover, and I like my food healthy and cholesterol friendly. I want my kids and family to be 
-healthy too. I’m not saying the food in the States are crap, all I’m saying is that we are spoilt for choice in Sydney.
-There are things that we take for granted, for example good coffee or a decent loaf of bread or fresh seafood. You can still
-find these in Sillicon Valley, but perhaps not so easily.&lt;/p&gt;
-
-&lt;p&gt;Secondly weather. I was in San Francisco a few weeks ago and I had a chance to experience “summer” there. Let me tell you now you can’t
-wear a bikini to the beach even in summer there. For one, there are no “beaches” there, at least not one that’s comparable to Bondi or any beach in
-Sydney. It’s just way too cold even during summer to go to the beach for a dip. If you think winter in Sydney is cold, think again.&lt;/p&gt;
-
-&lt;p&gt;I’m just really disappointed in Australia’s inability to retain talent. We are a talented nation. I know so because I have been 
-working in the IT industry for over 13 years now and I’ve met and worked with many talented developers. Why can’t Australia keep Australians
-working in Australia in the IT industry? There are a few reasons that pop to my head.&lt;/p&gt;
-
-&lt;p&gt;For one, the “big” names like Apple, Facebook, Amazon are too big to resist. Hollywood movies of Steve Jobs and “The Social Network” further
-extremised these views that Sillicon Valley is the place to be if you want to be somebody. I don’t blame them. The Australian government are
-not helping either, imposing strict legislations on innovative services and startups like Uber and AirBnb.&lt;/p&gt;
-
-&lt;p&gt;Do you know that Uber is still not
-completely legal in Australia? Nor is AirBnb. In San Francisco, the local government are so supportive of tech and startups, it became almost
-seamless and natural that new ideas are legalised almost immediately. In fact, if you are against new ideas or innovation, you’re weird.&lt;/p&gt;
-
-&lt;p&gt;Australia need
-to embrace tech like the San Franciscans. We need to do this in order to retain talent and to be competitive with the mammoth that are Google, 
-Amazon, etc in Sillicon Valley/Seattle. There is no reason why we can’t nurture this culture of tech startups and innovation. There is no reason
-why Sydney can’t have a “Sillicon Valley” or “Kangaroo Valley” (excuse the pun). We actually do have a place called Kangaroo Valley which is quite 
-lovely, I highly recommend it.&lt;/p&gt;
-
-&lt;p&gt;A change in government mentality towards technology is required in Australia to promote innovation and startups and to retain talent. I believe
-one day Australia will be a comparable competitor to the States in terms of technological advancement, talent pool and innovation. Companies like
-Atlassian and Xero are leading the way, but we need more. One day the tables will turn and Australia will be the ones poaching talent from the 
-States and the rest of the world as well.&lt;/p&gt;
-
-&lt;hr /&gt;
-</content>
-<category term="australia" />
-<category term="brain" />
-<category term="drain" />
-<summary>My first NDC conference (anywhere) I have to say the whole event was very well planned, although there are acouple of things which can be improved:    Wifi connection - the Hilton&#39;s wifi connection was so crap, all the guest speakers especially american and uk    speakers think that Australia as a whole are running on a 56k modem. I actually attended a session where the speaker had    to tether from an Android 4G connection just to demo his stuff (Peter Myers, please forgive us). If you are from overseas     speaking/spoke at NDC Sydney, please accept our sincerest apology, and please don&#39;t misunderstand. Our internet connection     in Australia is pretty good, it&#39;s just at Hilton&#39;s, so please forgive us.        Pricing was a bit steep. I understand Sydney is one of the most expensive cities in the world, yes yes. It&#39;s such     a shame though many developers are left out of NDC because of pricing/cost. Personally I know many a great    developer that missed out on NDC Sydney purely due to financial reasons. I believe an event such as this should be more    accessible and affordable to the community in general, because it&#39;s a symbiosis. The more people attending these events,    the more aware they are of the current technologies on offer today, the higher the adoption rate and awareness, and    the whole thing propagates in a vicious cycle that can only benefit the development world.    </summary>
 </entry>
 </feed>
