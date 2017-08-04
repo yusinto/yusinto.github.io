@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
-<link href="http://localhost:3001/feed.xml" rel="self" type="application/atom+xml" />
-<link href="http://localhost:3001/" rel="alternate" type="text/html" />
-<updated>2017-08-04T21:35:30+10:00</updated>
-<id>http://localhost:3001/</id>
+<link href="http://reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
+<link href="http://reactjunkie.com/" rel="alternate" type="text/html" />
+<updated>2017-08-04T21:39:50+10:00</updated>
+<id>http://reactjunkie.com/</id>
 <title>React Junkie</title>
 <entry>
 <title>WebAssembly and React</title>
-<link href="http://localhost:3001/webassembly-react/" rel="alternate" type="text/html" title="WebAssembly and React" />
+<link href="http://reactjunkie.com/webassembly-react/" rel="alternate" type="text/html" title="WebAssembly and React" />
 <published>2017-08-04T07:30:00+10:00</published>
 <updated>2017-08-04T07:30:00+10:00</updated>
-<id>http://localhost:3001/webassembly-react</id>
-<content type="html" xml:base="http://localhost:3001/webassembly-react/">&lt;p&gt;WebAssembly is the next big thing. So they say. Who knows. All I know is
+<id>http://reactjunkie.com/webassembly-react</id>
+<content type="html" xml:base="http://reactjunkie.com/webassembly-react/">&lt;p&gt;WebAssembly is the next big thing. So they say. Who knows. All I know is
 that it’s fast and it can make my app goes faster, like native fast. So
 naturally I am interested.&lt;/p&gt;
 
@@ -200,11 +200,11 @@ as usual. Start learning C/C++. Enjoy!&lt;/p&gt;
 </entry>
 <entry>
 <title>Writing Graphcool functions in es6 with async await and jest</title>
-<link href="http://localhost:3001/graphcool-functions-in-es6-with-async-await/" rel="alternate" type="text/html" title="Writing Graphcool functions in es6 with async await and jest" />
+<link href="http://reactjunkie.com/graphcool-functions-in-es6-with-async-await/" rel="alternate" type="text/html" title="Writing Graphcool functions in es6 with async await and jest" />
 <published>2017-06-30T08:30:00+10:00</published>
 <updated>2017-06-30T08:30:00+10:00</updated>
-<id>http://localhost:3001/graphcool-functions-in-es6-with-async-await</id>
-<content type="html" xml:base="http://localhost:3001/graphcool-functions-in-es6-with-async-await/">&lt;p&gt;Graphcool is cool. Graphcool functions are even cooler. There are two types of functions:
+<id>http://reactjunkie.com/graphcool-functions-in-es6-with-async-await</id>
+<content type="html" xml:base="http://reactjunkie.com/graphcool-functions-in-es6-with-async-await/">&lt;p&gt;Graphcool is cool. Graphcool functions are even cooler. There are two types of functions:
 request pipeline and server side subscription. Request pipeline function gets triggered
 at a specified stage of a crud request. You write custom business logic you want to execute
 as part of your api requests here. It is synchronous.&lt;/p&gt;
@@ -468,11 +468,11 @@ This feels right for me. Also, you can apply the same technique to test react co
 </entry>
 <entry>
 <title>React Europe</title>
-<link href="http://localhost:3001/react-europe/" rel="alternate" type="text/html" title="React Europe" />
+<link href="http://reactjunkie.com/react-europe/" rel="alternate" type="text/html" title="React Europe" />
 <published>2017-05-20T09:30:00+10:00</published>
 <updated>2017-05-20T09:30:00+10:00</updated>
-<id>http://localhost:3001/react-europe</id>
-<content type="html" xml:base="http://localhost:3001/react-europe/">&lt;p&gt;As I stared at the partially cloudy Parisian sky from my seat at Gare du Nord, 
+<id>http://reactjunkie.com/react-europe</id>
+<content type="html" xml:base="http://reactjunkie.com/react-europe/">&lt;p&gt;As I stared at the partially cloudy Parisian sky from my seat at Gare du Nord, 
 I had a chance to reflect on the week that was. 4 days jam packed with 
 javascript and react from morning till night followed by socialising afterwards 
 (my fave), it’s definitely not for the faint-hearted. I admit I was a little 
@@ -595,11 +595,11 @@ the great people I met. Till next time!&lt;/p&gt;
 </entry>
 <entry>
 <title>Change marker image onPress in react-native-maps</title>
-<link href="http://localhost:3001/react-native-maps-change-marker-image-onpress/" rel="alternate" type="text/html" title="Change marker image onPress in react-native-maps" />
+<link href="http://reactjunkie.com/react-native-maps-change-marker-image-onpress/" rel="alternate" type="text/html" title="Change marker image onPress in react-native-maps" />
 <published>2017-04-25T09:30:00+10:00</published>
 <updated>2017-04-25T09:30:00+10:00</updated>
-<id>http://localhost:3001/react-native-maps-change-marker-image-onpress</id>
-<content type="html" xml:base="http://localhost:3001/react-native-maps-change-marker-image-onpress/">&lt;p&gt;Recently I started a new pet project which involves maps and markers on ios and android. Of course I started
+<id>http://reactjunkie.com/react-native-maps-change-marker-image-onpress</id>
+<content type="html" xml:base="http://reactjunkie.com/react-native-maps-change-marker-image-onpress/">&lt;p&gt;Recently I started a new pet project which involves maps and markers on ios and android. Of course I started
 this new project in react native. I was expecting a somewhat challenging times ahead because it has been
 a few months since I last did react native development. The landscape has definitely improved, and I feel
 so fortunate to be a javascript developer at this present moment because of awesome tools like react-native
@@ -842,11 +842,11 @@ github. Let me know if this helps!&lt;/p&gt;
 </entry>
 <entry>
 <title>Scheduling Feature Flag Deployment</title>
-<link href="http://localhost:3001/scheduling-feature-flag-deployment/" rel="alternate" type="text/html" title="Scheduling Feature Flag Deployment" />
+<link href="http://reactjunkie.com/scheduling-feature-flag-deployment/" rel="alternate" type="text/html" title="Scheduling Feature Flag Deployment" />
 <published>2017-02-28T08:30:00+11:00</published>
 <updated>2017-02-28T08:30:00+11:00</updated>
-<id>http://localhost:3001/scheduling-feature-flag-deployment</id>
-<content type="html" xml:base="http://localhost:3001/scheduling-feature-flag-deployment/">&lt;h4 id=&quot;updated-mon-13-march-2017&quot;&gt;Updated Mon 13 March 2017&lt;/h4&gt;
+<id>http://reactjunkie.com/scheduling-feature-flag-deployment</id>
+<content type="html" xml:base="http://reactjunkie.com/scheduling-feature-flag-deployment/">&lt;h4 id=&quot;updated-mon-13-march-2017&quot;&gt;Updated Mon 13 March 2017&lt;/h4&gt;
 
 &lt;p&gt;Use Launch Darkly? Love their feature flagging and a/b testing features? Like reading blog posts that sounds like an informercial? Umm…&lt;/p&gt;
 
@@ -990,11 +990,11 @@ Of course you would enter this json object in the “Description” field of you
 </entry>
 <entry>
 <title>Testing Connected Redux and Relay Components</title>
-<link href="http://localhost:3001/testing-connected-redux-relay-components/" rel="alternate" type="text/html" title="Testing Connected Redux and Relay Components" />
+<link href="http://reactjunkie.com/testing-connected-redux-relay-components/" rel="alternate" type="text/html" title="Testing Connected Redux and Relay Components" />
 <published>2017-01-28T08:30:00+11:00</published>
 <updated>2017-01-28T08:30:00+11:00</updated>
-<id>http://localhost:3001/testing-connected-redux-relay-components</id>
-<content type="html" xml:base="http://localhost:3001/testing-connected-redux-relay-components/">&lt;p&gt;Happy chinese new year everyone! In the spirit of the year of the cock, I shall write the rest of this post in chinese. 
+<id>http://reactjunkie.com/testing-connected-redux-relay-components</id>
+<content type="html" xml:base="http://reactjunkie.com/testing-connected-redux-relay-components/">&lt;p&gt;Happy chinese new year everyone! In the spirit of the year of the cock, I shall write the rest of this post in chinese. 
 中国著名的大思想家、大教育家。孔子开创了私人讲学的风气，是儒家学派的创始人。孔子曾受业于老子 (roughly translates to… I don’t know).
 Did I say Cock? I mean Rooster. Apologies my dear chinese readers… I don’t think there’s a difference anyway?&lt;/p&gt;
 
@@ -1137,11 +1137,11 @@ This feels right for me. Also, you can apply the same technique to test react co
 </entry>
 <entry>
 <title>Building graphql schema without babelrc</title>
-<link href="http://localhost:3001/build-graphql-schema-without-babelrc/" rel="alternate" type="text/html" title="Building graphql schema without babelrc" />
+<link href="http://reactjunkie.com/build-graphql-schema-without-babelrc/" rel="alternate" type="text/html" title="Building graphql schema without babelrc" />
 <published>2016-12-12T19:30:00+11:00</published>
 <updated>2016-12-12T19:30:00+11:00</updated>
-<id>http://localhost:3001/build-graphql-schema-without-babelrc</id>
-<content type="html" xml:base="http://localhost:3001/build-graphql-schema-without-babelrc/">&lt;p&gt;Man it has been a busy month! It’s been a while since I blogged, I have to say I miss it a lot. Almost as much as I 
+<id>http://reactjunkie.com/build-graphql-schema-without-babelrc</id>
+<content type="html" xml:base="http://reactjunkie.com/build-graphql-schema-without-babelrc/">&lt;p&gt;Man it has been a busy month! It’s been a while since I blogged, I have to say I miss it a lot. Almost as much as I 
 miss drinking..&lt;/p&gt;
 
 &lt;p&gt;Today I’ll be talking about graphql and relay, specifically about building the schema. Warning this is not a beginner’s
@@ -1211,11 +1211,11 @@ require(‘./updateSchema’);
 </entry>
 <entry>
 <title>Targeting users with React Redux and Launch Darkly</title>
-<link href="http://localhost:3001/launch-darkly-part-two/" rel="alternate" type="text/html" title="Targeting users with React Redux and Launch Darkly" />
+<link href="http://reactjunkie.com/launch-darkly-part-two/" rel="alternate" type="text/html" title="Targeting users with React Redux and Launch Darkly" />
 <published>2016-11-01T19:30:00+11:00</published>
 <updated>2016-11-01T19:30:00+11:00</updated>
-<id>http://localhost:3001/launch-darkly-part-two</id>
-<content type="html" xml:base="http://localhost:3001/launch-darkly-part-two/">&lt;p&gt;In my &lt;a href=&quot;http://www.reactjunkie.com/react-feature-toggle-launch-darkly/&quot; target=&quot;_blank&quot;&gt;previous previous post&lt;/a&gt; 
+<id>http://reactjunkie.com/launch-darkly-part-two</id>
+<content type="html" xml:base="http://reactjunkie.com/launch-darkly-part-two/">&lt;p&gt;In my &lt;a href=&quot;http://www.reactjunkie.com/react-feature-toggle-launch-darkly/&quot; target=&quot;_blank&quot;&gt;previous previous post&lt;/a&gt; 
 I introduced launch darkly as a feature toggling platform and how to use it with react redux. In this post I
 will explain how you can further leverage the power of feature toggling with user targeting.&lt;/p&gt;
 
@@ -1345,11 +1345,11 @@ new world of possibilities in regards to what you can do with your app. Someday 
 </entry>
 <entry>
 <title>Hot Reloading Universally Bundled Webpack Apps</title>
-<link href="http://localhost:3001/universal-hot-reload/" rel="alternate" type="text/html" title="Hot Reloading Universally Bundled Webpack Apps" />
+<link href="http://reactjunkie.com/universal-hot-reload/" rel="alternate" type="text/html" title="Hot Reloading Universally Bundled Webpack Apps" />
 <published>2016-10-22T10:52:00+11:00</published>
 <updated>2016-10-22T10:52:00+11:00</updated>
-<id>http://localhost:3001/universal-hot-reload</id>
-<content type="html" xml:base="http://localhost:3001/universal-hot-reload/">&lt;p&gt;I learnt quite a lot in the past week. Firstly there’s no substitute to good sleep. Secondly, you can actually eat a salmon steak raw! Thirdly, it’s really really hard
+<id>http://reactjunkie.com/universal-hot-reload</id>
+<content type="html" xml:base="http://reactjunkie.com/universal-hot-reload/">&lt;p&gt;I learnt quite a lot in the past week. Firstly there’s no substitute to good sleep. Secondly, you can actually eat a salmon steak raw! Thirdly, it’s really really hard
 to hot reload a server bundle if you are writing a universal app.&lt;/p&gt;
 
 &lt;p&gt;On the client side, &lt;a href=&quot;https://github.com/webpack/webpack-dev-middleware&quot; target=&quot;_blank&quot;&gt;webpack-dev-middleware&lt;/a&gt; and &lt;a href=&quot;https://github.com/gaearon/react-hot-loader&quot; target=&quot;_blank&quot;&gt;react-hot-loader&lt;/a&gt;
@@ -1684,11 +1684,11 @@ Check it out! Let me know if there’s any issues.&lt;/p&gt;
 </entry>
 <entry>
 <title>Implementing feature toggle with launch darkly and react redux</title>
-<link href="http://localhost:3001/react-feature-toggle-launch-darkly/" rel="alternate" type="text/html" title="Implementing feature toggle with launch darkly and react redux" />
+<link href="http://reactjunkie.com/react-feature-toggle-launch-darkly/" rel="alternate" type="text/html" title="Implementing feature toggle with launch darkly and react redux" />
 <published>2016-09-16T10:52:00+10:00</published>
 <updated>2016-09-16T10:52:00+10:00</updated>
-<id>http://localhost:3001/react-feature-toggle-launch-darkly</id>
-<content type="html" xml:base="http://localhost:3001/react-feature-toggle-launch-darkly/">&lt;h3 id=&quot;update-22-october-2016&quot;&gt;&lt;em&gt;Update: 22 October 2016&lt;/em&gt;&lt;/h3&gt;
+<id>http://reactjunkie.com/react-feature-toggle-launch-darkly</id>
+<content type="html" xml:base="http://reactjunkie.com/react-feature-toggle-launch-darkly/">&lt;h3 id=&quot;update-22-october-2016&quot;&gt;&lt;em&gt;Update: 22 October 2016&lt;/em&gt;&lt;/h3&gt;
 &lt;p&gt;&lt;em&gt;I have published an npm package called &lt;a href=&quot;https://github.com/yusinto/ld-redux&quot; target=&quot;_blank&quot;&gt;ld-redux&lt;/a&gt; which covers everything you need to integrate launch darkly with your react 
 redux app. It’s the contents of this blog in an npm package. If you use it, please give me some feedback. Thanks!&lt;/em&gt;&lt;/p&gt;
 
