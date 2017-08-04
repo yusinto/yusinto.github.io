@@ -2,7 +2,7 @@
   
     {
       "title"    : "WebAssembly and React",
-      "tags"     : "webAssembly, react, web, assembly, javascript, c, and c++",
+      "tags"     : "webAssembly, react, wasm, web, assembly, javascript, c, c++, and emscripten",
       "url"      : "/webassembly-react/",
       "date"     : "04 Aug 2017"
     } ,

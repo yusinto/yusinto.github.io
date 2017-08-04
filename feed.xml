@@ -3,7 +3,7 @@
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
 <link href="http://reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
 <link href="http://reactjunkie.com/" rel="alternate" type="text/html" />
-<updated>2017-08-04T21:39:50+10:00</updated>
+<updated>2017-08-04T21:42:24+10:00</updated>
 <id>http://reactjunkie.com/</id>
 <title>React Junkie</title>
 <entry>
@@ -191,11 +191,13 @@ as usual. Start learning C/C++. Enjoy!&lt;/p&gt;
 </content>
 <category term="webAssembly" />
 <category term="react" />
+<category term="wasm" />
 <category term="web" />
 <category term="assembly" />
 <category term="javascript" />
 <category term="c" />
 <category term="c++" />
+<category term="emscripten" />
 <summary>WebAssembly is the next big thing. So they say. Who knows. All I know isthat it’s fast and it can make my app goes faster, like native fast. Sonaturally I am interested.</summary>
 </entry>
 <entry>
