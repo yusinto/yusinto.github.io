@@ -1,25 +1,217 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
-<link href="http://reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
-<link href="http://reactjunkie.com/" rel="alternate" type="text/html" />
-<updated>2017-07-05T08:43:20+10:00</updated>
-<id>http://reactjunkie.com/</id>
+<link href="http://localhost:3001/feed.xml" rel="self" type="application/atom+xml" />
+<link href="http://localhost:3001/" rel="alternate" type="text/html" />
+<updated>2017-08-04T21:35:30+10:00</updated>
+<id>http://localhost:3001/</id>
 <title>React Junkie</title>
 <entry>
+<title>WebAssembly and React</title>
+<link href="http://localhost:3001/webassembly-react/" rel="alternate" type="text/html" title="WebAssembly and React" />
+<published>2017-08-04T07:30:00+10:00</published>
+<updated>2017-08-04T07:30:00+10:00</updated>
+<id>http://localhost:3001/webassembly-react</id>
+<content type="html" xml:base="http://localhost:3001/webassembly-react/">&lt;p&gt;WebAssembly is the next big thing. So they say. Who knows. All I know is
+that it’s fast and it can make my app goes faster, like native fast. So
+naturally I am interested.&lt;/p&gt;
+
+&lt;p&gt;I looked around for a quick guide to get WebAssembly up and running in
+node, express and react but couldn’t find one. So I decided to do it myself.&lt;/p&gt;
+
+&lt;p&gt;Let’s begin!&lt;/p&gt;
+
+&lt;h2 id=&quot;goal&quot;&gt;Goal&lt;/h2&gt;
+&lt;p&gt;Run a C function from a .wasm file in a react component.&lt;/p&gt;
+
+&lt;h2 id=&quot;step-1-install-emscripten&quot;&gt;Step 1: Install emscripten&lt;/h2&gt;
+&lt;p&gt;Emscripten compiles C/C++ code to web assembly. Given a C file,
+emscripten produces a .wasm and a .js file.&lt;/p&gt;
+
+&lt;p&gt;.wasm is a binary file. You can’t easily
+import .wasm files directly into js (&lt;a href=&quot;https://medium.com/webpack/webpack-awarded-125-000-from-moss-program-f63eeaaf4e15&quot; target=&quot;_blank&quot;&gt;yet!&lt;/a&gt;) so 
+emscripten also produces a js file which acts as a proxy. You add a 
+script reference to this file in your html so you can use wasm in your 
+js app. They call this js file the “glue” code. Personally I prefer to call
+it proxy code.&lt;/p&gt;
+
+&lt;p&gt;Here are the steps to install emscripten:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Download &lt;a href=&quot;https://s3.amazonaws.com/mozilla-games/emscripten/releases/emsdk-portable.tar.gz&quot;&gt;emscripten portable&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Unzip and cd into the dir and execute these:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;{% highlight bash %}
+./emsdk update
+./emsdk install latest
+./emsdk activate latest
+source ./emsdk_env.sh
+{% endhighlight %}&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Add the emcc executable to your /etc/paths file. Mine is
+located at /your_download_dir/emsdk-portable/emscripten/1.37.16&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;step-2-write-c-code&quot;&gt;Step 2: Write C code&lt;/h2&gt;
+&lt;p&gt;Create a file called utils.c under your src folder.&lt;/p&gt;
+
+&lt;h4 id=&quot;utilsc&quot;&gt;utils.c&lt;/h4&gt;
+&lt;p&gt;{% highlight javascript %}
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;time.h&gt;
+#include &amp;lt;emscripten/emscripten.h&amp;gt;&lt;/time.h&gt;&lt;/stdlib.h&gt;&lt;/stdio.h&gt;&lt;/p&gt;
+
+&lt;p&gt;int main(int argc, char ** argv) {
+    // gets translated to console.log
+    printf(“WebAssembly successfully loaded!\n”);
+}&lt;/p&gt;
+
+&lt;p&gt;// Emscripten does dead code elimination during compilation.
+// This decorator ensures our code does not get removed.
+EMSCRIPTEN_KEEPALIVE
+int generateRandom() {
+    srand ( time(NULL) );
+    return rand();
+}
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h2 id=&quot;step-3-compile-your-c-code&quot;&gt;Step 3: Compile your C code&lt;/h2&gt;
+
+&lt;p&gt;{% highlight bash %}
+emcc utils.c -s WASM=1 -o utils.js -O3
+{% endhighlight %}&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;-s Specify settings which gets passed down to the emscripten compiler. Here
+we specify we want to compile to wasm. The default is asm. This will
+produce utils.wasm.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;-o Specify the filename for the glue code. This will produce utils.js.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;-O3 The first character is the upper case letter ‘O’ not zero! Sets the optimisation
+level for your wasm and js files. You can check the various optimisation levels
+&lt;a href=&quot;https://kripken.github.io/emscripten-site/docs/tools_reference/emcc.html#emcc-o0&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;step-4-add-the-glue-code-to-your-html&quot;&gt;Step 4: Add the glue code to your html&lt;/h2&gt;
+
+&lt;p&gt;{% highlight html %}
+&amp;lt;!DOCTYPE html&amp;gt;
+    &amp;lt;html&amp;gt;
+         &amp;lt;head&amp;gt;
+            &lt;title&gt;Hasta la vista JS!&lt;/title&gt;
+            &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot; /&gt;
+          &amp;lt;/head&amp;gt;
+          &amp;lt;body&amp;gt;
+            &amp;lt;div id=&quot;reactDiv&quot;/&amp;gt;
+            &lt;script src=&quot;/dist/utils.js&quot;&gt;&lt;/script&gt;
+            &lt;script src=&quot;/dist/bundle.js&quot;&gt;&lt;/script&gt;
+          &amp;lt;/body&amp;gt;
+    &amp;lt;/html&amp;gt;
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h2 id=&quot;step-5-add-an-express-route-to-serve-wasm-files&quot;&gt;Step 5: Add an express route to serve wasm files&lt;/h2&gt;
+
+&lt;p&gt;Express does not serve .wasm files by default so we have to add a custom route.&lt;/p&gt;
+
+&lt;h4 id=&quot;serverjs&quot;&gt;server.js&lt;/h4&gt;
+&lt;p&gt;{% highlight javascript %}
+app.get(‘/:filename.wasm’, (req, res) =&amp;gt; {
+  const wasmFilePath = path.resolve(__dirname, 
+    &lt;code class=&quot;highlighter-rouge&quot;&gt;../../dist/${req.params.filename}.wasm&lt;/code&gt;);&lt;/p&gt;
+
+&lt;p&gt;console.log(&lt;code class=&quot;highlighter-rouge&quot;&gt;Wasm request ${wasmFilePath}&lt;/code&gt;);&lt;/p&gt;
+
+&lt;p&gt;fs.readFile(wasmFilePath, (err, data) =&amp;gt; {
+    const errorMessage = &lt;code class=&quot;highlighter-rouge&quot;&gt;Error ${wasmFilePath} not found. ${JSON.stringify(err)}&lt;/code&gt;;
+    if (err) {
+      console.log(errorMessage);
+      res.status(404).send(errorMessage);
+      return;
+    }
+    res.send(data);
+  });
+});
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h2 id=&quot;step-6-call-wasm-from-react&quot;&gt;Step 6: Call wasm from React!&lt;/h2&gt;
+
+&lt;p&gt;Finally! You can now use your C function from React by prefixing an underscore
+in front of the C function’s name. We included the glue code in our app html, so
+all your C methods are exposed globally. This is not the best way, but 
+in the future, webpack will rescue us. There is &lt;a href=&quot;https://medium.com/webpack/webpack-awarded-125-000-from-moss-program-f63eeaaf4e15&quot; target=&quot;_blank&quot;&gt;wip&lt;/a&gt;
+right now sponsored by Mozilla to develop first class support for WebAssembly in webpack. 
+This means we’ll be able to import C/C++ files directly in js files and
+call wasm functions directly!&lt;/p&gt;
+
+&lt;p&gt;Till that day arrives, a global script tag will have to do for now.&lt;/p&gt;
+
+&lt;h4 id=&quot;appjs&quot;&gt;app.js&lt;/h4&gt;
+&lt;p&gt;{% highlight javascript %}&lt;/p&gt;
+
+&lt;p&gt;export default class App extends Component {
+    state = {randomNumber: -1};&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;onClickGenerateRandom = () =&amp;gt; {
+  // EUREKA! Call our C function with an underscore prefix!
+  // All the methods in utils.c are exposed globally because utils.js
+  // is included as a script tag in our html.
+  const randomNumber = _generateRandom();
+  console.log(`onClickGenerateRandom: ${randomNumber}`);
+  this.setState({randomNumber});
+}; 
+  
+render() {
+  return (
+    &amp;lt;div&amp;gt;
+      &amp;lt;button onClick={this.onClickGenerateRandom}&amp;gt;
+        Generate random
+      &amp;lt;/button&amp;gt;
+      {this.state.randomNumber}
+    &amp;lt;/div&amp;gt;
+  );
+} } {% endhighlight %}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;The next step is to help Sean Larkin and co to get webpack support WebAssembly!&lt;/p&gt;
+
+&lt;p&gt;The complete code is &lt;a href=&quot;https://github.com/yusinto/wasm-playground&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;
+as usual. Start learning C/C++. Enjoy!&lt;/p&gt;
+
+&lt;hr /&gt;
+</content>
+<category term="webAssembly" />
+<category term="react" />
+<category term="web" />
+<category term="assembly" />
+<category term="javascript" />
+<category term="c" />
+<category term="c++" />
+<summary>WebAssembly is the next big thing. So they say. Who knows. All I know isthat it’s fast and it can make my app goes faster, like native fast. Sonaturally I am interested.</summary>
+</entry>
+<entry>
 <title>Writing Graphcool functions in es6 with async await and jest</title>
-<link href="http://reactjunkie.com/graphcool-functions-in-es6-with-async-await/" rel="alternate" type="text/html" title="Writing Graphcool functions in es6 with async await and jest" />
+<link href="http://localhost:3001/graphcool-functions-in-es6-with-async-await/" rel="alternate" type="text/html" title="Writing Graphcool functions in es6 with async await and jest" />
 <published>2017-06-30T08:30:00+10:00</published>
 <updated>2017-06-30T08:30:00+10:00</updated>
-<id>http://reactjunkie.com/graphcool-functions-in-es6-with-async-await</id>
-<content type="html" xml:base="http://reactjunkie.com/graphcool-functions-in-es6-with-async-await/">&lt;p&gt;Graphcool is cool. Graphcool functions are even cooler. There are two types of functions:
-request pipeline and server side subscription. Request pipeline functions get triggered
+<id>http://localhost:3001/graphcool-functions-in-es6-with-async-await</id>
+<content type="html" xml:base="http://localhost:3001/graphcool-functions-in-es6-with-async-await/">&lt;p&gt;Graphcool is cool. Graphcool functions are even cooler. There are two types of functions:
+request pipeline and server side subscription. Request pipeline function gets triggered
 at a specified stage of a crud request. You write custom business logic you want to execute
-as part of your api requests. It is synchronous.&lt;/p&gt;
+as part of your api requests here. It is synchronous.&lt;/p&gt;
 
 &lt;p&gt;The second type of function is server side subscription. These get triggered
 &lt;b&gt;after&lt;/b&gt; crud operations. Your write custom business logic here to
-react to crud events in your database after the fact. Server side subscriptions are
+react to crud events in your database. Server side subscriptions are
 asynchronous.&lt;/p&gt;
 
 &lt;p&gt;In this blog, I will talk about server side subscriptions. A crud occurs
@@ -78,6 +270,7 @@ subscription {
   Customer(filter: {
     mutation_in: [CREATED]
   }) {
+    updatedFields
     node {
       id
       email
@@ -99,7 +292,7 @@ You can also listen to UPDATED and DELETED events but we don&#39;t need those he
 &lt;/ul&gt;
 
 &lt;p&gt;Back in the console click “Create Function”. Leave inline code on the right pane
-for now, we’ll write the code for this in the next section.&lt;/p&gt;
+as is for now, we’ll write the code for this in the next section.&lt;/p&gt;
 
 &lt;h2 id=&quot;step-3-write-code&quot;&gt;Step 3: Write code!&lt;/h2&gt;
 &lt;p&gt;Finally we get to write some code! You can code directly
@@ -108,7 +301,7 @@ of your IDE. Furthermore, behind the scenes inline functions are deployed
 to &lt;a href=&quot;https://webtask.io/&quot;&gt;webtask&lt;/a&gt; which is cool
 but does not support async await.&lt;/p&gt;
 
-&lt;p&gt;Optionally you can also write and deploy your code elsewhere (like aws lambda or even directly in webtask) and
+&lt;p&gt;Optionally you can also write and host your code elsewhere (like aws lambda) and
 specify that as a webhook. But this means you have to worry about hosting
 your code elsewhere.&lt;/p&gt;
 
@@ -121,48 +314,39 @@ config to support async await and the latest es6 features to write Graphcool
 functions. There’s a &lt;a href=&quot;#bonus-webpack-configuration&quot;&gt;bonus section&lt;/a&gt; at the
 end of this blog if you are interested in how the webpack config works.&lt;/p&gt;
 
-&lt;h3 id=&quot;step-31-cheat-and-setup-webpack-and-dependencies&quot;&gt;Step 3.1: Cheat and setup webpack and dependencies&lt;/h3&gt;
-&lt;p&gt;This is not a webpack tutorial so we’re gonna cheat and copy all the required
-config. Copy package.json, webpack.config.js and .babelrc from
-&lt;a href=&quot;https://github.com/graphcool-examples/functions/tree/master/stripe-create-customer-es6&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;
-to your root directory.&lt;/p&gt;
-
-&lt;p&gt;Also at the root of your project, create a src directory for all your code. Then do yarn.&lt;/p&gt;
+&lt;h3 id=&quot;step-31-copy-packagejson&quot;&gt;Step 3.1: Copy package.json&lt;/h3&gt;
+&lt;p&gt;Copy package.json from &lt;a href=&quot;https://github.com/graphcool-examples/functions/tree/master/stripe-create-customer-es6&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;
+to your root directory. Then do yarn.&lt;/p&gt;
 
 &lt;p&gt;{% highlight bash %}
 yarn
 {% endhighlight %}&lt;/p&gt;
 
-&lt;p&gt;Note the dependencies in package.json. We need stripe and a fetch library
-so those are included. In Graphcool, our code runs in a webtask container which has these
-npm packages available. Therefore we don’t include third party npm
-packages in our bundle. This keeps our bundle size small so we can easily deploy it.
-You can see the libraries available in webtask &lt;a href=&quot;https://tehsis.github.io/webtaskio-canirequire/&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The devDependencies are mostly used by webpack to transpile our code. We also
+use jest for unit tests so that’s in there too. We also need the stripe
+library and a fetch library so those are included as dependencies.&lt;/p&gt;
 
-&lt;p&gt;There also devDependencies which are mostly used by webpack to transpile our code.
-You can safely acknowledge that it’s there and ignore this for now. We
-also use jest for unit tests so that’s in there too. Check the
-&lt;a href=&quot;#bonus-webpack-configuration&quot;&gt;bonus section&lt;/a&gt; below if you want to
-dig into the webpack config.&lt;/p&gt;
+&lt;h3 id=&quot;step-32-copy-webpackconfigjs-and-babelrc-and-create-src-dir&quot;&gt;Step 3.2: Copy webpack.config.js and .babelrc and create src dir&lt;/h3&gt;
+&lt;p&gt;Copy webpack.config.js and .babelrc files from &lt;a href=&quot;https://github.com/graphcool-examples/functions/tree/master/stripe-create-customer-es6&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;
+into the root directory of your project. Check the
+&lt;a href=&quot;#bonus-webpack-configuration&quot;&gt;bonus section&lt;/a&gt; below if you want to dig
+into the webpack config.&lt;/p&gt;
 
-&lt;h2 id=&quot;step-32&quot;&gt;Step 3.2:&lt;/h2&gt;
+&lt;p&gt;Also at the root of your project, create a src directory where all your code lives.&lt;/p&gt;
+
+&lt;h2 id=&quot;step-33&quot;&gt;Step 3.3:&lt;/h2&gt;
 &lt;p&gt;Create a file called src/createStripeCustomer.js. This file contains all
 of our function code. Note that the webpack config you copied is hardcoded to
 look for this file under src/createStripeCustomer.js. You can change this
-in webpack.config.js if you wish. Let’s go ahead and define our main method.&lt;/p&gt;
+in webpack.config.js if you wish.&lt;/p&gt;
 
-&lt;h4 id=&quot;main&quot;&gt;main&lt;/h4&gt;
+&lt;h4 id=&quot;main-method&quot;&gt;main method&lt;/h4&gt;
 &lt;p&gt;{% highlight javascript %}
 const main = event =&amp;gt; {
-  // event.data contains the shape of the object returned by your
-  // subscription query in step 2
   const {id, email} = event.data.Customer.node;&lt;/p&gt;
 
-&lt;p&gt;// we have to return a promise from this method if there are asynchronous
-  // logic involved. Otherwise the webtask process completes and exits.
-  return new Promise(async (resolve, reject) =&amp;gt; {
+&lt;p&gt;return new Promise(async (resolve, reject) =&amp;gt; {
     try {
-      // Look ma! async await! yayy
       const stripeCustomer = await createStripeCustomer(email);
       const graphCoolCustomer = await updateGraphCoolCustomer(id, stripeCustomer.id);
       console.log(&lt;code class=&quot;highlighter-rouge&quot;&gt;Successfully updated GraphCool customer: ${JSON.stringify(graphCoolCustomer)}&lt;/code&gt;);
@@ -173,22 +357,8 @@ const main = event =&amp;gt; {
       reject(err);
     }
   });
-};&lt;/p&gt;
-
-&lt;p&gt;module.exports = main;
+};
 {% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;The business logic goes like this:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-When a Graphcool customer is created, create a stripe customer. This is done
-via the &lt;i&gt;createStripeCustomer&lt;/i&gt; which we wil define below.
-&lt;/li&gt;
-&lt;li&gt;
-When a stripe customer is created, update the existing Graphcool customer
-record with the stripe customer id.
-&lt;/li&gt;
-&lt;/ul&gt;
 
 &lt;h4 id=&quot;createstripecustomer-method&quot;&gt;createStripeCustomer method&lt;/h4&gt;
 &lt;p&gt;{% highlight javascript %}
@@ -197,7 +367,6 @@ const createStripeCustomer = async email =&amp;gt; {
   let stripeCustomer;&lt;/p&gt;
 
 &lt;p&gt;try {
-    // invoke stripe api
     stripeCustomer = await stripe.customers.create({email});
     console.log(&lt;code class=&quot;highlighter-rouge&quot;&gt;Successfully created Stripe customer: ${stripeCustomer.id}&lt;/code&gt;);
     return stripeCustomer;
@@ -212,7 +381,6 @@ const createStripeCustomer = async email =&amp;gt; {
 &lt;h4 id=&quot;updategraphcoolcustomer-method&quot;&gt;updateGraphCoolCustomer method&lt;/h4&gt;
 &lt;p&gt;{% highlight javascript %}
 const updateGraphCoolCustomer = async (id, stripeCustomerId) =&amp;gt; {
-  // prepare our mutation to send to Graphcool
   const updateCustomer = JSON.stringify({
     query: `
         mutation {
@@ -229,7 +397,6 @@ const updateGraphCoolCustomer = async (id, stripeCustomerId) =&amp;gt; {
   });&lt;/p&gt;
 
 &lt;p&gt;try {
-    // post the mutation to Graphcool
     const response = await fetch(graphCoolEndpoint, {
       headers: {‘content-type’: ‘application/json’},
       method: ‘POST’,
@@ -244,67 +411,46 @@ const updateGraphCoolCustomer = async (id, stripeCustomerId) =&amp;gt; {
 };
 {% endhighlight %}&lt;/p&gt;
 
-&lt;p&gt;These methods are quite self-explanatory, but some notes:&lt;/p&gt;
+&lt;p&gt;The entire file is available &lt;a href=&quot;https://github.com/graphcool-examples/functions/blob/master/stripe-create-customer-es6/src/createStripeCustomer.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;
+on github.&lt;/p&gt;
 
-&lt;ul&gt;
-  &lt;li&gt;I left out import statements for brevity, but you need to import isomorphic-fetch
-and stripe at the top of the file.&lt;/li&gt;
-  &lt;li&gt;I placed my stripe key and Graphcool endpoint in a constants file for code
-cleanliness.&lt;/li&gt;
-  &lt;li&gt;It would have been cleaner to use &lt;a href=&quot;https://github.com/graphcool/graphql-request&quot; target=&quot;_blank&quot;&gt;graphql-request&lt;/a&gt;
-instead of isomorphic-fetch. However webtask does not support that yet.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;The full code is available &lt;a href=&quot;https://github.com/graphcool-examples/functions/blob/master/stripe-create-customer-es6/src/createStripeCustomer.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h2 id=&quot;step-4-build--deploy&quot;&gt;Step 4: Build &amp;amp; deploy&lt;/h2&gt;
-&lt;p&gt;{% highlight bash %}
-npm run build
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;This should produce an uglified js file under build/createStripeCustomer.js. To deploy,
-we’ll use a sophisticated method which you might not be familiar with: copy &amp;amp; paste.
-I know I know it sucks. In the future Graphcool cli should support function creation and updates
-so hopefully at that time, someone can post a PR to this github repo.&lt;/p&gt;
-
-&lt;p&gt;In the meantime, open the uglified file, copy the contents and paste that into the inline editor
-in the Graphcool console. Remember to save by clicking the Update Function.&lt;/p&gt;
-
-&lt;p&gt;Test the function by creating a customer in the playground. Note that stripeCustomerId
-is null initially. Then query that customer again and
-if everything works, you should see a stripe customer id!&lt;/p&gt;
+&lt;h2 id=&quot;step-4-deploy-and-test&quot;&gt;Step 4: Deploy and test&lt;/h2&gt;
+&lt;p&gt;TODO&lt;/p&gt;
 
 &lt;h2 id=&quot;bonus-webpack-configuration&quot;&gt;Bonus: webpack configuration&lt;/h2&gt;
 &lt;p&gt;This is not a webpack tutorial but I want to share a few interesting things I
 discovered while working on this:&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;We export our function by setting module.exports so we need to set
-output.libraryTarget to commonjs2.&lt;/li&gt;
-  &lt;li&gt;&lt;b&gt;DO NOT BUNDLE THIRD PARTY LIBRARIES!&lt;/b&gt; This will blow up your code size, and it’s
+&lt;li&gt;
+We will export our function by setting module.exports so we need to set
+output.libraryTarget to commonjs2.
+&lt;/li&gt;
+&lt;li&gt;
+&lt;b&gt;DO NOT BUNDLE THIRD PARTY LIBRARIES!&lt;/b&gt; This will blow up your code size, and it&#39;s
 not necessary. Your Graphcool function is executed in webtask
-and it supports most of the npm packages you’ll need. Check &lt;a href=&quot;https://tehsis.github.io/webtaskio-canirequire/&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;
-for packages webtask supports.&lt;/li&gt;
-  &lt;li&gt;As a result of the point above, use
-&lt;a href=&quot;https://github.com/liady/webpack-node-externals&quot; target=&quot;_blank&quot;&gt;webpack-node-externals&lt;/a&gt; to exclude all npm packages.&lt;/li&gt;
-  &lt;li&gt;&lt;b&gt;GOTCHA&lt;/b&gt;: oops actually not &lt;i&gt;all&lt;/i&gt;. To enable latest es6
-features and async await, we have to include two npm packages: babel-polyfill and regenerator-runtime/runtime&lt;/li&gt;
+and it supports most of the npm packages you&#39;ll need. Check [here](https://tehsis.github.io/webtaskio-canirequire/){:target=&quot;_blank&quot;}
+for packages webtask supports.
+&lt;/li&gt;
+&lt;li&gt;As a result of the point above, use
+[webpack-node-externals](https://github.com/liady/webpack-node-externals){:target=&quot;_blank&quot;} to exclude all npm packages.
+&lt;/li&gt;
+&lt;li&gt;
+GOTCHA: To enable latest es6 features and async await, we have to include two npm packages: babel-polyfill and regenerator-runtime/runtime
+&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;If you are interested, you can check the complete webpack config &lt;a href=&quot;https://github.com/graphcool-examples/functions/blob/master/stripe-create-customer-es6/webpack.config.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
 
-&lt;h2 id=&quot;whats-next&quot;&gt;What’s next?&lt;/h2&gt;
-&lt;p&gt;Part 2 of this blog will cover unit testing your functions with jest. I’ll
-also attempt to cover client side subscriptions separate to this.&lt;/p&gt;
-
-&lt;p&gt;With client side subscriptions, you use apollo with
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;With client side subscriptions, you’ll use apollo with
 the &lt;a href=&quot;https://github.com/apollographql/subscriptions-transport-ws&quot; target=&quot;_blank&quot;&gt;subscriptions-transport-ws&lt;/a&gt;
 to enable your js client app to “hot listen” to server changes. The server pushes notifications
 to the client, which reacts to these notifications in real-time. It’s super cool!&lt;/p&gt;
 
-&lt;p&gt;As usual the full project is available &lt;a href=&quot;https://github.com/graphcool-examples/functions/tree/master/stripe-create-customer-es6&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This approach incurs a little more time to setup, but I think it’s worth it. We leave the code fully testable, encapsulation intact. 
+This feels right for me. Also, you can apply the same technique to test react components wrapped in relay containers. It works!&lt;/p&gt;
 
-&lt;p&gt;Please let me know if this is helpful!&lt;/p&gt;
+&lt;p&gt;Check out the &lt;a href=&quot;https://github.com/yusinto/test-react&quot; target=&quot;_blank&quot;&gt;sample code&lt;/a&gt; for a working example and let me know if this is useful (or not)!&lt;/p&gt;
 
 &lt;hr /&gt;
 </content>
@@ -318,15 +464,15 @@ to the client, which reacts to these notifications in real-time. It’s super co
 <category term="es6" />
 <category term="graphql" />
 <category term="jest" />
-<summary>Graphcool is cool. Graphcool functions are even cooler. There are two types of functions:request pipeline and server side subscription. Request pipeline functions get triggeredat a specified stage of a crud request. You write custom business logic you want to executeas part of your api requests. It is synchronous.</summary>
+<summary>Graphcool is cool. Graphcool functions are even cooler. There are two types of functions:request pipeline and server side subscription. Request pipeline function gets triggeredat a specified stage of a crud request. You write custom business logic you want to executeas part of your api requests here. It is synchronous.</summary>
 </entry>
 <entry>
 <title>React Europe</title>
-<link href="http://reactjunkie.com/react-europe/" rel="alternate" type="text/html" title="React Europe" />
+<link href="http://localhost:3001/react-europe/" rel="alternate" type="text/html" title="React Europe" />
 <published>2017-05-20T09:30:00+10:00</published>
 <updated>2017-05-20T09:30:00+10:00</updated>
-<id>http://reactjunkie.com/react-europe</id>
-<content type="html" xml:base="http://reactjunkie.com/react-europe/">&lt;p&gt;As I stared at the partially cloudy Parisian sky from my seat at Gare du Nord, 
+<id>http://localhost:3001/react-europe</id>
+<content type="html" xml:base="http://localhost:3001/react-europe/">&lt;p&gt;As I stared at the partially cloudy Parisian sky from my seat at Gare du Nord, 
 I had a chance to reflect on the week that was. 4 days jam packed with 
 javascript and react from morning till night followed by socialising afterwards 
 (my fave), it’s definitely not for the faint-hearted. I admit I was a little 
@@ -449,11 +595,11 @@ the great people I met. Till next time!&lt;/p&gt;
 </entry>
 <entry>
 <title>Change marker image onPress in react-native-maps</title>
-<link href="http://reactjunkie.com/react-native-maps-change-marker-image-onpress/" rel="alternate" type="text/html" title="Change marker image onPress in react-native-maps" />
+<link href="http://localhost:3001/react-native-maps-change-marker-image-onpress/" rel="alternate" type="text/html" title="Change marker image onPress in react-native-maps" />
 <published>2017-04-25T09:30:00+10:00</published>
 <updated>2017-04-25T09:30:00+10:00</updated>
-<id>http://reactjunkie.com/react-native-maps-change-marker-image-onpress</id>
-<content type="html" xml:base="http://reactjunkie.com/react-native-maps-change-marker-image-onpress/">&lt;p&gt;Recently I started a new pet project which involves maps and markers on ios and android. Of course I started
+<id>http://localhost:3001/react-native-maps-change-marker-image-onpress</id>
+<content type="html" xml:base="http://localhost:3001/react-native-maps-change-marker-image-onpress/">&lt;p&gt;Recently I started a new pet project which involves maps and markers on ios and android. Of course I started
 this new project in react native. I was expecting a somewhat challenging times ahead because it has been
 a few months since I last did react native development. The landscape has definitely improved, and I feel
 so fortunate to be a javascript developer at this present moment because of awesome tools like react-native
@@ -696,11 +842,11 @@ github. Let me know if this helps!&lt;/p&gt;
 </entry>
 <entry>
 <title>Scheduling Feature Flag Deployment</title>
-<link href="http://reactjunkie.com/scheduling-feature-flag-deployment/" rel="alternate" type="text/html" title="Scheduling Feature Flag Deployment" />
+<link href="http://localhost:3001/scheduling-feature-flag-deployment/" rel="alternate" type="text/html" title="Scheduling Feature Flag Deployment" />
 <published>2017-02-28T08:30:00+11:00</published>
 <updated>2017-02-28T08:30:00+11:00</updated>
-<id>http://reactjunkie.com/scheduling-feature-flag-deployment</id>
-<content type="html" xml:base="http://reactjunkie.com/scheduling-feature-flag-deployment/">&lt;h4 id=&quot;updated-mon-13-march-2017&quot;&gt;Updated Mon 13 March 2017&lt;/h4&gt;
+<id>http://localhost:3001/scheduling-feature-flag-deployment</id>
+<content type="html" xml:base="http://localhost:3001/scheduling-feature-flag-deployment/">&lt;h4 id=&quot;updated-mon-13-march-2017&quot;&gt;Updated Mon 13 March 2017&lt;/h4&gt;
 
 &lt;p&gt;Use Launch Darkly? Love their feature flagging and a/b testing features? Like reading blog posts that sounds like an informercial? Umm…&lt;/p&gt;
 
@@ -844,11 +990,11 @@ Of course you would enter this json object in the “Description” field of you
 </entry>
 <entry>
 <title>Testing Connected Redux and Relay Components</title>
-<link href="http://reactjunkie.com/testing-connected-redux-relay-components/" rel="alternate" type="text/html" title="Testing Connected Redux and Relay Components" />
+<link href="http://localhost:3001/testing-connected-redux-relay-components/" rel="alternate" type="text/html" title="Testing Connected Redux and Relay Components" />
 <published>2017-01-28T08:30:00+11:00</published>
 <updated>2017-01-28T08:30:00+11:00</updated>
-<id>http://reactjunkie.com/testing-connected-redux-relay-components</id>
-<content type="html" xml:base="http://reactjunkie.com/testing-connected-redux-relay-components/">&lt;p&gt;Happy chinese new year everyone! In the spirit of the year of the cock, I shall write the rest of this post in chinese. 
+<id>http://localhost:3001/testing-connected-redux-relay-components</id>
+<content type="html" xml:base="http://localhost:3001/testing-connected-redux-relay-components/">&lt;p&gt;Happy chinese new year everyone! In the spirit of the year of the cock, I shall write the rest of this post in chinese. 
 中国著名的大思想家、大教育家。孔子开创了私人讲学的风气，是儒家学派的创始人。孔子曾受业于老子 (roughly translates to… I don’t know).
 Did I say Cock? I mean Rooster. Apologies my dear chinese readers… I don’t think there’s a difference anyway?&lt;/p&gt;
 
@@ -991,11 +1137,11 @@ This feels right for me. Also, you can apply the same technique to test react co
 </entry>
 <entry>
 <title>Building graphql schema without babelrc</title>
-<link href="http://reactjunkie.com/build-graphql-schema-without-babelrc/" rel="alternate" type="text/html" title="Building graphql schema without babelrc" />
+<link href="http://localhost:3001/build-graphql-schema-without-babelrc/" rel="alternate" type="text/html" title="Building graphql schema without babelrc" />
 <published>2016-12-12T19:30:00+11:00</published>
 <updated>2016-12-12T19:30:00+11:00</updated>
-<id>http://reactjunkie.com/build-graphql-schema-without-babelrc</id>
-<content type="html" xml:base="http://reactjunkie.com/build-graphql-schema-without-babelrc/">&lt;p&gt;Man it has been a busy month! It’s been a while since I blogged, I have to say I miss it a lot. Almost as much as I 
+<id>http://localhost:3001/build-graphql-schema-without-babelrc</id>
+<content type="html" xml:base="http://localhost:3001/build-graphql-schema-without-babelrc/">&lt;p&gt;Man it has been a busy month! It’s been a while since I blogged, I have to say I miss it a lot. Almost as much as I 
 miss drinking..&lt;/p&gt;
 
 &lt;p&gt;Today I’ll be talking about graphql and relay, specifically about building the schema. Warning this is not a beginner’s
@@ -1065,11 +1211,11 @@ require(‘./updateSchema’);
 </entry>
 <entry>
 <title>Targeting users with React Redux and Launch Darkly</title>
-<link href="http://reactjunkie.com/launch-darkly-part-two/" rel="alternate" type="text/html" title="Targeting users with React Redux and Launch Darkly" />
+<link href="http://localhost:3001/launch-darkly-part-two/" rel="alternate" type="text/html" title="Targeting users with React Redux and Launch Darkly" />
 <published>2016-11-01T19:30:00+11:00</published>
 <updated>2016-11-01T19:30:00+11:00</updated>
-<id>http://reactjunkie.com/launch-darkly-part-two</id>
-<content type="html" xml:base="http://reactjunkie.com/launch-darkly-part-two/">&lt;p&gt;In my &lt;a href=&quot;http://www.reactjunkie.com/react-feature-toggle-launch-darkly/&quot; target=&quot;_blank&quot;&gt;previous previous post&lt;/a&gt; 
+<id>http://localhost:3001/launch-darkly-part-two</id>
+<content type="html" xml:base="http://localhost:3001/launch-darkly-part-two/">&lt;p&gt;In my &lt;a href=&quot;http://www.reactjunkie.com/react-feature-toggle-launch-darkly/&quot; target=&quot;_blank&quot;&gt;previous previous post&lt;/a&gt; 
 I introduced launch darkly as a feature toggling platform and how to use it with react redux. In this post I
 will explain how you can further leverage the power of feature toggling with user targeting.&lt;/p&gt;
 
@@ -1199,11 +1345,11 @@ new world of possibilities in regards to what you can do with your app. Someday 
 </entry>
 <entry>
 <title>Hot Reloading Universally Bundled Webpack Apps</title>
-<link href="http://reactjunkie.com/universal-hot-reload/" rel="alternate" type="text/html" title="Hot Reloading Universally Bundled Webpack Apps" />
+<link href="http://localhost:3001/universal-hot-reload/" rel="alternate" type="text/html" title="Hot Reloading Universally Bundled Webpack Apps" />
 <published>2016-10-22T10:52:00+11:00</published>
 <updated>2016-10-22T10:52:00+11:00</updated>
-<id>http://reactjunkie.com/universal-hot-reload</id>
-<content type="html" xml:base="http://reactjunkie.com/universal-hot-reload/">&lt;p&gt;I learnt quite a lot in the past week. Firstly there’s no substitute to good sleep. Secondly, you can actually eat a salmon steak raw! Thirdly, it’s really really hard
+<id>http://localhost:3001/universal-hot-reload</id>
+<content type="html" xml:base="http://localhost:3001/universal-hot-reload/">&lt;p&gt;I learnt quite a lot in the past week. Firstly there’s no substitute to good sleep. Secondly, you can actually eat a salmon steak raw! Thirdly, it’s really really hard
 to hot reload a server bundle if you are writing a universal app.&lt;/p&gt;
 
 &lt;p&gt;On the client side, &lt;a href=&quot;https://github.com/webpack/webpack-dev-middleware&quot; target=&quot;_blank&quot;&gt;webpack-dev-middleware&lt;/a&gt; and &lt;a href=&quot;https://github.com/gaearon/react-hot-loader&quot; target=&quot;_blank&quot;&gt;react-hot-loader&lt;/a&gt;
@@ -1538,11 +1684,11 @@ Check it out! Let me know if there’s any issues.&lt;/p&gt;
 </entry>
 <entry>
 <title>Implementing feature toggle with launch darkly and react redux</title>
-<link href="http://reactjunkie.com/react-feature-toggle-launch-darkly/" rel="alternate" type="text/html" title="Implementing feature toggle with launch darkly and react redux" />
+<link href="http://localhost:3001/react-feature-toggle-launch-darkly/" rel="alternate" type="text/html" title="Implementing feature toggle with launch darkly and react redux" />
 <published>2016-09-16T10:52:00+10:00</published>
 <updated>2016-09-16T10:52:00+10:00</updated>
-<id>http://reactjunkie.com/react-feature-toggle-launch-darkly</id>
-<content type="html" xml:base="http://reactjunkie.com/react-feature-toggle-launch-darkly/">&lt;h3 id=&quot;update-22-october-2016&quot;&gt;&lt;em&gt;Update: 22 October 2016&lt;/em&gt;&lt;/h3&gt;
+<id>http://localhost:3001/react-feature-toggle-launch-darkly</id>
+<content type="html" xml:base="http://localhost:3001/react-feature-toggle-launch-darkly/">&lt;h3 id=&quot;update-22-october-2016&quot;&gt;&lt;em&gt;Update: 22 October 2016&lt;/em&gt;&lt;/h3&gt;
 &lt;p&gt;&lt;em&gt;I have published an npm package called &lt;a href=&quot;https://github.com/yusinto/ld-redux&quot; target=&quot;_blank&quot;&gt;ld-redux&lt;/a&gt; which covers everything you need to integrate launch darkly with your react 
 redux app. It’s the contents of this blog in an npm package. If you use it, please give me some feedback. Thanks!&lt;/em&gt;&lt;/p&gt;
 
@@ -1892,195 +2038,5 @@ and launch darkly in the coming posts.&lt;/p&gt;
 <category term="darkly" />
 <category term="toggling" />
 <summary>Update: 22 October 2016I have published an npm package called ld-redux which covers everything you need to integrate launch darkly with your react redux app. It’s the contents of this blog in an npm package. If you use it, please give me some feedback. Thanks!</summary>
-</entry>
-<entry>
-<title>Deploying react apps on docker using ecs and terraform part 1</title>
-<link href="http://reactjunkie.com/docker-ecs-terraform-react/" rel="alternate" type="text/html" title="Deploying react apps on docker using ecs and terraform part 1" />
-<published>2016-09-03T10:52:00+10:00</published>
-<updated>2016-09-03T10:52:00+10:00</updated>
-<id>http://reactjunkie.com/docker-ecs-terraform-react</id>
-<content type="html" xml:base="http://reactjunkie.com/docker-ecs-terraform-react/">&lt;p&gt;I was tinkering on blogging about Step 5 to React: Introduction to Redux, but I decided to write something closer to my heart: 
-using ecs and terraform to deploy docker react apps (can I squeeze in anymore buzzwords?). This is not an intro to docker so 
-I assume you are familiar with the basics.&lt;/p&gt;
-
-&lt;p&gt;My plan was to use docker to achieve continuous integration and ultimately continuous delivery and then deployment. But I like to
-start things small so the plan was to firstly create a docker image on every master merge and save that image.&lt;/p&gt;
-
-&lt;p&gt;This image
-is a stable and deployable package which can be deployed and run on any environment. This is the “golden” build concept - a single build
-that is used on all steps of the deployment pipeline: uat, stage and prod. This is a good practice to adopt because the exact same 
-build that has gone through all the QA steps is the one that’s going out to production.&lt;/p&gt;
-
-&lt;p&gt;It gives you confidence the prod deployment at the end
-will work as expected. This is only possible if the package that comes out of your CI build is immutable - that’s where docker comes in. I don’t 
-know about you but I get really turned on by this kind of stuff! Let’s get to it!&lt;/p&gt;
-
-&lt;h2 id=&quot;the-end-game&quot;&gt;The end game&lt;/h2&gt;
-&lt;p&gt;By the end of this blog, we want to be able to create a docker image containing our react app, be able to run lint, tests and the actual app
-on that image.&lt;/p&gt;
-
-&lt;p&gt;We will be using the codebase from my &lt;a href=&quot;http://www.reactjunkie.com/step-four-to-react-routing-with-react-router/&quot; target=&quot;_blank&quot;&gt;previous blog on react router&lt;/a&gt;. It’s 
-a minimal react spa with routing, you should be able to easily substitute your own codebase and follow the steps here to use docker.&lt;/p&gt;
-
-&lt;h2 id=&quot;step-1-install-docker&quot;&gt;Step 1: Install docker&lt;/h2&gt;
-&lt;p&gt;I’m on a mac so download docker for mac from &lt;a href=&quot;https://download.docker.com/mac/stable/Docker.dmg&quot;&gt;here&lt;/a&gt;. It’s a 110mb download so stop reading and do it first, continue reading later.
-There are some hardware &amp;amp; os requirements. The important ones are:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;OS X 10.10.3 Yosemite or newer&lt;/li&gt;
-&lt;li&gt;VirtualBox 4.3.30 or newer&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;If you have a previous install of docker-machine, mac docker will ask if you want to migrate data from that install to your new install. I said no because I don’t have anything
-important to migrate as I’ll be starting from scratch.&lt;/p&gt;
-
-&lt;p&gt;Once installation is done, open terminal and type:
-{% highlight bash %}
-docker -v
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;You should get something like 
-{% highlight bash %}
-Docker version 1.12.0, build 8eab29e
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;Now we are ready to rock!&lt;/p&gt;
-
-&lt;h2 id=&quot;step-2-create-dockerfile&quot;&gt;Step 2: Create Dockerfile&lt;/h2&gt;
-
-&lt;p&gt;We need to create a Dockerfile first. This is the sequence of instructions you tell docker to execute to create the image. 
-It’s akin to you manually entering a sequence of shell commands on the terminal of a new linux box when deploying your app. Except
-docker runs it for you automatically, and then saves the resultant state of that linux box as an image.&lt;/p&gt;
-
-&lt;p&gt;So right click on the root directory of your project, add a new file call it &lt;i&gt;Dockerfile&lt;/i&gt;. It should look like this:&lt;/p&gt;
-
-&lt;h4 id=&quot;dockerfile&quot;&gt;DockerFile&lt;/h4&gt;
-&lt;p&gt;{% highlight bash %}
-# We need a base image to build upon. Use the latest node image from 
-# dockerhub as the base image so we get node and npm for free
-FROM node:latest
-MAINTAINER Yus Ng&lt;/p&gt;
-
-&lt;h1 id=&quot;store-all-our-app-code-in-the-src-folder-starting-from-packagejson&quot;&gt;Store all our app code in the /src folder, starting from package.json&lt;/h1&gt;
-&lt;p&gt;# first. Why copy package.json first? So we can take advantage of 
-# the docker build cache. More below.
-COPY package.json /src/package.json&lt;/p&gt;
-
-&lt;h1 id=&quot;once-we-have-packagejson-do-npm-install-restricting-the-loglevel&quot;&gt;Once we have package.json, do npm install (restricting the loglevel&lt;/h1&gt;
-&lt;p&gt;# to minimise noise)
-RUN cd /src &amp;amp;&amp;amp; npm install –loglevel error&lt;/p&gt;
-
-&lt;h1 id=&quot;copy-all-our-code-yes-including-packagejson-again-to-src&quot;&gt;Copy all our code (yes including package.json again) to /src.&lt;/h1&gt;
-&lt;p&gt;COPY . /src&lt;/p&gt;
-
-&lt;h1 id=&quot;change-directory-into-the-src-folder-so-we-can-execute-npm-commands&quot;&gt;Change directory into the /src folder so we can execute npm commands&lt;/h1&gt;
-&lt;p&gt;WORKDIR /src&lt;/p&gt;
-
-&lt;h1 id=&quot;this-is-the-express-port-on-which-our-app-runs&quot;&gt;This is the express port on which our app runs&lt;/h1&gt;
-&lt;p&gt;EXPOSE 3000&lt;/p&gt;
-
-&lt;h1 id=&quot;this-is-the-default-command-to-execute-when-docker-run-is-issued-only&quot;&gt;This is the default command to execute when docker run is issued. Only&lt;/h1&gt;
-&lt;p&gt;# one CMD instruction is allowed per Dockerfile.
-CMD npm start
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;&lt;b&gt;Important points&lt;/b&gt;:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Each instruction creates a new intermediate layer.&lt;/li&gt;
-&lt;li&gt;Docker uses the instruction string as the cache key. The result of that instruction is a new layer which gets stored as the cache value.&lt;/li&gt;
-&lt;li&gt;ADD and COPY instructions are special. The cache key for these are the checksum of their file contents.&lt;/li&gt;
-&lt;li&gt;If your package.json file does not change, the cache will be hit because the checksum matches. The next instruction npm install will also hit the cache 
-because docker uses the instruction string as key which has not changed.&lt;/li&gt;
-&lt;li&gt;In contrast, consider what will happen if do COPY . /src and then followed by RUN npm install.&lt;/li&gt;
-&lt;li&gt;The COPY command does a checksum of all the files in current directory and compares that against previous layers. Some files
-would have changed in the src folder, because it contains all our source code, images, config files, styles, etc. The checksum comparison would not match, hence
-the cache will be invalidated. Once invalidated, all subsequent instructions will create new layers ignoring the cache.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;For more information on docker build cache check the official doco &lt;a href=&quot;https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h2 id=&quot;step-3-create-dockerignore&quot;&gt;Step 3: Create .dockerignore&lt;/h2&gt;
-
-&lt;p&gt;We need one more file before we can build our image. Go ahead and add a new file to the root directory of your project call it 
-&lt;i&gt;.dockerignore&lt;/i&gt;&lt;/p&gt;
-
-&lt;p&gt;Docker will exclude files and directories specified here from the image. It should look like this:&lt;/p&gt;
-
-&lt;p&gt;{% highlight bash %}
-.git
-.gitignore
-node_modules
-npm-debug.log
-{% endhighlight %}&lt;/p&gt;
-
-&lt;h2 id=&quot;step-4-build-the-docker-image&quot;&gt;Step 4: Build the docker image&lt;/h2&gt;
-
-&lt;p&gt;Let’s do it! Go to terminal, cd into your root project folder where your Dockerfile resides and type the following (&lt;b&gt;NOTE&lt;/b&gt; the “.” at the end
-is very important!):&lt;/p&gt;
-
-&lt;p&gt;{% highlight bash %}
-docker build -t reactjunkie:v1 .
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;Docker will build an image named “reactjunkie:v1” using the Dockerfile specified in the current directory (represented by the “.” at the end). You can see it
-by issuing the command:&lt;/p&gt;
-
-&lt;p&gt;{% highlight bash %}
-docker images
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;You should see two images; the latest node base image which gets downloaded when docker built our image and our reactjunkie:v1 image.&lt;/p&gt;
-
-&lt;h2 id=&quot;step-5-run-the-docker-container&quot;&gt;Step 5: Run the docker container&lt;/h2&gt;
-
-&lt;p&gt;Now we have an image, we can start a container based on that image and run our app!&lt;/p&gt;
-
-&lt;p&gt;{% highlight bash %}
-docker run -d -p 8080:3000 reactjunkie:v1
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;This command tells docker to run the default CMD command specified in the last line of our Dockerfile above. As we will see shortly we can
-override this default by issuing our own commands.&lt;/p&gt;
-
-&lt;p&gt;The -d flag tells docker to detach from the container process after issuing the command so we regain control of our terminal window.&lt;/p&gt;
-&lt;p&gt;The -p flag maps the port on your mac (the host) to the container port.
-Hit &lt;a href=&quot;http://localhost:8080&quot; target=&quot;_blank&quot;&gt;http://localhost:8080&lt;/a&gt; and you should be able to see the app running!&lt;/p&gt;
-
-&lt;h2 id=&quot;step-6-running-lint-and-test&quot;&gt;Step 6: Running lint and test&lt;/h2&gt;
-
-&lt;p&gt;So the previous step demonstrated how we can run our webapp on our docker container. However in a CI environment, we want to be able to first build our image,
-run lint and tests and then save the image first prior to starting the web app.&lt;/p&gt;
-
-&lt;p&gt;I’ve setup eslint and jest in this project (available on &lt;a href=&quot;https://github.com/yusinto/docker&quot; target=&quot;_blank&quot;&gt;github&lt;/a&gt;). To run eslint and tests on our container, type 
-the following:&lt;/p&gt;
-
-&lt;p&gt;{% highlight bash %}
-docker run -i –rm reactjunkie:v1 npm run lint
-docker run -i –rm reactjunkie:v1 npm t
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;The -i flag tells docker to run in &quot;interactive&quot; mode so we can see eslint console output from the container.&lt;/p&gt;
-&lt;p&gt;The --rm flag tells docker to automatically clean up the container and remove its file system when the it exits.&lt;/p&gt;
-&lt;p&gt;Then npm run lint and npm t are the commands that override the default CMD instruction in our Dockerfile. Docker will start
-a container based on our image, issue these commands and then cleanup and remove the container when that command is finished.&lt;/p&gt;
-
-&lt;h2 id=&quot;whats-next&quot;&gt;What’s next?&lt;/h2&gt;
-&lt;p&gt;Now we have the docker image on our local machine, we need a way to export it to a central place so it can be shared with other developers, 
-build systems and so on. Docker has dockerhub which does exactly that, but I use ECR which is aws’ offering.&lt;/p&gt;
-
-&lt;p&gt;All the code in this blog are available on &lt;a href=&quot;https://github.com/yusinto/docker&quot; target=&quot;_blank&quot;&gt;github&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;To be continued…&lt;/p&gt;
-
-&lt;hr /&gt;
-</content>
-<category term="react" />
-<category term="docker" />
-<category term="ecs" />
-<category term="terraform" />
-<category term="deploy" />
-<category term="continuous" />
-<category term="integration" />
-<category term="deployment" />
-<summary>I was tinkering on blogging about Step 5 to React: Introduction to Redux, but I decided to write something closer to my heart: using ecs and terraform to deploy docker react apps (can I squeeze in anymore buzzwords?). This is not an intro to docker so I assume you are familiar with the basics.My plan was to use docker to achieve continuous integration and ultimately continuous delivery and then deployment. But I like tostart things small so the plan was to firstly create a docker image on every master merge and save that image.</summary>
 </entry>
 </feed>
