@@ -1,6 +1,13 @@
 [
   
     {
+      "title"    : "Javascript Job Queues and Promises",
+      "tags"     : "javascript, promises, job, queues, js, and asynchronous",
+      "url"      : "/promises-promises/",
+      "date"     : "18 Sep 2017"
+    } ,
+  
+    {
       "title"    : "WebAssembly and React",
       "tags"     : "webAssembly, react, wasm, web, assembly, javascript, c, c++, and emscripten",
       "url"      : "/webassembly-react/",
