@@ -1,6 +1,13 @@
 [
   
     {
+      "title"    : "Relay Modern Persisted Queries",
+      "tags"     : "relay, modern, persisted, queries, graphql, javascript, and js",
+      "url"      : "/relay-modern-persisted-queries/",
+      "date"     : "12 Nov 2017"
+    } ,
+  
+    {
       "title"    : "Javascript Job Queues and Promises",
       "tags"     : "javascript, promises, job, queues, js, and asynchronous",
       "url"      : "/promises-promises/",

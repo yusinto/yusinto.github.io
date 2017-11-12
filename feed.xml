@@ -3,9 +3,172 @@
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
 <link href="http://reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
 <link href="http://reactjunkie.com/" rel="alternate" type="text/html" />
-<updated>2017-09-20T20:24:33+10:00</updated>
+<updated>2017-11-12T15:08:15+11:00</updated>
 <id>http://reactjunkie.com/</id>
 <title>React Junkie</title>
+<entry>
+<title>Relay Modern Persisted Queries</title>
+<link href="http://reactjunkie.com/relay-modern-persisted-queries/" rel="alternate" type="text/html" title="Relay Modern Persisted Queries" />
+<published>2017-11-12T07:30:00+11:00</published>
+<updated>2017-11-12T07:30:00+11:00</updated>
+<id>http://reactjunkie.com/relay-modern-persisted-queries</id>
+<content type="html" xml:base="http://reactjunkie.com/relay-modern-persisted-queries/">&lt;p&gt;This blog is about &lt;a href=&quot;https://github.com/yusinto/relay-compiler-plus&quot; target=&quot;_blank&quot;&gt;relay-compiler-plus&lt;/a&gt;, 
+a custom relay compiler which supports persisted queries.&lt;/p&gt;
+
+&lt;p&gt;One of the more exciting features of relay modern is the ability to use persisted queries with the graphql server.
+Instead of sending the full graphql query in the request payload, you send a short query id which gets mapped
+on the server side to the full query. It’s a no-brainer for performance. I upgraded from classic for this!&lt;/p&gt;
+
+&lt;p&gt;Alas, the official &lt;a href=&quot;https://facebook.github.io/relay/docs/new-in-relay-modern.html&quot; target=&quot;_blank&quot;&gt;documentation&lt;/a&gt;
+only briefly mentioned this without anything else. A quick google search reveals a solution from 
+&lt;a href=&quot;https://medium.com/@wonderboymusic/upgrading-to-relay-modern-or-apollo-ffa58d3a5d59&quot; target=&quot;_blank&quot;&gt;Scott Taylor&lt;/a&gt;
+from the New York Times. However his solution generates query ids at runtime at the network fetch level which is not
+optimal. I want a solution where the query ids and the query map file are both generated at compile time for maximum
+performance.&lt;/p&gt;
+
+&lt;p&gt;It turns out, the original relay-compiler does have a hidden feature to support persisted queries.&lt;/p&gt;
+
+&lt;p&gt;This package is inspired by a conversation with &lt;a href=&quot;https://github.com/leebyron&quot; target=&quot;_blank&quot;&gt;Lee Byron&lt;/a&gt; 
+at &lt;a href=&quot;https://summit.graphql.com/&quot; target=&quot;_blank&quot;&gt;Graphql Summit 2017&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-key&quot;&gt;The key&lt;/h2&gt;
+&lt;p&gt;The key lies in &lt;a href=&quot;https://github.com/facebook/relay/blob/master/packages/relay-compiler/codegen/RelayFileWriter.js&quot; target=&quot;_blank&quot;&gt;RelayFileWriter&lt;/a&gt;.
+It accepts a config object where you can specify a &lt;code class=&quot;highlighter-rouge&quot;&gt;persistQuery&lt;/code&gt; function. You can dig around and peruse
+that code at your leisure (which I did). The end result is a modification to the relay-compiler which
+accepts a &lt;code class=&quot;highlighter-rouge&quot;&gt;persistQuery&lt;/code&gt; function which gets passed down to &lt;code class=&quot;highlighter-rouge&quot;&gt;RelayFileWriter&lt;/code&gt;. I call it 
+&lt;a href=&quot;https://github.com/yusinto/relay-compiler-plus&quot; target=&quot;_blank&quot;&gt;relay-compiler-plus&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;step-1-install&quot;&gt;Step 1: Install&lt;/h2&gt;
+&lt;p&gt;Install relay-compiler-plus and the latest &lt;a href=&quot;https://github.com/graphql/graphql-js&quot; target=&quot;_blank&quot;&gt;graphql-js&lt;/a&gt; package:&lt;/p&gt;
+
+&lt;p&gt;{% highlight bash %}
+yarn add relay-compiler-plus
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;{% highlight bash %}
+yarn upgrade graphql –latest
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h2 id=&quot;step-2-compile&quot;&gt;Step 2: Compile&lt;/h2&gt;
+&lt;p&gt;Add this npm command to your &lt;strong&gt;package.json&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;p&gt;{% highlight json %}
+“scripts”: {
+    “rcp”: “relay-compiler-plus –schema &lt;schema_file_path&gt; --src &lt;src_dir_path&gt; -f&quot;
+},
+{% endhighlight %}&lt;/src_dir_path&gt;&lt;/schema_file_path&gt;&lt;/p&gt;
+
+&lt;p&gt;where:&lt;br /&gt; 
+&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;SCHEMA_FILE_PATH&amp;gt;&lt;/code&gt; is the path to your schema.graphql or schema.json file&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;SRC_DIR_PATH&amp;gt;&lt;/code&gt; is the path to your src directory&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;-f&lt;/code&gt; will delete all &lt;code class=&quot;highlighter-rouge&quot;&gt;**/__generated__/*.graphql.js&lt;/code&gt; files under &lt;code class=&quot;highlighter-rouge&quot;&gt;SRC_DIR_PATH&lt;/code&gt; before compilation starts&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Run the command to start compiling:&lt;/p&gt;
+
+&lt;p&gt;{% highlight bash %}
+npm run rcp
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h2 id=&quot;step-3-map-query-ids-on-the-server&quot;&gt;Step 3: Map query ids on the server&lt;/h2&gt;
+&lt;p&gt;On the server, use &lt;code class=&quot;highlighter-rouge&quot;&gt;matchQueryMiddleware&lt;/code&gt; prior to &lt;code class=&quot;highlighter-rouge&quot;&gt;express-graphql&lt;/code&gt; to match query ids to actual queries. Note 
+that &lt;code class=&quot;highlighter-rouge&quot;&gt;queryMap.json&lt;/code&gt; is auto-generated by &lt;code class=&quot;highlighter-rouge&quot;&gt;relay-compiler-plus&lt;/code&gt; in the previous step.&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+import Express from ‘express’;
+import expressGraphl from ‘express-graphql’;
+import {matchQueryMiddleware} from ‘relay-compiler-plus’; // do this
+import queryMapJson from ‘../queryMap.json’; // do this&lt;/p&gt;
+
+&lt;p&gt;const app = Express();&lt;/p&gt;
+
+&lt;p&gt;app.use(‘/graphql’,
+  matchQueryMiddleware(queryMapJson), // do this
+  expressGraphl({
+    schema: graphqlSchema,
+    graphiql: true,
+  }));
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h2 id=&quot;step-4-send-query-ids-on-the-client&quot;&gt;Step 4: Send query ids on the client&lt;/h2&gt;
+&lt;p&gt;On the client, modify your relay network fetch implementation to pass a &lt;code class=&quot;highlighter-rouge&quot;&gt;queryId&lt;/code&gt; parameter in the
+request body instead of a &lt;code class=&quot;highlighter-rouge&quot;&gt;query&lt;/code&gt; parameter. Note that &lt;code class=&quot;highlighter-rouge&quot;&gt;operation.id&lt;/code&gt; is generated by &lt;code class=&quot;highlighter-rouge&quot;&gt;relay-compiler-plus&lt;/code&gt; in step 2.&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+function fetchQuery(operation, variables,) {
+  return fetch(‘/graphql’, {
+    method: ‘POST’,
+    headers: {
+      ‘content-type’: ‘application/json’
+    },
+    body: JSON.stringify({
+      queryId: operation.id, // do this
+      variables,
+    }),
+  }).then(response =&amp;gt; {
+    return response.json();
+  });
+}
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h2 id=&quot;bonus&quot;&gt;Bonus&lt;/h2&gt;
+&lt;p&gt;In &lt;a href=&quot;#step-2-compile&quot;&gt;step 2&lt;/a&gt;, running relay-compiler-plus generates relay query files like the original relay-compiler,
+but with a difference. Inspect a generated &lt;code class=&quot;highlighter-rouge&quot;&gt;ConcreteBatch&lt;/code&gt; query file and you’ll see that it now has an &lt;code class=&quot;highlighter-rouge&quot;&gt;id&lt;/code&gt; assigned 
+to it and that the query &lt;code class=&quot;highlighter-rouge&quot;&gt;text&lt;/code&gt; is now &lt;code class=&quot;highlighter-rouge&quot;&gt;null&lt;/code&gt;:&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+const batch /&lt;em&gt;: ConcreteBatch&lt;/em&gt;/ = {
+  “fragment”: {
+    “argumentDefinitions”: [],
+    “kind”: “Fragment”,
+    “metadata”: null,
+    “name”: “client_index_Query”,
+    “selections”: […],
+    “type”: “Query”
+  },
+  “id”: “6082095e8a45f64d38924775d047cf8c”, // look ma, query id!
+  “kind”: “Batch”,
+  “metadata”: {},
+  “name”: “client_index_Query”,
+  “query”: {…},
+  “text”: null // look again ma, null query text!
+};
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;The id is an md5 hash of the query text, generated by the &lt;a href=&quot;https://github.com/yusinto/relay-compiler-plus/blob/master/src/compiler/main.js&quot; target=&quot;_blank&quot;&gt;persistQuery&lt;/a&gt; 
+function. It looks like this:&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+ function persistQuery(operationText: string): Promise&lt;string&gt; {
+   return new Promise((resolve) =&amp;gt; {
+     const queryId = md5(operationText);&lt;/string&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; // queryCache is written to disk at the end as queryMap.json
+ queryCache.push({id: queryId, text: operationText});
+ resolve(queryId);    });  }    {% endhighlight %}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;As you can see above, the hash to query text mapping is saved to an array which gets written to disk
+at the end of the compilation as queryMap.json. This is used on the server side as outlined in 
+&lt;a href=&quot;#step-3-map-query-ids-on-the-server&quot;&gt;step 3&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;You can find the package at &lt;a href=&quot;https://github.com/yusinto/relay-compiler-plus&quot; target=&quot;_blank&quot;&gt;github&lt;/a&gt; with a fully working
+&lt;a href=&quot;https://github.com/yusinto/relay-compiler-plus/tree/master/example&quot; target=&quot;_blank&quot;&gt;example&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Let me know if this is useful (or not)!&lt;/p&gt;
+
+&lt;hr /&gt;
+</content>
+<category term="relay" />
+<category term="modern" />
+<category term="persisted" />
+<category term="queries" />
+<category term="graphql" />
+<category term="javascript" />
+<category term="js" />
+<summary>This blog is about relay-compiler-plus, a custom relay compiler which supports persisted queries.</summary>
+</entry>
 <entry>
 <title>Javascript Job Queues and Promises</title>
 <link href="http://reactjunkie.com/promises-promises/" rel="alternate" type="text/html" title="Javascript Job Queues and Promises" />
@@ -1468,344 +1631,5 @@ new world of possibilities in regards to what you can do with your app. Someday 
 <category term="toggling" />
 <category term="ld-redux" />
 <summary>In my previous previous post I introduced launch darkly as a feature toggling platform and how to use it with react redux. In this post Iwill explain how you can further leverage the power of feature toggling with user targeting.What’s user targeting?You have a feature or functionality you only want to display to a select group of audience. For example releasing a beta feature to users who have signed up. Kinda like a sneak preview for early adopters. Or perhaps you want to show special offers only to premium members of your website. This is user targeting.</summary>
-</entry>
-<entry>
-<title>Hot Reloading Universally Bundled Webpack Apps</title>
-<link href="http://reactjunkie.com/universal-hot-reload/" rel="alternate" type="text/html" title="Hot Reloading Universally Bundled Webpack Apps" />
-<published>2016-10-22T10:52:00+11:00</published>
-<updated>2016-10-22T10:52:00+11:00</updated>
-<id>http://reactjunkie.com/universal-hot-reload</id>
-<content type="html" xml:base="http://reactjunkie.com/universal-hot-reload/">&lt;p&gt;I learnt quite a lot in the past week. Firstly there’s no substitute to good sleep. Secondly, you can actually eat a salmon steak raw! Thirdly, it’s really really hard
-to hot reload a server bundle if you are writing a universal app.&lt;/p&gt;
-
-&lt;p&gt;On the client side, &lt;a href=&quot;https://github.com/webpack/webpack-dev-middleware&quot; target=&quot;_blank&quot;&gt;webpack-dev-middleware&lt;/a&gt; and &lt;a href=&quot;https://github.com/gaearon/react-hot-loader&quot; target=&quot;_blank&quot;&gt;react-hot-loader&lt;/a&gt;
-have been around for a while now and have become indispensable to developers. However, what about the server side?&lt;/p&gt;
-
-&lt;p&gt;One solution is to use nodemon to restart the server on file changes. This works if you don’t bundle your server side code. If you do, you’ll have to use a task runner 
-like gulp to first compile your code, then use nodemon to restart the server.&lt;/p&gt;
-
-&lt;p&gt;I don’t particularly like this solution because I need to introduce gulp and nodemon into my project. I believe webpack can solve anything and everything. So the challenge was set:
-use only webpack to implement server side bundling and hot reload.&lt;/p&gt;
-
-&lt;p&gt;The final product is &lt;a href=&quot;https://github.com/yusinto/universal-hot-reload&quot; target=&quot;_blank&quot;&gt;universal-hot-reload&lt;/a&gt; if you want to skip straight to dessert.&lt;/p&gt;
-
-&lt;h2 id=&quot;the-plan&quot;&gt;The plan&lt;/h2&gt;
-
-&lt;p&gt;We want to use webpack to watch our server files for changes, rebundle on change and restart the express server for changes to take effect.&lt;/p&gt;
-
-&lt;h2 id=&quot;whats-so-hard-about-it&quot;&gt;What’s so hard about it?&lt;/h2&gt;
-
-&lt;p&gt;Watching files for changes is already supported by webpack out of the box so that’s easy. For example we can do this:&lt;/p&gt;
-
-&lt;p&gt;{% highlight javascript %}
-  function watchServerChanges() {
-    const webpack = require(‘webpack’);
-    const serverCompiler = webpack(require(‘path/to/webpack/server/config’);
-    const options = {
-      aggregateTimeout: 300, // wait so long for more changes
-      poll: true // use polling instead of native watchers
-    };&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;serverCompiler.watch(options, function onServerChange(err, stats) {
-  if (err) {
-    console.log(&#39;Server bundling error:&#39; + JSON.stringify(err));
-    return;
-  }
-
-  // TODO: restart express here 
-});   } {% endhighlight %}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;We can call watchServerChanges on our server bootstrap and walah problem solved. Well not quite. How do we tackle restarting express on server file changes?&lt;/p&gt;
-
-&lt;h2 id=&quot;step-1-express-server-restart-using-htttpserverclose&quot;&gt;Step 1: Express server restart using htttp.Server.close()&lt;/h2&gt;
-&lt;p&gt;The http.Server object provides a &lt;a href=&quot;https://nodejs.org/api/http.html#http_server_close_callback&quot; target=&quot;_blank&quot;&gt;close&lt;/a&gt; method which sounds like it might do the job.
-For example we can theoretically do this:&lt;/p&gt;
-
-&lt;p&gt;{% highlight javascript %}
-  function onServerChange(err, stats) {
-    if (err) {
-      console.log(‘Server bundling error:’ + JSON.stringify(err));
-      return;
-    }&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// TODO: somehow get a reference to the running http.Server object;
-//const httpServer = ??? 
-
-httpServer.close(function () {
-  console.log(&#39;Server restarted &#39; + new Date());
-});   } {% endhighlight %}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;Two things we need to solve here:&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;
-    &lt;p&gt;We need to obtain a reference to the running http.Server object.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;close() does not restart the server. It stops the server from accepting new connections and then shuts down the server when all its existing connections have closed.&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h3 id=&quot;step-11-getting-a-reference-to-httpserver&quot;&gt;Step 1.1: Getting a reference to http.Server&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&quot;/assets/images/neo_spoon.jpg&quot; alt=&quot;Neo Spoon&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Let’s take a look at some code.&lt;/p&gt;
-
-&lt;h4 id=&quot;srcserverindexjs-bootstrap&quot;&gt;src/server/index.js (bootstrap)&lt;/h4&gt;
-&lt;p&gt;{% highlight javascript %}
-  require(‘babel-polyfill’);&lt;/p&gt;
-
-&lt;p&gt;// require the server entry file where the express server is initialised
-  // expect the server entry file to export a http.Server object
-  const httpServer = require(‘./server’);&lt;/p&gt;
-
-&lt;p&gt;//… then we can call httpServer.close() at some point later
-{% endhighlight %}&lt;/p&gt;
-
-&lt;h4 id=&quot;srcserverserverjs-entry&quot;&gt;src/server/server.js (entry)&lt;/h4&gt;
-&lt;p&gt;{% highlight javascript %}
-import express from ‘express’;&lt;/p&gt;
-
-&lt;p&gt;const PORT = 3000;
-const app = express();&lt;/p&gt;
-
-&lt;p&gt;//… your other express middlewares&lt;/p&gt;
-
-&lt;p&gt;// the listen method returns the currently running instance of 
-// http.Server object 
-const httpServer = app.listen(PORT, () =&amp;gt; {
-  console.log(&lt;code class=&quot;highlighter-rouge&quot;&gt;Listening at ${PORT}&lt;/code&gt;);
-});&lt;/p&gt;
-
-&lt;p&gt;// export httpServer object so we can access it in bootstrap
-module.exports = httpServer;
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;What’s happening here:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;src/server/index.js is our bootstrap file. It requires src/server/server.js 
-and expects an http.Server object as the exported value of that module.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;In server.js, the listen() method returns an instance of the running http.Server object. 
-This is what we export out of this module for index.js.&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;We are not done yet. Merely setting module.exports will not expose the exported object to
-the consumer of our bundled js. Essentially we need to create a library out of our app. 
-Meaning the main export of our app needs to be exposed to the consumer. To do this, 
-in your webpack server config file, set &lt;strong&gt;output.libraryTarget = ‘commonjs2’&lt;/strong&gt;, like so:&lt;/p&gt;
-
-&lt;h4 id=&quot;webpackconfigserverjs&quot;&gt;webpack.config.server.js&lt;/h4&gt;
-&lt;p&gt;{% highlight javascript %}
-const webpack = require(‘webpack’);
-const path = require(‘path’);
-const nodeExternals = require(‘webpack-node-externals’);&lt;/p&gt;
-
-&lt;p&gt;module.exports = {
-  devtool: ‘cheap-module-inline-source-map’,&lt;/p&gt;
-
-&lt;p&gt;// set this to your server entry point. This should be where you start 
-  // your express server with .listen()
-  entry: ‘./src/server/server.js’,&lt;/p&gt;
-
-&lt;p&gt;// tell webpack this bundle will be used in nodejs environment.
-  target: ‘node’,&lt;/p&gt;
-
-&lt;p&gt;// Omit node_modules code from the bundle. You don’t want and don’t 
-  // need them in the bundle.
-  externals: [nodeExternals()], 
-  output: {
-    path: path.resolve(‘dist’),
-    filename: ‘serverBundle.js’,&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// IMPORTANT! Add module.exports to the beginning of the bundle 
-// so your main module is exposed to the consumer of the bundle.
-libraryTarget: &#39;commonjs2&#39;   },   // The rest of the config is pretty standard and can contain    // other webpack stuff you need.   module: {
-loaders: [
-  {
-    test: /\.json$/,
-    loader: &#39;json-loader&#39;
-  },
-  {
-    test: /\.jsx?$/,
-    loader: &#39;babel&#39;,
-    include: path.resolve(&#39;src&#39;)
-  }]   } }; {% endhighlight %}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;h3 id=&quot;step-12-restarting-express&quot;&gt;Step 1.2: Restarting express&lt;/h3&gt;
-
-&lt;p&gt;Now we have http.Server, we can call close() to stop the server. However as mentioned earlier, 
-close() shuts down the server ONLY when all existing connections have closed. It does not terminate
-stale or idle keep-alive connections. As a result after close() is invoked, your server will continue to run.
-It will not accept new connections and it will wait for existing connections to timeout, which is in minutes.&lt;/p&gt;
-
-&lt;p&gt;Obviously you can’t develop rapidly like this. You can’t call this hot-reload, it’s more like shit-reload.
-A little googling reveals a promising &lt;a href=&quot;http://stackoverflow.com/questions/14626636/how-do-i-shutdown-a-node-js-https-server-immediately&quot;&gt;solution from stackoverflow&lt;/a&gt; by
-&lt;a href=&quot;http://www.goloroden.de/&quot;&gt;Golo Roden&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;The takeaway from that post is that each time a connection is made to our 
-server, we have to keep a reference to the socket object that represents 
-the connection. I store these in a Map for better performance rather
-than a normal object as suggested in the post. We can then call
-socket.destroy() in our watch handler for all sockets, which
-terminates all connections to our http.Server. The close() method can then
-proceed to shut the server.&lt;/p&gt;
-
-&lt;p&gt;What does it look like in code?&lt;/p&gt;
-
-&lt;h4 id=&quot;srcserverindexjs-bootstrap-1&quot;&gt;src/server/index.js (bootstrap)&lt;/h4&gt;
-&lt;p&gt;{% highlight javascript %}
-  require(‘babel-polyfill’);&lt;/p&gt;
-
-&lt;p&gt;watchServerChanges();&lt;/p&gt;
-
-&lt;p&gt;// Starts the express server. Caches sockets and delete those caches 
-  // on socket close. Returns the running http.Server object and the
-  // socket Map cache.
-  function initHttpServer() {
-    // start the server, getting back a reference to http.Server
-    const httpServer = require(‘/path/to/server/bundle’);
-    const sockets = new Map(); // cache all sockets in a Map
-    let nextSocketId = 0;&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;httpServer.on(&#39;connection&#39;, function (socket) {
-  var socketId = nextSocketId++;
-  sockets.set(socketId, socket);
-
-  // remove socket from Map on close.
-  // this is not where we terminate the socket! That happens 
-  // in webpack.watch done handler below 
-  socket.on(&#39;close&#39;, function () {
-    sockets.delete(socketId);
-  });
-});
-
-return {httpServer, sockets};   }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;function watchServerChanges() {
-      const webpack = require(‘webpack’);&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  // contains the running http.Server and socket cache
-  let httpServerInitObject;
-  let initialLoad = true;
-  const compiler = webpack(require(&#39;path/to/webpack/server/config&#39;);
-  const compilerOptions = {
-    aggregateTimeout: 300, // wait so long for more changes
-    poll: true // use polling instead of native watchers
-  };
-  
-  // watch file changes
-  compiler.watch(compilerOptions, function onServerChange(err, stats){
-    if (err) {
-      console.log(&#39;Server bundling error:&#39; + JSON.stringify(err));
-      return;
-    }
-  
-    if (initialLoad) {
-      // first time run, just start the server, no need to restart
-      initialLoad = false;
-      httpServerInitObject = initHttpServer();
-      console.log(&#39;Server bundling done&#39;);
-    } else {
-      // subsequent runs need to close the server and restart
-      // call close() method, but this won&#39;t complete until all
-      // sockets are destroyed below.
-      httpServerInitObject.httpServer.close(function () {
-        // if we reach this step, that means we have succeeded
-        // in shutting down the server!!! Omg fuck yea!
-        httpServerInitObject = initHttpServer(); // re-start
-        console.log(&#39;Server restarted &#39; + new Date());
-      });
-  
-      // This is where the magic happens: destroy all open sockets
-      for (var socket of httpServerInitObject.sockets.values()) {
-        socket.destroy();
-      }        
-    }
-  });
-} {% endhighlight %}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;h2 id=&quot;step-2-clearing-the-require-cache&quot;&gt;Step 2: Clearing the require cache&lt;/h2&gt;
-&lt;p&gt;&lt;img src=&quot;/assets/images/batman_robin.jpg&quot; alt=&quot;Are we there yet?&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;If you try the code above, you realise that it does not freakin work. Why? 
-We are forgetting one thing: node caches all modules when required. How is
-this a problem? At initial load, initHttpServer() will require your server.bundle.js
-and node will cache that. Subsequent calls to initHttpServer() will re-use that
-same server.bundle.js which is not we want. We want to require the newly
-bundled server.bundle.js which webpack produces. To do this we need to clear
-the require cache:&lt;/p&gt;
-
-&lt;p&gt;{% highlight javascript %}
-  function clearCache() {
-    const cacheIds = Object.keys(require.cache);
-    for(let id of cacheIds) {
-      if (id === ‘path/to/server/bundle’) {
-        delete require.cache[id];
-        return;
-      }
-    }
-  }
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;You call clearCache() in onServerChange callback prior to starting the 
-express server like so:
-{% highlight javascript %}&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  //... same code as above
-  
-  // watch file changes
-  compiler.watch(compilerOptions, function onServerChange(err, stats){
-    if (err) {
-      console.log(&#39;Server bundling error:&#39; + JSON.stringify(err));
-      return;
-    }
-    
-    // This solves all first world problems
-    clearCache();
-  
-    //... same as above
-  });
-
-// ...  {% endhighlight %}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;h2 id=&quot;step-3-but-wait-theres-more&quot;&gt;Step 3: But wait there’s more!&lt;/h2&gt;
-&lt;p&gt;You can combine this with existing client hot reload techniques using &lt;a href=&quot;https://github.com/webpack/webpack-dev-server&quot;&gt;webpack-dev-server&lt;/a&gt; 
-and &lt;a href=&quot;https://github.com/gaearon/react-hot-loader&quot;&gt;react-hot-loader&lt;/a&gt; to achieve the ultimate universal hot reload experience. 
-I have done this in &lt;a href=&quot;https://github.com/yusinto/universal-hot-reload&quot; target=&quot;_blank&quot;&gt;universal-hot-reload&lt;/a&gt; so you can check the source
-code for that if you are interested. But for now, I’m out of time .. I need to take a shower.&lt;/p&gt;
-
-&lt;h2 id=&quot;whats-next&quot;&gt;What’s next?&lt;/h2&gt;
-&lt;p&gt;So webpack does solve everything and anything like I said in the beginning.. can it do my laundry and feed my dog too?&lt;/p&gt;
-
-&lt;p&gt;The final product is &lt;a href=&quot;https://github.com/yusinto/universal-hot-reload&quot; target=&quot;_blank&quot;&gt;universal-hot-reload&lt;/a&gt;. 
-Check it out! Let me know if there’s any issues.&lt;/p&gt;
-
-&lt;hr /&gt;
-</content>
-<category term="universal" />
-<category term="hot" />
-<category term="reload" />
-<category term="webpack" />
-<category term="server" />
-<category term="client" />
-<category term="bundle" />
-<summary>I learnt quite a lot in the past week. Firstly there’s no substitute to good sleep. Secondly, you can actually eat a salmon steak raw! Thirdly, it’s really really hardto hot reload a server bundle if you are writing a universal app.</summary>
 </entry>
 </feed>
