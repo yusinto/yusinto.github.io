@@ -3,9 +3,485 @@
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
 <link href="http://reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
 <link href="http://reactjunkie.com/" rel="alternate" type="text/html" />
-<updated>2017-11-12T15:08:15+11:00</updated>
+<updated>2018-01-18T20:28:08+11:00</updated>
 <id>http://reactjunkie.com/</id>
 <title>React Junkie</title>
+<entry>
+<title>Launch Darkly, React and Redux: The Easy Way</title>
+<link href="http://reactjunkie.com/ld-redux-v3/" rel="alternate" type="text/html" title="Launch Darkly, React and Redux: The Easy Way" />
+<published>2018-01-14T07:30:00+11:00</published>
+<updated>2018-01-14T07:30:00+11:00</updated>
+<id>http://reactjunkie.com/ld-redux-v3</id>
+<content type="html" xml:base="http://reactjunkie.com/ld-redux-v3/">&lt;p&gt;About a year and a bit ago I published ld-redux to integrate launch darkly with react and redux. I used that solution
+both commercially in production and personally. It has been stable thus far. There were issues though:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;ld-redux state contains a somewhat mysterious internal property called &lt;em&gt;isLDReady&lt;/em&gt; which is a pain in the butt.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;components have to be connected via a hoc called &lt;em&gt;ldConnect&lt;/em&gt; which is again a pain.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;The subscription logic for flag changes in that hoc might result in duplicate subscriptions which is inefficient.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;With these in mind, I introduce to you (drum roll) &lt;a href=&quot;https://github.com/yusinto/ld-redux&quot; target=&quot;_blank&quot;&gt;ld-redux v3&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;whats-new&quot;&gt;What’s new?&lt;/h2&gt;
+&lt;p&gt;There’s no longer need to worry about &lt;em&gt;isLDReady&lt;/em&gt;. It has been deleted completely from the package.&lt;/p&gt;
+
+&lt;p&gt;There’s no longer need to connect using &lt;em&gt;ldConnect&lt;/em&gt; either! It is gone baby gone!&lt;/p&gt;
+
+&lt;p&gt;You can consume your flags directly from your redux store without having to use &lt;em&gt;getFlags()&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;The subscription logic has been moved to the &lt;em&gt;init()&lt;/em&gt; method so all subscriptions are done just once. Very efficient.&lt;/p&gt;
+
+&lt;h1 style=&quot;color: red&quot;&gt;!!WARNING!!&lt;/h1&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/steve-jobs-small.jpg&quot; alt=&quot;Backwards compatibility?&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;v3 is &lt;strong&gt;NOT&lt;/strong&gt; backwards compatible with v1.x! So be prepared to do some refactoring if you are on v1 upgrading to v3.
+It’s a simple upgrade though. You will be deleting code most of the time. ld-redux v3 is launch darkly 
+and redux as it’s meant to be!&lt;/p&gt;
+
+&lt;h2 id=&quot;how-to-use&quot;&gt;How to use?&lt;/h2&gt;
+&lt;p&gt;You include ldReducer in your app and call the init method once at bootstrap. Your flags will then be available
+in your redux state as camel cased keys. That’s it!&lt;/p&gt;
+
+&lt;h4 id=&quot;clientbootstrapjs&quot;&gt;clientBootstrap.js&lt;/h4&gt;
+&lt;p&gt;{% highlight javascript %}
+import createStore from ‘&lt;your-project&gt;/store&#39;;
+import ldRedux from &#39;ld-redux&#39;;&lt;/your-project&gt;&lt;/p&gt;
+
+&lt;p&gt;// standard redux createStore
+const store = createStore();&lt;/p&gt;
+
+&lt;p&gt;// Tip: you can declare your flags inline or import it as a json file
+const flags = { ‘feature-flag-key’: false };&lt;/p&gt;
+
+&lt;p&gt;// Init once on bootstrap to set default flag values and subscriptions
+ldRedux.init({
+  clientSideId: ‘your-client-side-id’,
+  store,
+  flags,
+});&lt;/p&gt;
+
+&lt;p&gt;render(
+  &amp;lt;Provider store={store}&amp;gt;
+    &amp;lt;Router routes={routes} history={browserHistory}/&amp;gt;
+  &amp;lt;/Provider&amp;gt;,
+  document.getElementById(‘reactDiv’)
+);
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h4 id=&quot;reducerjs&quot;&gt;reducer.js&lt;/h4&gt;
+&lt;p&gt;{% highlight javascript %}
+import { combineReducers } from ‘redux’;
+import ldRedux from ‘ld-redux’;
+import reducers from ‘&lt;your-project&gt;/reducers&#39;;&lt;/your-project&gt;&lt;/p&gt;
+
+&lt;p&gt;// Note: the LD key can be anything you want
+export default combineReducers({
+  …reducers,
+  LD: ldRedux.reducer(),
+});
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h4 id=&quot;yourcomponentjs&quot;&gt;yourComponent.js&lt;/h4&gt;
+&lt;p&gt;{% highlight javascript %}
+…&lt;/p&gt;
+
+&lt;p&gt;const mapStateToProps = (state) =&amp;gt; {
+  // Your camelCased feature flags are magically available in the store!
+  // Note: the key LD must be the same as step 2
+  const {featureFlagKey} = state.LD;&lt;/p&gt;
+
+&lt;p&gt;return {
+    featureFlagKey,
+  };
+};&lt;/p&gt;
+
+&lt;p&gt;…
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;Check the fully working &lt;a href=&quot;https://github.com/yusinto/ld-redux/tree/master/example&quot; target=&quot;_blank&quot;&gt;example&lt;/a&gt; on github.&lt;/p&gt;
+
+&lt;p&gt;Oh and one more thing in case someone asks what happened to ld-redux v2? It went from v1.4.x to v3.0.1. What the heck?
+Umm I made a mistake during publishing (entered npm version update major twice) so it became v3. Doesn’t matter! As long
+as it works right?&lt;/p&gt;
+
+&lt;hr /&gt;
+</content>
+<category term="launch" />
+<category term="darkly" />
+<category term="react" />
+<category term="redux" />
+<category term="feature" />
+<category term="flags" />
+<category term="toggle" />
+<summary>About a year and a bit ago I published ld-redux to integrate launch darkly with react and redux. I used that solutionboth commercially in production and personally. It has been stable thus far. There were issues though:</summary>
+</entry>
+<entry>
+<title>Async Generator Functions</title>
+<link href="http://reactjunkie.com/async-generator-functions/" rel="alternate" type="text/html" title="Async Generator Functions" />
+<published>2018-01-14T07:30:00+11:00</published>
+<updated>2018-01-14T07:30:00+11:00</updated>
+<id>http://reactjunkie.com/async-generator-functions</id>
+<content type="html" xml:base="http://reactjunkie.com/async-generator-functions/">&lt;p&gt;An exciting new feature of js is async generator functions. A normal function in javascript is
+run from beginning till end i.e. run to completion. Once invoked, the entire body
+of the function is executed until the end is reached. You can’t stop or pause the execution of an
+ordinary js function.&lt;/p&gt;
+
+&lt;p&gt;Generator functions however, does not run to completion. You use the yield keyword to pause function
+execution and then the next() method to continue execution.&lt;/p&gt;
+
+&lt;h2 id=&quot;goal&quot;&gt;Goal&lt;/h2&gt;
+&lt;p&gt;Use async generator functions right now with babel.&lt;/p&gt;
+
+&lt;h2 id=&quot;step-1-what-is-a-generator-function&quot;&gt;Step 1: What is a generator function?&lt;/h2&gt;
+&lt;p&gt;A generator function is a function which returns an iterator when run.
+An iterator is an object that has a next() method implemented returning an object { value, done }.&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+function* () {
+    console.log(1);
+    let temp = yield “first yield”;
+    console.log(temp);
+    yield “second yield”;
+    return;
+} 
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h2 id=&quot;step-2-what-is-an-async-generator-function&quot;&gt;Step 2: What is an async generator function?&lt;/h2&gt;
+&lt;p&gt;Is the same as a generator function, BUT iterator.next() returns a promise returning the { value, done } object.&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+async function* () {
+    console.log(1);
+    let temp = yield “first yield”;
+    console.log(temp);
+    yield “second yield”;
+    return;
+} 
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h2 id=&quot;step-3-how-to-use-async-generator-with-babel&quot;&gt;Step 3: How to use async generator with babel&lt;/h2&gt;
+&lt;p&gt;{% highlight bash %}
+yarn add –dev babel-plugin-transform-async-to-generator babel-plugin-transform-async-generator-functions
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;Then in your .babelrc file:&lt;/p&gt;
+
+&lt;p&gt;{% highlight json %}
+{
+  “plugins”: [
+    “transform-async-to-generator”,
+    “transform-async-generator-functions”
+  ]
+}
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;Install relay-compiler-plus and the latest &lt;a href=&quot;https://github.com/graphql/graphql-js&quot; target=&quot;_blank&quot;&gt;graphql-js&lt;/a&gt; package:&lt;/p&gt;
+
+&lt;p&gt;{% highlight bash %}
+yarn add relay-compiler-plus
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;{% highlight bash %}
+yarn upgrade graphql –latest
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h2 id=&quot;step-2-compile&quot;&gt;Step 2: Compile&lt;/h2&gt;
+&lt;p&gt;Add this npm command to your &lt;strong&gt;package.json&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;p&gt;{% highlight json %}
+“scripts”: {
+    “rcp”: “relay-compiler-plus –schema &lt;schema_file_path&gt; --src &lt;src_dir_path&gt; -f&quot;
+},
+{% endhighlight %}&lt;/src_dir_path&gt;&lt;/schema_file_path&gt;&lt;/p&gt;
+
+&lt;p&gt;where:&lt;br /&gt; 
+&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;SCHEMA_FILE_PATH&amp;gt;&lt;/code&gt; is the path to your schema.graphql or schema.json file&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;SRC_DIR_PATH&amp;gt;&lt;/code&gt; is the path to your src directory&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;-f&lt;/code&gt; will delete all &lt;code class=&quot;highlighter-rouge&quot;&gt;**/__generated__/*.graphql.js&lt;/code&gt; files under &lt;code class=&quot;highlighter-rouge&quot;&gt;SRC_DIR_PATH&lt;/code&gt; before compilation starts&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Run the command to start compiling:&lt;/p&gt;
+
+&lt;p&gt;{% highlight bash %}
+npm run rcp
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h2 id=&quot;step-3-map-query-ids-on-the-server&quot;&gt;Step 3: Map query ids on the server&lt;/h2&gt;
+&lt;p&gt;On the server, use &lt;code class=&quot;highlighter-rouge&quot;&gt;matchQueryMiddleware&lt;/code&gt; prior to &lt;code class=&quot;highlighter-rouge&quot;&gt;express-graphql&lt;/code&gt; to match query ids to actual queries. Note 
+that &lt;code class=&quot;highlighter-rouge&quot;&gt;queryMap.json&lt;/code&gt; is auto-generated by &lt;code class=&quot;highlighter-rouge&quot;&gt;relay-compiler-plus&lt;/code&gt; in the previous step.&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+import Express from ‘express’;
+import expressGraphl from ‘express-graphql’;
+import {matchQueryMiddleware} from ‘relay-compiler-plus’; // do this
+import queryMapJson from ‘../queryMap.json’; // do this&lt;/p&gt;
+
+&lt;p&gt;const app = Express();&lt;/p&gt;
+
+&lt;p&gt;app.use(‘/graphql’,
+  matchQueryMiddleware(queryMapJson), // do this
+  expressGraphl({
+    schema: graphqlSchema,
+    graphiql: true,
+  }));
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h2 id=&quot;step-4-send-query-ids-on-the-client&quot;&gt;Step 4: Send query ids on the client&lt;/h2&gt;
+&lt;p&gt;On the client, modify your relay network fetch implementation to pass a &lt;code class=&quot;highlighter-rouge&quot;&gt;queryId&lt;/code&gt; parameter in the
+request body instead of a &lt;code class=&quot;highlighter-rouge&quot;&gt;query&lt;/code&gt; parameter. Note that &lt;code class=&quot;highlighter-rouge&quot;&gt;operation.id&lt;/code&gt; is generated by &lt;code class=&quot;highlighter-rouge&quot;&gt;relay-compiler-plus&lt;/code&gt; in step 2.&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+function fetchQuery(operation, variables,) {
+  return fetch(‘/graphql’, {
+    method: ‘POST’,
+    headers: {
+      ‘content-type’: ‘application/json’
+    },
+    body: JSON.stringify({
+      queryId: operation.id, // do this
+      variables,
+    }),
+  }).then(response =&amp;gt; {
+    return response.json();
+  });
+}
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h2 id=&quot;bonus&quot;&gt;Bonus&lt;/h2&gt;
+&lt;p&gt;In &lt;a href=&quot;#step-2-compile&quot;&gt;step 2&lt;/a&gt;, running relay-compiler-plus generates relay query files like the original relay-compiler,
+but with a difference. Inspect a generated &lt;code class=&quot;highlighter-rouge&quot;&gt;ConcreteBatch&lt;/code&gt; query file and you’ll see that it now has an &lt;code class=&quot;highlighter-rouge&quot;&gt;id&lt;/code&gt; assigned 
+to it and that the query &lt;code class=&quot;highlighter-rouge&quot;&gt;text&lt;/code&gt; is now &lt;code class=&quot;highlighter-rouge&quot;&gt;null&lt;/code&gt;:&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+const batch /&lt;em&gt;: ConcreteBatch&lt;/em&gt;/ = {
+  “fragment”: {
+    “argumentDefinitions”: [],
+    “kind”: “Fragment”,
+    “metadata”: null,
+    “name”: “client_index_Query”,
+    “selections”: […],
+    “type”: “Query”
+  },
+  “id”: “6082095e8a45f64d38924775d047cf8c”, // look ma, query id!
+  “kind”: “Batch”,
+  “metadata”: {},
+  “name”: “client_index_Query”,
+  “query”: {…},
+  “text”: null // look again ma, null query text!
+};
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;The id is an md5 hash of the query text, generated by the &lt;a href=&quot;https://github.com/yusinto/relay-compiler-plus/blob/master/src/compiler/main.js&quot; target=&quot;_blank&quot;&gt;persistQuery&lt;/a&gt; 
+function. It looks like this:&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+ function persistQuery(operationText: string): Promise&lt;string&gt; {
+   return new Promise((resolve) =&amp;gt; {
+     const queryId = md5(operationText);&lt;/string&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; // queryCache is written to disk at the end as queryMap.json
+ queryCache.push({id: queryId, text: operationText});
+ resolve(queryId);    });  }    {% endhighlight %}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;As you can see above, the hash to query text mapping is saved to an array which gets written to disk
+at the end of the compilation as queryMap.json. This is used on the server side as outlined in 
+&lt;a href=&quot;#step-3-map-query-ids-on-the-server&quot;&gt;step 3&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;You can find the package at &lt;a href=&quot;https://github.com/yusinto/relay-compiler-plus&quot; target=&quot;_blank&quot;&gt;github&lt;/a&gt; with a fully working
+&lt;a href=&quot;https://github.com/yusinto/relay-compiler-plus/tree/master/example&quot; target=&quot;_blank&quot;&gt;example&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Let me know if this is useful (or not)!&lt;/p&gt;
+
+&lt;hr /&gt;
+</content>
+<category term="async" />
+<category term="generator" />
+<category term="functions" />
+<category term="iterator" />
+<category term="yield" />
+<category term="for-await-of" />
+<category term="for" />
+<category term="await" />
+<category term="of" />
+<summary>An exciting new feature of js is async generator functions. A normal function in javascript isrun from beginning till end i.e. run to completion. Once invoked, the entire bodyof the function is executed until the end is reached. You can’t stop or pause the execution of anordinary js function.</summary>
+</entry>
+<entry>
+<title>Relay Modern Server Side Rendering</title>
+<link href="http://reactjunkie.com/relay-modern-ssr/" rel="alternate" type="text/html" title="Relay Modern Server Side Rendering" />
+<published>2018-01-09T07:30:00+11:00</published>
+<updated>2018-01-09T07:30:00+11:00</updated>
+<id>http://reactjunkie.com/relay-modern-ssr</id>
+<content type="html" xml:base="http://reactjunkie.com/relay-modern-ssr/">&lt;p&gt;Relay modern is awesome, but unfortunately not much has been documented about how to use it with ssr. Facebook
+does not use ssr with relay modern so it’s up to the community to do something about it. When I say community it’s
+really just one man Jimmy Chia aka taion who has single-handedly written found router, farce and found relay to
+make ssr possible with relay modern.&lt;/p&gt;
+
+&lt;p&gt;If you are using react-router, you’re out of luck. You’ll need to jump the cliff and swap it out with found. I have 
+done it and I never look back. Found is very similar to react router v3, so you won’t have any problems switching.&lt;/p&gt;
+
+&lt;h2 id=&quot;goal&quot;&gt;Goal&lt;/h2&gt;
+&lt;p&gt;Create a relay modern app with ssr with found and found relay.&lt;/p&gt;
+
+&lt;h2 id=&quot;step-1-install-npm-packages&quot;&gt;Step 1: Install npm packages&lt;/h2&gt;
+&lt;p&gt;Install babel-polyfill (for async await), found and found relay&lt;/p&gt;
+
+&lt;h2 id=&quot;step-2-create-routes&quot;&gt;Step 2: Create routes&lt;/h2&gt;
+&lt;p&gt;create routes, makeRouteConfig, export that routeConfig object.
+createBrowserRouter using routeConfig object.&lt;/p&gt;
+
+&lt;h2 id=&quot;step-3-ssr&quot;&gt;Step 3: SSR&lt;/h2&gt;
+&lt;p&gt;use the same routes object
+on the client bootstrap use createInitialBrowserRouter instead and await on that
+u also need createRender function (TODO: investigate why?)&lt;/p&gt;
+
+&lt;p&gt;On the server, await getFarceResult from found/lib/server passing in url, routeConfig and 
+render method to get the output data from the requested route.&lt;/p&gt;
+
+&lt;p&gt;Then renderToString the element property from the output. That’s it!&lt;/p&gt;
+
+&lt;p&gt;Without redux, it’s soo much cleaner!&lt;/p&gt;
+
+&lt;p&gt;Install relay-compiler-plus and the latest &lt;a href=&quot;https://github.com/graphql/graphql-js&quot; target=&quot;_blank&quot;&gt;graphql-js&lt;/a&gt; package:&lt;/p&gt;
+
+&lt;p&gt;{% highlight bash %}
+yarn add relay-compiler-plus
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;{% highlight bash %}
+yarn upgrade graphql –latest
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h2 id=&quot;step-2-compile&quot;&gt;Step 2: Compile&lt;/h2&gt;
+&lt;p&gt;Add this npm command to your &lt;strong&gt;package.json&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;p&gt;{% highlight json %}
+“scripts”: {
+    “rcp”: “relay-compiler-plus –schema &lt;schema_file_path&gt; --src &lt;src_dir_path&gt; -f&quot;
+},
+{% endhighlight %}&lt;/src_dir_path&gt;&lt;/schema_file_path&gt;&lt;/p&gt;
+
+&lt;p&gt;where:&lt;br /&gt; 
+&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;SCHEMA_FILE_PATH&amp;gt;&lt;/code&gt; is the path to your schema.graphql or schema.json file&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;SRC_DIR_PATH&amp;gt;&lt;/code&gt; is the path to your src directory&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;-f&lt;/code&gt; will delete all &lt;code class=&quot;highlighter-rouge&quot;&gt;**/__generated__/*.graphql.js&lt;/code&gt; files under &lt;code class=&quot;highlighter-rouge&quot;&gt;SRC_DIR_PATH&lt;/code&gt; before compilation starts&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Run the command to start compiling:&lt;/p&gt;
+
+&lt;p&gt;{% highlight bash %}
+npm run rcp
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h2 id=&quot;step-3-map-query-ids-on-the-server&quot;&gt;Step 3: Map query ids on the server&lt;/h2&gt;
+&lt;p&gt;On the server, use &lt;code class=&quot;highlighter-rouge&quot;&gt;matchQueryMiddleware&lt;/code&gt; prior to &lt;code class=&quot;highlighter-rouge&quot;&gt;express-graphql&lt;/code&gt; to match query ids to actual queries. Note 
+that &lt;code class=&quot;highlighter-rouge&quot;&gt;queryMap.json&lt;/code&gt; is auto-generated by &lt;code class=&quot;highlighter-rouge&quot;&gt;relay-compiler-plus&lt;/code&gt; in the previous step.&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+import Express from ‘express’;
+import expressGraphl from ‘express-graphql’;
+import {matchQueryMiddleware} from ‘relay-compiler-plus’; // do this
+import queryMapJson from ‘../queryMap.json’; // do this&lt;/p&gt;
+
+&lt;p&gt;const app = Express();&lt;/p&gt;
+
+&lt;p&gt;app.use(‘/graphql’,
+  matchQueryMiddleware(queryMapJson), // do this
+  expressGraphl({
+    schema: graphqlSchema,
+    graphiql: true,
+  }));
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h2 id=&quot;step-4-send-query-ids-on-the-client&quot;&gt;Step 4: Send query ids on the client&lt;/h2&gt;
+&lt;p&gt;On the client, modify your relay network fetch implementation to pass a &lt;code class=&quot;highlighter-rouge&quot;&gt;queryId&lt;/code&gt; parameter in the
+request body instead of a &lt;code class=&quot;highlighter-rouge&quot;&gt;query&lt;/code&gt; parameter. Note that &lt;code class=&quot;highlighter-rouge&quot;&gt;operation.id&lt;/code&gt; is generated by &lt;code class=&quot;highlighter-rouge&quot;&gt;relay-compiler-plus&lt;/code&gt; in step 2.&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+function fetchQuery(operation, variables,) {
+  return fetch(‘/graphql’, {
+    method: ‘POST’,
+    headers: {
+      ‘content-type’: ‘application/json’
+    },
+    body: JSON.stringify({
+      queryId: operation.id, // do this
+      variables,
+    }),
+  }).then(response =&amp;gt; {
+    return response.json();
+  });
+}
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h2 id=&quot;bonus&quot;&gt;Bonus&lt;/h2&gt;
+&lt;p&gt;In &lt;a href=&quot;#step-2-compile&quot;&gt;step 2&lt;/a&gt;, running relay-compiler-plus generates relay query files like the original relay-compiler,
+but with a difference. Inspect a generated &lt;code class=&quot;highlighter-rouge&quot;&gt;ConcreteBatch&lt;/code&gt; query file and you’ll see that it now has an &lt;code class=&quot;highlighter-rouge&quot;&gt;id&lt;/code&gt; assigned 
+to it and that the query &lt;code class=&quot;highlighter-rouge&quot;&gt;text&lt;/code&gt; is now &lt;code class=&quot;highlighter-rouge&quot;&gt;null&lt;/code&gt;:&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+const batch /&lt;em&gt;: ConcreteBatch&lt;/em&gt;/ = {
+  “fragment”: {
+    “argumentDefinitions”: [],
+    “kind”: “Fragment”,
+    “metadata”: null,
+    “name”: “client_index_Query”,
+    “selections”: […],
+    “type”: “Query”
+  },
+  “id”: “6082095e8a45f64d38924775d047cf8c”, // look ma, query id!
+  “kind”: “Batch”,
+  “metadata”: {},
+  “name”: “client_index_Query”,
+  “query”: {…},
+  “text”: null // look again ma, null query text!
+};
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;The id is an md5 hash of the query text, generated by the &lt;a href=&quot;https://github.com/yusinto/relay-compiler-plus/blob/master/src/compiler/main.js&quot; target=&quot;_blank&quot;&gt;persistQuery&lt;/a&gt; 
+function. It looks like this:&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+ function persistQuery(operationText: string): Promise&lt;string&gt; {
+   return new Promise((resolve) =&amp;gt; {
+     const queryId = md5(operationText);&lt;/string&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; // queryCache is written to disk at the end as queryMap.json
+ queryCache.push({id: queryId, text: operationText});
+ resolve(queryId);    });  }    {% endhighlight %}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;As you can see above, the hash to query text mapping is saved to an array which gets written to disk
+at the end of the compilation as queryMap.json. This is used on the server side as outlined in 
+&lt;a href=&quot;#step-3-map-query-ids-on-the-server&quot;&gt;step 3&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;You can find the package at &lt;a href=&quot;https://github.com/yusinto/relay-compiler-plus&quot; target=&quot;_blank&quot;&gt;github&lt;/a&gt; with a fully working
+&lt;a href=&quot;https://github.com/yusinto/relay-compiler-plus/tree/master/example&quot; target=&quot;_blank&quot;&gt;example&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Let me know if this is useful (or not)!&lt;/p&gt;
+
+&lt;hr /&gt;
+</content>
+<category term="relay" />
+<category term="modern" />
+<category term="ssr" />
+<category term="server" />
+<category term="side" />
+<category term="rendering" />
+<category term="redux" />
+<summary>Relay modern is awesome, but unfortunately not much has been documented about how to use it with ssr. Facebookdoes not use ssr with relay modern so it’s up to the community to do something about it. When I say community it’sreally just one man Jimmy Chia aka taion who has single-handedly written found router, farce and found relay tomake ssr possible with relay modern.</summary>
+</entry>
 <entry>
 <title>Relay Modern Persisted Queries</title>
 <link href="http://reactjunkie.com/relay-modern-persisted-queries/" rel="alternate" type="text/html" title="Relay Modern Persisted Queries" />
@@ -1276,360 +1752,5 @@ Of course you would enter this json object in the “Description” field of you
 <category term="automation" />
 <category term="scheduling" />
 <summary>Updated Mon 13 March 2017</summary>
-</entry>
-<entry>
-<title>Testing Connected Redux and Relay Components</title>
-<link href="http://reactjunkie.com/testing-connected-redux-relay-components/" rel="alternate" type="text/html" title="Testing Connected Redux and Relay Components" />
-<published>2017-01-28T08:30:00+11:00</published>
-<updated>2017-01-28T08:30:00+11:00</updated>
-<id>http://reactjunkie.com/testing-connected-redux-relay-components</id>
-<content type="html" xml:base="http://reactjunkie.com/testing-connected-redux-relay-components/">&lt;p&gt;Happy chinese new year everyone! In the spirit of the year of the cock, I shall write the rest of this post in chinese. 
-中国著名的大思想家、大教育家。孔子开创了私人讲学的风气，是儒家学派的创始人。孔子曾受业于老子 (roughly translates to… I don’t know).
-Did I say Cock? I mean Rooster. Apologies my dear chinese readers… I don’t think there’s a difference anyway?&lt;/p&gt;
-
-&lt;p&gt;I’m gonna talk about testing redux components today. If you use react-redux, you are probably connecting
-your components to redux using the connect method. If you do this in one file with a single default export (which is the connected component)
-you have a problem. You’ll find that you can’t test your component directly because the default export of your module is not the component
-itself, rather it’s the redux connected component. What you want to test is the presentational component, not the connected component. Redux
-itself is already tested!&lt;/p&gt;
-
-&lt;p&gt;You have two options at this point; you can either bite the bullet and test the redux component meaning mocking a lot of the redux stuff OR 
-you can modify your code to be testable by exporting the private presentational component. This second approach is the one recommended by the 
-&lt;a href=&quot;https://github.com/reactjs/redux/blob/master/docs/recipes/WritingTests.md&quot; target=&quot;_blank&quot;&gt;official redux documentation&lt;/a&gt;. I find that although 
-this works it does so at the expense of encapsulation. I believe code should be driven by design and requirements, not testing restrictions. 
-So I set out to find a better approach.&lt;/p&gt;
-
-&lt;p&gt;There is a popular npm package &lt;a href=&quot;https://github.com/jhnns/rewire&quot; target=&quot;_blank&quot;&gt;rewire&lt;/a&gt; which seems to be promising. I failed to make it work
-quickly though, because it does not work with es6 so a little more googling reveals &lt;a href=&quot;https://github.com/speedskater/babel-plugin-rewire&quot; target=&quot;_blank&quot;&gt;babel-plugin-rewire&lt;/a&gt; 
-which is based on rewire and works with es6. Armed with this library, I embarked on a journey towards a better cock year oops I mean better unit tests.&lt;/p&gt;
-
-&lt;h2 id=&quot;enough-talk-show-me-some-code&quot;&gt;Enough talk, show me some code&lt;/h2&gt;
-&lt;p&gt;Consider the following code (which you can see in entirety &lt;a href=&quot;https://github.com/yusinto/test-react/blob/master/src/universal/home/home.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;):&lt;/p&gt;
-
-&lt;h4 id=&quot;homejs&quot;&gt;home.js&lt;/h4&gt;
-&lt;p&gt;{% highlight javascript %}
-import React, {Component} from ‘react’;
-import {connect} from ‘react-redux’;
-import * as Actions from ‘./homeAction’;&lt;/p&gt;
-
-&lt;p&gt;// private class
-class Home extends Component {
-  constructor(props) {
-    super(props);
-    this.onClickGenerateRandom = ::this.onClickGenerateRandom;
-  }&lt;/p&gt;
-
-&lt;p&gt;onClickGenerateRandom() {
-    this.props.generateRandom();
-  }&lt;/p&gt;
-
-&lt;p&gt;render() {
-    let homeText = ‘Click button below to generate a random number!’;&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;return (
-  &amp;lt;div&amp;gt;
-    &amp;lt;p&amp;gt;{ homeText }&amp;lt;/p&amp;gt;
-    &amp;lt;div&amp;gt;{this.props.randomNumber}&amp;lt;/div&amp;gt;
-    &amp;lt;button onClick={this.onClickGenerateRandom}&amp;gt;
-        Generate random number
-    &amp;lt;/button&amp;gt;
-  &amp;lt;/div&amp;gt;
-);   } }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;const mapStateToProps = (state) =&amp;gt; {
-  const homeState = state.Home;&lt;/p&gt;
-
-&lt;p&gt;return {
-    randomNumber: homeState.randomNumber
-  };
-};&lt;/p&gt;
-
-&lt;p&gt;export default connect(mapStateToProps, Actions)(Home);
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;The Home class is private and that’s what we want to test. It is not exported at all, so we can’t access it directly. 
-As mentioned above, the official redux documentation recommends exporting this class, but that breaks encapsulation.
-So what do we do? Enter &lt;a href=&quot;https://github.com/speedskater/babel-plugin-rewire&quot; target=&quot;_blank&quot;&gt;babel-plugin-rewire&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h2 id=&quot;using-rewire&quot;&gt;Using rewire&lt;/h2&gt;
-&lt;p&gt;You need to install the following npm packages:&lt;/p&gt;
-
-&lt;p&gt;{% highlight javascript %}
-yarn add –dev jest babel-plugin-rewire enzyme react-addons-test-utils
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;I use &lt;a href=&quot;https://facebook.github.io/jest/&quot; target=&quot;_blank&quot;&gt;jest&lt;/a&gt; for my test framework and you should too, it kicks butt. 
-I also use &lt;a href=&quot;https://github.com/airbnb/enzyme&quot; target=&quot;_blank&quot;&gt;enzyme&lt;/a&gt; which is a utility library for testing react components. 
-Enzyme requires the official &lt;a href=&quot;https://facebook.github.io/react/docs/test-utils.html&quot; target=&quot;_blank&quot;&gt;react-addons-test-utils&lt;/a&gt; package.&lt;/p&gt;
-
-&lt;p&gt;In your .babelrc, add an “env” block to include babel-plugin-rewire when running tests:&lt;/p&gt;
-
-&lt;h4 id=&quot;babelrc&quot;&gt;.babelrc&lt;/h4&gt;
-&lt;p&gt;{% highlight javascript %}
-{
-    “presets”: [“es2015”, “react”, “stage-0”],&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/* etc your other config */
-
-&quot;env&quot;: {
-  &quot;test&quot;: {
-    &quot;plugins&quot;: [&quot;babel-plugin-rewire&quot;]
-  }
-} } {% endhighlight %}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;h2 id=&quot;write-the-tests&quot;&gt;Write the tests!&lt;/h2&gt;
-&lt;p&gt;Now we can write the tests! The complete file is &lt;a href=&quot;https://github.com/yusinto/test-react/blob/master/src/universal/home/home.test.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;:&lt;/p&gt;
-
-&lt;h4 id=&quot;hometestjs&quot;&gt;home.test.js&lt;/h4&gt;
-&lt;p&gt;{% highlight javascript %}
-import React from ‘react’;
-import {shallow} from ‘enzyme’;
-import HomeRedux from ‘./home’;&lt;/p&gt;
-
-&lt;p&gt;describe(‘Home component tests’, () =&amp;gt; {
-  // rewire injects &lt;strong&gt;get&lt;/strong&gt; and &lt;strong&gt;set&lt;/strong&gt; methods to all our modules.
-  // These can then be used to extract and set top level private variables.
-  // In this instance, we extract the private Home class
-  const Home = HomeRedux.&lt;strong&gt;get&lt;/strong&gt;(‘Home’);&lt;/p&gt;
-
-&lt;p&gt;it(‘should render correctly’, () =&amp;gt; {
-    // Yayy! We can now render the presentational component directly! 
-    const output = shallow(&amp;lt;Home randomNumber={45}/&amp;gt;);&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// Use jest snapshot testing for convenience
-expect(output).toMatchSnapshot();   }); }); {% endhighlight %}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
-&lt;p&gt;This approach incurs a little more time to setup, but I think it’s worth it. We leave the code fully testable, encapsulation intact. 
-This feels right for me. Also, you can apply the same technique to test react components wrapped in relay containers. It works!&lt;/p&gt;
-
-&lt;p&gt;Check out the &lt;a href=&quot;https://github.com/yusinto/test-react&quot; target=&quot;_blank&quot;&gt;sample code&lt;/a&gt; for a working example and let me know if this is useful (or not)!&lt;/p&gt;
-
-&lt;hr /&gt;
-</content>
-<category term="redux" />
-<category term="relay" />
-<category term="connected" />
-<category term="unit" />
-<category term="tests" />
-<category term="testing" />
-<category term="encapsulation" />
-<category term="jest" />
-<category term="rewire" />
-<summary>Happy chinese new year everyone! In the spirit of the year of the cock, I shall write the rest of this post in chinese. 中国著名的大思想家、大教育家。孔子开创了私人讲学的风气，是儒家学派的创始人。孔子曾受业于老子 (roughly translates to… I don’t know).Did I say Cock? I mean Rooster. Apologies my dear chinese readers… I don’t think there’s a difference anyway?I’m gonna talk about testing redux components today. If you use react-redux, you are probably connectingyour components to redux using the connect method. If you do this in one file with a single default export (which is the connected component)you have a problem. You’ll find that you can’t test your component directly because the default export of your module is not the componentitself, rather it’s the redux connected component. What you want to test is the presentational component, not the connected component. Reduxitself is already tested!</summary>
-</entry>
-<entry>
-<title>Building graphql schema without babelrc</title>
-<link href="http://reactjunkie.com/build-graphql-schema-without-babelrc/" rel="alternate" type="text/html" title="Building graphql schema without babelrc" />
-<published>2016-12-12T19:30:00+11:00</published>
-<updated>2016-12-12T19:30:00+11:00</updated>
-<id>http://reactjunkie.com/build-graphql-schema-without-babelrc</id>
-<content type="html" xml:base="http://reactjunkie.com/build-graphql-schema-without-babelrc/">&lt;p&gt;Man it has been a busy month! It’s been a while since I blogged, I have to say I miss it a lot. Almost as much as I 
-miss drinking..&lt;/p&gt;
-
-&lt;p&gt;Today I’ll be talking about graphql and relay, specifically about building the schema. Warning this is not a beginner’s
-guide to graphql and relay, there are tons of other tutorials which can help you with that. This blog is about
-decoupling your graphql schema build from your project’s .babelrc file.&lt;/p&gt;
-
-&lt;h2 id=&quot;the-problem&quot;&gt;The problem&lt;/h2&gt;
-&lt;p&gt;Your project has a .babelrc file which contains presets, plugins, etc used by babel when you run your app. You need 
-to include babelRelayPlugin in your .babelrc plugins section so your relay app can comprehend your graphql schema.&lt;/p&gt;
-
-&lt;p&gt;However, babelRelayPlugin.js contains a reference to schema.json which is generated by babel-node &lt;a href=&quot;https://github.com/relayjs/relay-starter-kit/blob/master/scripts/updateSchema.js&quot; target=&quot;_blank&quot;&gt;updateSchema.js&lt;/a&gt; 
-which in turn uses .babelrc which has a dependency on babelRelayPlugin which is a cyclic dependency which gives me a 
-migraine.&lt;/p&gt;
-
-&lt;h2 id=&quot;the-solution&quot;&gt;The solution&lt;/h2&gt;
-&lt;p&gt;We need to decouple graphql schema generation from app runtime. The standard .babelrc file is required for our app runtime so that stays.
-That means we cannot depend on .babelrc for our schema generation i.e. when running &lt;a href=&quot;https://github.com/relayjs/relay-starter-kit/blob/master/scripts/updateSchema.js&quot; target=&quot;_blank&quot;&gt;updateSchema.js&lt;/a&gt;
-we can’t use babel-node. Instead we use plain vanilla node in combination with babel-register with inline
-config when running updateSchema.&lt;/p&gt;
-
-&lt;h2 id=&quot;enough-talk-show-me-some-code&quot;&gt;Enough talk, show me some code&lt;/h2&gt;
-&lt;p&gt;You need the following babel packages:&lt;/p&gt;
-
-&lt;p&gt;{% highlight javascript %}
-sudo yarn add –dev babel-polyfill babel-preset-latest
-sudo yarn add babel-register babel-preset-stage-0
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;In your package.json, you declare an npm run command update-schema which points an index.js file:&lt;/p&gt;
-
-&lt;p&gt;{% highlight javascript %}
-“scripts”: {
-    “update-schema”: “node ./src/graphql/index.js”,
-    …
-}
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;Your src/graphql/index.js then looks like this:&lt;/p&gt;
-
-&lt;p&gt;{% highlight javascript %}
-require(‘babel-register’)({
-  babelrc: false,
-  presets: [
-    “latest”
-  ]
-});
-require(“babel-polyfill”); // required for async generators
-require(‘./updateSchema’);
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;where updateSchema.js is provided by facebook &lt;a href=&quot;https://github.com/relayjs/relay-starter-kit/blob/master/scripts/updateSchema.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
-&lt;p&gt;Check out the &lt;a href=&quot;https://github.com/yusinto/movie-time&quot; target=&quot;_blank&quot;&gt;sample code&lt;/a&gt; for a working example and let me know if this is useful (or not)!&lt;/p&gt;
-
-&lt;hr /&gt;
-</content>
-<category term="graphql" />
-<category term="schema" />
-<category term="relay" />
-<category term="react" />
-<category term="babel" />
-<category term="babelrc" />
-<category term="build" />
-<category term="babelrelayplugin" />
-<summary>Man it has been a busy month! It’s been a while since I blogged, I have to say I miss it a lot. Almost as much as I miss drinking..</summary>
-</entry>
-<entry>
-<title>Targeting users with React Redux and Launch Darkly</title>
-<link href="http://reactjunkie.com/launch-darkly-part-two/" rel="alternate" type="text/html" title="Targeting users with React Redux and Launch Darkly" />
-<published>2016-11-01T19:30:00+11:00</published>
-<updated>2016-11-01T19:30:00+11:00</updated>
-<id>http://reactjunkie.com/launch-darkly-part-two</id>
-<content type="html" xml:base="http://reactjunkie.com/launch-darkly-part-two/">&lt;p&gt;In my &lt;a href=&quot;http://www.reactjunkie.com/react-feature-toggle-launch-darkly/&quot; target=&quot;_blank&quot;&gt;previous previous post&lt;/a&gt; 
-I introduced launch darkly as a feature toggling platform and how to use it with react redux. In this post I
-will explain how you can further leverage the power of feature toggling with user targeting.&lt;/p&gt;
-
-&lt;h2 id=&quot;whats-user-targeting&quot;&gt;What’s user targeting?&lt;/h2&gt;
-&lt;p&gt;You have a feature or functionality you only want to display to a select group of audience. For example 
-releasing a beta feature to users who have signed up. Kinda like a sneak preview for early adopters. 
-Or perhaps you want to show special offers only to premium members of your website. This is user targeting.&lt;/p&gt;
-
-&lt;h2 id=&quot;ok-sounds-interesting-how-do-i-do-it&quot;&gt;Ok sounds interesting. How do I do it?&lt;/h2&gt;
-&lt;p&gt;On init, you’ll need to pass a user object to Launch Darkly so it has something to work with:&lt;/p&gt;
-
-&lt;p&gt;{% highlight javascript %}
-import ldClient from ‘ldclient-js’;&lt;/p&gt;
-
-&lt;p&gt;// Launch Darkly supports the following user attributes by default
-const user = {
-   key: ‘some-unique-key’, // mandatory, the only mandatory property
-   ip: ‘111.222.3.4’,
-   email: ‘some@email.com’,
-   name: ‘React Junkie’,
-   firstName: ‘React’,
-   lastName: ‘Junkie’,
-   country: ‘Australia’
-};&lt;/p&gt;
-
-&lt;p&gt;ldClient.initialize(‘your/client/side/id’, user);
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;You’ll need to pass a user object containing at least a key property to Launch Darkly.&lt;/p&gt;
-
-&lt;h2 id=&quot;configure-the-dashboard&quot;&gt;Configure the dashboard&lt;/h2&gt;
-&lt;p&gt;Login to Launch Darkly and in the Feature Flags section select a feature flag. In the targeting section,
-you can target individual users, use rules to target a group of users or default to a blanket rule for 
-all users.&lt;/p&gt;
-
-&lt;p&gt;I will delve into using rules to target a group of users because I think that’s a more common use case 
-compared to targeting individual users.&lt;/p&gt;
-
-&lt;p&gt;For example, the settings below will target users in Australia:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/images/user_targeting_by_country.png&quot; alt=&quot;Targeting user by country?&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;You can also serve true to a percentage of Australian users using the “percentage rollout” serve option.
-For example the settings below will rollout true to 50% of Australian users:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/images/user_targeting_percentage_rollout.png&quot; alt=&quot;Targeting user by country percentage rollout?&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;advanced-targeting&quot;&gt;Advanced targeting&lt;/h3&gt;
-&lt;p&gt;If you look carefully there’s an Advanced option if you select percentage rollout. The purpose of this 
-option is not very obvious. In our example above you can use this advanced option to further group 
-Australian users by (say) their browser.&lt;/p&gt;
-
-&lt;p&gt;For example, the settings below will serve true to half of chrome users, half of safari users, 
-half of firefox users, etc. It’s a way of “bucketing” your users so each bucket receives the 
-percentage rollout you specified.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/images/user_targeting_advanced.png&quot; alt=&quot;Targeting user by country percentage rollout?&quot; /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;usage-with-ld-redux&quot;&gt;Usage with ld-redux&lt;/h2&gt;
-&lt;p&gt;If you use &lt;a href=&quot;https://github.com/yusinto/ld-redux&quot; target=&quot;_blank&quot;&gt;ld-redux&lt;/a&gt;, you pass the user object
-as the third parameter to ldRedux.init method:
-{% highlight javascript %}
-import createStore from ‘&lt;your-project&gt;/store&#39;;
-import ldRedux from &#39;ld-redux&#39;;&lt;/your-project&gt;&lt;/p&gt;
-
-&lt;p&gt;// standard redux createStore
-const store = createStore();&lt;/p&gt;
-
-&lt;p&gt;const user = {
-   key: ‘some-unique-key’,
-   ip: ‘111.222.3.4’,
-   email: ‘some@email.com’,
-   name: ‘React Junkie’,
-   firstName: ‘React’,
-   lastName: ‘Junkie’,
-   country: ‘Australia’
-};&lt;/p&gt;
-
-&lt;p&gt;// Pass the user object after store to the init method
-ldRedux.init(‘yourClientSideId’, store, user);&lt;/p&gt;
-
-&lt;p&gt;render(
-  &amp;lt;Provider store={store}&amp;gt;
-    &amp;lt;Router routes={routes} history={browserHistory}/&amp;gt;
-  &amp;lt;/Provider&amp;gt;,
-  document.getElementById(‘reactDiv’)
-);
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;By default, if you don’t specify a user object, ld-redux will create a default
-user like below:&lt;/p&gt;
-
-&lt;p&gt;{% highlight javascript %}
-user = {
-   key: uuid.v4(),
-   ip: ip.address(),
-   custom: {
-        browser: userAgentParser.getResult().browser.name,
-        device, // either mobile, tablet or desktop
-   },
-};
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;You can see the complete logic for default user creation &lt;a href=&quot;https://github.com/yusinto/ld-redux/blob/master/src/init.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;The custom property allows you to pass any arbitrary properties to Launch Darkly which you can use for targeting. This is very useful and powerful.&lt;/p&gt;
-
-&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
-&lt;p&gt;Feature flagging coupled with user targeting is a powerful way to control your target audience. This opens up a whole
-new world of possibilities in regards to what you can do with your app. Someday all apps will be built this way.&lt;/p&gt;
-
-&lt;p&gt;Check out &lt;a href=&quot;https://github.com/yusinto/ld-redux&quot; target=&quot;_blank&quot;&gt;ld-redux&lt;/a&gt; if you haven’t, and please give me some feedback if you use it! Thanks.&lt;/p&gt;
-
-&lt;hr /&gt;
-</content>
-<category term="targeting" />
-<category term="users" />
-<category term="react" />
-<category term="redux" />
-<category term="feature" />
-<category term="toggle" />
-<category term="launch" />
-<category term="darkly" />
-<category term="toggling" />
-<category term="ld-redux" />
-<summary>In my previous previous post I introduced launch darkly as a feature toggling platform and how to use it with react redux. In this post Iwill explain how you can further leverage the power of feature toggling with user targeting.What’s user targeting?You have a feature or functionality you only want to display to a select group of audience. For example releasing a beta feature to users who have signed up. Kinda like a sneak preview for early adopters. Or perhaps you want to show special offers only to premium members of your website. This is user targeting.</summary>
 </entry>
 </feed>

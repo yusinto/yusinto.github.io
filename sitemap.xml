@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://reactjunkie.com/ld-redux-v3/</loc>
+<lastmod>2018-01-14T07:30:00+11:00</lastmod>
+</url>
+<url>
+<loc>http://reactjunkie.com/async-generator-functions/</loc>
+<lastmod>2018-01-14T07:30:00+11:00</lastmod>
+</url>
+<url>
+<loc>http://reactjunkie.com/relay-modern-ssr/</loc>
+<lastmod>2018-01-09T07:30:00+11:00</lastmod>
+</url>
+<url>
 <loc>http://reactjunkie.com/relay-modern-persisted-queries/</loc>
 <lastmod>2017-11-12T07:30:00+11:00</lastmod>
 </url>
@@ -91,10 +103,10 @@
 <loc>http://reactjunkie.com/about/</loc>
 </url>
 <url>
-<loc>http://reactjunkie.com/blog/</loc>
+<loc>http://reactjunkie.com/</loc>
 </url>
 <url>
-<loc>http://reactjunkie.com/</loc>
+<loc>http://reactjunkie.com/blog/</loc>
 </url>
 <url>
 <loc>http://reactjunkie.com/projects/</loc>
