@@ -3,7 +3,7 @@
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
 <link href="http://reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
 <link href="http://reactjunkie.com/" rel="alternate" type="text/html" />
-<updated>2018-01-18T20:28:08+11:00</updated>
+<updated>2018-01-19T09:29:29+11:00</updated>
 <id>http://reactjunkie.com/</id>
 <title>React Junkie</title>
 <entry>
@@ -123,198 +123,6 @@ as it works right?&lt;/p&gt;
 <category term="flags" />
 <category term="toggle" />
 <summary>About a year and a bit ago I published ld-redux to integrate launch darkly with react and redux. I used that solutionboth commercially in production and personally. It has been stable thus far. There were issues though:</summary>
-</entry>
-<entry>
-<title>Async Generator Functions</title>
-<link href="http://reactjunkie.com/async-generator-functions/" rel="alternate" type="text/html" title="Async Generator Functions" />
-<published>2018-01-14T07:30:00+11:00</published>
-<updated>2018-01-14T07:30:00+11:00</updated>
-<id>http://reactjunkie.com/async-generator-functions</id>
-<content type="html" xml:base="http://reactjunkie.com/async-generator-functions/">&lt;p&gt;An exciting new feature of js is async generator functions. A normal function in javascript is
-run from beginning till end i.e. run to completion. Once invoked, the entire body
-of the function is executed until the end is reached. You can’t stop or pause the execution of an
-ordinary js function.&lt;/p&gt;
-
-&lt;p&gt;Generator functions however, does not run to completion. You use the yield keyword to pause function
-execution and then the next() method to continue execution.&lt;/p&gt;
-
-&lt;h2 id=&quot;goal&quot;&gt;Goal&lt;/h2&gt;
-&lt;p&gt;Use async generator functions right now with babel.&lt;/p&gt;
-
-&lt;h2 id=&quot;step-1-what-is-a-generator-function&quot;&gt;Step 1: What is a generator function?&lt;/h2&gt;
-&lt;p&gt;A generator function is a function which returns an iterator when run.
-An iterator is an object that has a next() method implemented returning an object { value, done }.&lt;/p&gt;
-
-&lt;p&gt;{% highlight javascript %}
-function* () {
-    console.log(1);
-    let temp = yield “first yield”;
-    console.log(temp);
-    yield “second yield”;
-    return;
-} 
-{% endhighlight %}&lt;/p&gt;
-
-&lt;h2 id=&quot;step-2-what-is-an-async-generator-function&quot;&gt;Step 2: What is an async generator function?&lt;/h2&gt;
-&lt;p&gt;Is the same as a generator function, BUT iterator.next() returns a promise returning the { value, done } object.&lt;/p&gt;
-
-&lt;p&gt;{% highlight javascript %}
-async function* () {
-    console.log(1);
-    let temp = yield “first yield”;
-    console.log(temp);
-    yield “second yield”;
-    return;
-} 
-{% endhighlight %}&lt;/p&gt;
-
-&lt;h2 id=&quot;step-3-how-to-use-async-generator-with-babel&quot;&gt;Step 3: How to use async generator with babel&lt;/h2&gt;
-&lt;p&gt;{% highlight bash %}
-yarn add –dev babel-plugin-transform-async-to-generator babel-plugin-transform-async-generator-functions
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;Then in your .babelrc file:&lt;/p&gt;
-
-&lt;p&gt;{% highlight json %}
-{
-  “plugins”: [
-    “transform-async-to-generator”,
-    “transform-async-generator-functions”
-  ]
-}
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;Install relay-compiler-plus and the latest &lt;a href=&quot;https://github.com/graphql/graphql-js&quot; target=&quot;_blank&quot;&gt;graphql-js&lt;/a&gt; package:&lt;/p&gt;
-
-&lt;p&gt;{% highlight bash %}
-yarn add relay-compiler-plus
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;{% highlight bash %}
-yarn upgrade graphql –latest
-{% endhighlight %}&lt;/p&gt;
-
-&lt;h2 id=&quot;step-2-compile&quot;&gt;Step 2: Compile&lt;/h2&gt;
-&lt;p&gt;Add this npm command to your &lt;strong&gt;package.json&lt;/strong&gt;:&lt;/p&gt;
-
-&lt;p&gt;{% highlight json %}
-“scripts”: {
-    “rcp”: “relay-compiler-plus –schema &lt;schema_file_path&gt; --src &lt;src_dir_path&gt; -f&quot;
-},
-{% endhighlight %}&lt;/src_dir_path&gt;&lt;/schema_file_path&gt;&lt;/p&gt;
-
-&lt;p&gt;where:&lt;br /&gt; 
-&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;SCHEMA_FILE_PATH&amp;gt;&lt;/code&gt; is the path to your schema.graphql or schema.json file&lt;br /&gt;
-&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;SRC_DIR_PATH&amp;gt;&lt;/code&gt; is the path to your src directory&lt;br /&gt;
-&lt;code class=&quot;highlighter-rouge&quot;&gt;-f&lt;/code&gt; will delete all &lt;code class=&quot;highlighter-rouge&quot;&gt;**/__generated__/*.graphql.js&lt;/code&gt; files under &lt;code class=&quot;highlighter-rouge&quot;&gt;SRC_DIR_PATH&lt;/code&gt; before compilation starts&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;Run the command to start compiling:&lt;/p&gt;
-
-&lt;p&gt;{% highlight bash %}
-npm run rcp
-{% endhighlight %}&lt;/p&gt;
-
-&lt;h2 id=&quot;step-3-map-query-ids-on-the-server&quot;&gt;Step 3: Map query ids on the server&lt;/h2&gt;
-&lt;p&gt;On the server, use &lt;code class=&quot;highlighter-rouge&quot;&gt;matchQueryMiddleware&lt;/code&gt; prior to &lt;code class=&quot;highlighter-rouge&quot;&gt;express-graphql&lt;/code&gt; to match query ids to actual queries. Note 
-that &lt;code class=&quot;highlighter-rouge&quot;&gt;queryMap.json&lt;/code&gt; is auto-generated by &lt;code class=&quot;highlighter-rouge&quot;&gt;relay-compiler-plus&lt;/code&gt; in the previous step.&lt;/p&gt;
-
-&lt;p&gt;{% highlight javascript %}
-import Express from ‘express’;
-import expressGraphl from ‘express-graphql’;
-import {matchQueryMiddleware} from ‘relay-compiler-plus’; // do this
-import queryMapJson from ‘../queryMap.json’; // do this&lt;/p&gt;
-
-&lt;p&gt;const app = Express();&lt;/p&gt;
-
-&lt;p&gt;app.use(‘/graphql’,
-  matchQueryMiddleware(queryMapJson), // do this
-  expressGraphl({
-    schema: graphqlSchema,
-    graphiql: true,
-  }));
-{% endhighlight %}&lt;/p&gt;
-
-&lt;h2 id=&quot;step-4-send-query-ids-on-the-client&quot;&gt;Step 4: Send query ids on the client&lt;/h2&gt;
-&lt;p&gt;On the client, modify your relay network fetch implementation to pass a &lt;code class=&quot;highlighter-rouge&quot;&gt;queryId&lt;/code&gt; parameter in the
-request body instead of a &lt;code class=&quot;highlighter-rouge&quot;&gt;query&lt;/code&gt; parameter. Note that &lt;code class=&quot;highlighter-rouge&quot;&gt;operation.id&lt;/code&gt; is generated by &lt;code class=&quot;highlighter-rouge&quot;&gt;relay-compiler-plus&lt;/code&gt; in step 2.&lt;/p&gt;
-
-&lt;p&gt;{% highlight javascript %}
-function fetchQuery(operation, variables,) {
-  return fetch(‘/graphql’, {
-    method: ‘POST’,
-    headers: {
-      ‘content-type’: ‘application/json’
-    },
-    body: JSON.stringify({
-      queryId: operation.id, // do this
-      variables,
-    }),
-  }).then(response =&amp;gt; {
-    return response.json();
-  });
-}
-{% endhighlight %}&lt;/p&gt;
-
-&lt;h2 id=&quot;bonus&quot;&gt;Bonus&lt;/h2&gt;
-&lt;p&gt;In &lt;a href=&quot;#step-2-compile&quot;&gt;step 2&lt;/a&gt;, running relay-compiler-plus generates relay query files like the original relay-compiler,
-but with a difference. Inspect a generated &lt;code class=&quot;highlighter-rouge&quot;&gt;ConcreteBatch&lt;/code&gt; query file and you’ll see that it now has an &lt;code class=&quot;highlighter-rouge&quot;&gt;id&lt;/code&gt; assigned 
-to it and that the query &lt;code class=&quot;highlighter-rouge&quot;&gt;text&lt;/code&gt; is now &lt;code class=&quot;highlighter-rouge&quot;&gt;null&lt;/code&gt;:&lt;/p&gt;
-
-&lt;p&gt;{% highlight javascript %}
-const batch /&lt;em&gt;: ConcreteBatch&lt;/em&gt;/ = {
-  “fragment”: {
-    “argumentDefinitions”: [],
-    “kind”: “Fragment”,
-    “metadata”: null,
-    “name”: “client_index_Query”,
-    “selections”: […],
-    “type”: “Query”
-  },
-  “id”: “6082095e8a45f64d38924775d047cf8c”, // look ma, query id!
-  “kind”: “Batch”,
-  “metadata”: {},
-  “name”: “client_index_Query”,
-  “query”: {…},
-  “text”: null // look again ma, null query text!
-};
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;The id is an md5 hash of the query text, generated by the &lt;a href=&quot;https://github.com/yusinto/relay-compiler-plus/blob/master/src/compiler/main.js&quot; target=&quot;_blank&quot;&gt;persistQuery&lt;/a&gt; 
-function. It looks like this:&lt;/p&gt;
-
-&lt;p&gt;{% highlight javascript %}
- function persistQuery(operationText: string): Promise&lt;string&gt; {
-   return new Promise((resolve) =&amp;gt; {
-     const queryId = md5(operationText);&lt;/string&gt;&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; // queryCache is written to disk at the end as queryMap.json
- queryCache.push({id: queryId, text: operationText});
- resolve(queryId);    });  }    {% endhighlight %}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;As you can see above, the hash to query text mapping is saved to an array which gets written to disk
-at the end of the compilation as queryMap.json. This is used on the server side as outlined in 
-&lt;a href=&quot;#step-3-map-query-ids-on-the-server&quot;&gt;step 3&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
-&lt;p&gt;You can find the package at &lt;a href=&quot;https://github.com/yusinto/relay-compiler-plus&quot; target=&quot;_blank&quot;&gt;github&lt;/a&gt; with a fully working
-&lt;a href=&quot;https://github.com/yusinto/relay-compiler-plus/tree/master/example&quot; target=&quot;_blank&quot;&gt;example&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;Let me know if this is useful (or not)!&lt;/p&gt;
-
-&lt;hr /&gt;
-</content>
-<category term="async" />
-<category term="generator" />
-<category term="functions" />
-<category term="iterator" />
-<category term="yield" />
-<category term="for-await-of" />
-<category term="for" />
-<category term="await" />
-<category term="of" />
-<summary>An exciting new feature of js is async generator functions. A normal function in javascript isrun from beginning till end i.e. run to completion. Once invoked, the entire bodyof the function is executed until the end is reached. You can’t stop or pause the execution of anordinary js function.</summary>
 </entry>
 <entry>
 <title>Relay Modern Server Side Rendering</title>
@@ -1752,5 +1560,152 @@ Of course you would enter this json object in the “Description” field of you
 <category term="automation" />
 <category term="scheduling" />
 <summary>Updated Mon 13 March 2017</summary>
+</entry>
+<entry>
+<title>Testing Connected Redux and Relay Components</title>
+<link href="http://reactjunkie.com/testing-connected-redux-relay-components/" rel="alternate" type="text/html" title="Testing Connected Redux and Relay Components" />
+<published>2017-01-28T08:30:00+11:00</published>
+<updated>2017-01-28T08:30:00+11:00</updated>
+<id>http://reactjunkie.com/testing-connected-redux-relay-components</id>
+<content type="html" xml:base="http://reactjunkie.com/testing-connected-redux-relay-components/">&lt;p&gt;Happy chinese new year everyone! In the spirit of the year of the cock, I shall write the rest of this post in chinese. 
+中国著名的大思想家、大教育家。孔子开创了私人讲学的风气，是儒家学派的创始人。孔子曾受业于老子 (roughly translates to… I don’t know).
+Did I say Cock? I mean Rooster. Apologies my dear chinese readers… I don’t think there’s a difference anyway?&lt;/p&gt;
+
+&lt;p&gt;I’m gonna talk about testing redux components today. If you use react-redux, you are probably connecting
+your components to redux using the connect method. If you do this in one file with a single default export (which is the connected component)
+you have a problem. You’ll find that you can’t test your component directly because the default export of your module is not the component
+itself, rather it’s the redux connected component. What you want to test is the presentational component, not the connected component. Redux
+itself is already tested!&lt;/p&gt;
+
+&lt;p&gt;You have two options at this point; you can either bite the bullet and test the redux component meaning mocking a lot of the redux stuff OR 
+you can modify your code to be testable by exporting the private presentational component. This second approach is the one recommended by the 
+&lt;a href=&quot;https://github.com/reactjs/redux/blob/master/docs/recipes/WritingTests.md&quot; target=&quot;_blank&quot;&gt;official redux documentation&lt;/a&gt;. I find that although 
+this works it does so at the expense of encapsulation. I believe code should be driven by design and requirements, not testing restrictions. 
+So I set out to find a better approach.&lt;/p&gt;
+
+&lt;p&gt;There is a popular npm package &lt;a href=&quot;https://github.com/jhnns/rewire&quot; target=&quot;_blank&quot;&gt;rewire&lt;/a&gt; which seems to be promising. I failed to make it work
+quickly though, because it does not work with es6 so a little more googling reveals &lt;a href=&quot;https://github.com/speedskater/babel-plugin-rewire&quot; target=&quot;_blank&quot;&gt;babel-plugin-rewire&lt;/a&gt; 
+which is based on rewire and works with es6. Armed with this library, I embarked on a journey towards a better cock year oops I mean better unit tests.&lt;/p&gt;
+
+&lt;h2 id=&quot;enough-talk-show-me-some-code&quot;&gt;Enough talk, show me some code&lt;/h2&gt;
+&lt;p&gt;Consider the following code (which you can see in entirety &lt;a href=&quot;https://github.com/yusinto/test-react/blob/master/src/universal/home/home.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;):&lt;/p&gt;
+
+&lt;h4 id=&quot;homejs&quot;&gt;home.js&lt;/h4&gt;
+&lt;p&gt;{% highlight javascript %}
+import React, {Component} from ‘react’;
+import {connect} from ‘react-redux’;
+import * as Actions from ‘./homeAction’;&lt;/p&gt;
+
+&lt;p&gt;// private class
+class Home extends Component {
+  constructor(props) {
+    super(props);
+    this.onClickGenerateRandom = ::this.onClickGenerateRandom;
+  }&lt;/p&gt;
+
+&lt;p&gt;onClickGenerateRandom() {
+    this.props.generateRandom();
+  }&lt;/p&gt;
+
+&lt;p&gt;render() {
+    let homeText = ‘Click button below to generate a random number!’;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;return (
+  &amp;lt;div&amp;gt;
+    &amp;lt;p&amp;gt;{ homeText }&amp;lt;/p&amp;gt;
+    &amp;lt;div&amp;gt;{this.props.randomNumber}&amp;lt;/div&amp;gt;
+    &amp;lt;button onClick={this.onClickGenerateRandom}&amp;gt;
+        Generate random number
+    &amp;lt;/button&amp;gt;
+  &amp;lt;/div&amp;gt;
+);   } }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;const mapStateToProps = (state) =&amp;gt; {
+  const homeState = state.Home;&lt;/p&gt;
+
+&lt;p&gt;return {
+    randomNumber: homeState.randomNumber
+  };
+};&lt;/p&gt;
+
+&lt;p&gt;export default connect(mapStateToProps, Actions)(Home);
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;The Home class is private and that’s what we want to test. It is not exported at all, so we can’t access it directly. 
+As mentioned above, the official redux documentation recommends exporting this class, but that breaks encapsulation.
+So what do we do? Enter &lt;a href=&quot;https://github.com/speedskater/babel-plugin-rewire&quot; target=&quot;_blank&quot;&gt;babel-plugin-rewire&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;using-rewire&quot;&gt;Using rewire&lt;/h2&gt;
+&lt;p&gt;You need to install the following npm packages:&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+yarn add –dev jest babel-plugin-rewire enzyme react-addons-test-utils
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;I use &lt;a href=&quot;https://facebook.github.io/jest/&quot; target=&quot;_blank&quot;&gt;jest&lt;/a&gt; for my test framework and you should too, it kicks butt. 
+I also use &lt;a href=&quot;https://github.com/airbnb/enzyme&quot; target=&quot;_blank&quot;&gt;enzyme&lt;/a&gt; which is a utility library for testing react components. 
+Enzyme requires the official &lt;a href=&quot;https://facebook.github.io/react/docs/test-utils.html&quot; target=&quot;_blank&quot;&gt;react-addons-test-utils&lt;/a&gt; package.&lt;/p&gt;
+
+&lt;p&gt;In your .babelrc, add an “env” block to include babel-plugin-rewire when running tests:&lt;/p&gt;
+
+&lt;h4 id=&quot;babelrc&quot;&gt;.babelrc&lt;/h4&gt;
+&lt;p&gt;{% highlight javascript %}
+{
+    “presets”: [“es2015”, “react”, “stage-0”],&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/* etc your other config */
+
+&quot;env&quot;: {
+  &quot;test&quot;: {
+    &quot;plugins&quot;: [&quot;babel-plugin-rewire&quot;]
+  }
+} } {% endhighlight %}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;write-the-tests&quot;&gt;Write the tests!&lt;/h2&gt;
+&lt;p&gt;Now we can write the tests! The complete file is &lt;a href=&quot;https://github.com/yusinto/test-react/blob/master/src/universal/home/home.test.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;:&lt;/p&gt;
+
+&lt;h4 id=&quot;hometestjs&quot;&gt;home.test.js&lt;/h4&gt;
+&lt;p&gt;{% highlight javascript %}
+import React from ‘react’;
+import {shallow} from ‘enzyme’;
+import HomeRedux from ‘./home’;&lt;/p&gt;
+
+&lt;p&gt;describe(‘Home component tests’, () =&amp;gt; {
+  // rewire injects &lt;strong&gt;get&lt;/strong&gt; and &lt;strong&gt;set&lt;/strong&gt; methods to all our modules.
+  // These can then be used to extract and set top level private variables.
+  // In this instance, we extract the private Home class
+  const Home = HomeRedux.&lt;strong&gt;get&lt;/strong&gt;(‘Home’);&lt;/p&gt;
+
+&lt;p&gt;it(‘should render correctly’, () =&amp;gt; {
+    // Yayy! We can now render the presentational component directly! 
+    const output = shallow(&amp;lt;Home randomNumber={45}/&amp;gt;);&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// Use jest snapshot testing for convenience
+expect(output).toMatchSnapshot();   }); }); {% endhighlight %}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;This approach incurs a little more time to setup, but I think it’s worth it. We leave the code fully testable, encapsulation intact. 
+This feels right for me. Also, you can apply the same technique to test react components wrapped in relay containers. It works!&lt;/p&gt;
+
+&lt;p&gt;Check out the &lt;a href=&quot;https://github.com/yusinto/test-react&quot; target=&quot;_blank&quot;&gt;sample code&lt;/a&gt; for a working example and let me know if this is useful (or not)!&lt;/p&gt;
+
+&lt;hr /&gt;
+</content>
+<category term="redux" />
+<category term="relay" />
+<category term="connected" />
+<category term="unit" />
+<category term="tests" />
+<category term="testing" />
+<category term="encapsulation" />
+<category term="jest" />
+<category term="rewire" />
+<summary>Happy chinese new year everyone! In the spirit of the year of the cock, I shall write the rest of this post in chinese. 中国著名的大思想家、大教育家。孔子开创了私人讲学的风气，是儒家学派的创始人。孔子曾受业于老子 (roughly translates to… I don’t know).Did I say Cock? I mean Rooster. Apologies my dear chinese readers… I don’t think there’s a difference anyway?I’m gonna talk about testing redux components today. If you use react-redux, you are probably connectingyour components to redux using the connect method. If you do this in one file with a single default export (which is the connected component)you have a problem. You’ll find that you can’t test your component directly because the default export of your module is not the componentitself, rather it’s the redux connected component. What you want to test is the presentational component, not the connected component. Reduxitself is already tested!</summary>
 </entry>
 </feed>
