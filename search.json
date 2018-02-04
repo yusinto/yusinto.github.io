@@ -8,6 +8,13 @@
     } ,
   
     {
+      "title"    : "Async Generator Functions",
+      "tags"     : "async, generator, functions, iterator, yield, for-await-of, for, await, and of",
+      "url"      : "/async-generator-functions/",
+      "date"     : "14 Jan 2018"
+    } ,
+  
+    {
       "title"    : "Relay Modern Server Side Rendering",
       "tags"     : "relay, modern, ssr, server, side, rendering, and redux",
       "url"      : "/relay-modern-ssr/",
