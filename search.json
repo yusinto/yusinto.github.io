@@ -1,6 +1,13 @@
 [
   
     {
+      "title"    : "Docker is dead long live Kubernetes",
+      "tags"     : "docker, kubernetes, engine, google, cloud, platform, ci, cd, continuous, deployment, integration, build, pipeline, end, to, and end",
+      "url"      : "/docker-is-dead/",
+      "date"     : "28 Feb 2018"
+    } ,
+  
+    {
       "title"    : "Launch Darkly, React and Redux: The Easy Way",
       "tags"     : "launch, darkly, react, redux, feature, flags, and toggle",
       "url"      : "/ld-redux-v3/",

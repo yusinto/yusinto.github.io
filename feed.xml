@@ -3,9 +3,200 @@
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
 <link href="http://reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
 <link href="http://reactjunkie.com/" rel="alternate" type="text/html" />
-<updated>2018-02-04T21:43:57+11:00</updated>
+<updated>2018-03-03T17:01:31+11:00</updated>
 <id>http://reactjunkie.com/</id>
 <title>React Junkie - Yusinto Ngadiman&#39;s Blog</title>
+<entry>
+<title>Docker is dead long live Kubernetes</title>
+<link href="http://reactjunkie.com/docker-is-dead/" rel="alternate" type="text/html" title="Docker is dead long live Kubernetes" />
+<published>2018-02-28T07:30:00+11:00</published>
+<updated>2018-02-28T07:30:00+11:00</updated>
+<id>http://reactjunkie.com/docker-is-dead</id>
+<content type="html" xml:base="http://reactjunkie.com/docker-is-dead/">&lt;p&gt;Kubernetes rocks. Kubernetes engine to be exact. I was so inspired by Kelsey Hightower’s
+&lt;a href=&quot;https://www.youtube.com/watch?v=kOa_llowQ1c&amp;amp;feature=youtu.be&quot; target=&quot;_blank&quot;&gt;presentation&lt;/a&gt; at KubeCon 2017 I
+spent the next 2 weeks migrating my entire pipeline from Jenkins/AWS/Terraform to Google Cloud Platform (GCP for short) 
+and the Kubernetes Engine. It’s the best decision I have ever made.&lt;/p&gt;
+
+&lt;p&gt;Ok so the title is a little dramatic. Kubernetes uses docker so it doesn’t actually really kill docker, it merely pushes
+it further into the background. That means you are free to focus on the bigger picture, which is your end to end pipeline
+and your code. During my migration, I found that apart from the dockerfile and a docker build, I didn’t really have to
+touch docker much. It’s a sign that the docker stack has matured.&lt;/p&gt;
+
+&lt;p&gt;In this blog I’ll walk you through how to set up a continuous dev pipeline on GCP and the Kubernetes Engine.&lt;/p&gt;
+
+&lt;h2 id=&quot;goal&quot;&gt;Goal&lt;/h2&gt;
+&lt;p&gt;During development, the dev test cycle is predictable and well-defined. You write code, it runs locally and pass all the 
+tests then you push your code to git. The &lt;em&gt;intent&lt;/em&gt; is clear. Pushing to git means you want to see that code running on an 
+environment somewhere. This environment should also be predictable and well-defined. Without doing any more work, you
+should be able to open your browser and run the code you just pushed in this well-defined environment.&lt;/p&gt;
+
+&lt;p&gt;The goal of this tutorial is to build a pipeline that does exactly that. At the end of this post, you should be able to:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Create a new feature off master, code and test locally.&lt;/li&gt;
+  &lt;li&gt;Push to git.&lt;/li&gt;
+  &lt;li&gt;Browse to a well-defined feature url which has the new code running.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;step-1-create-a-kubernetes-cluster&quot;&gt;Step 1: Create a Kubernetes cluster&lt;/h2&gt;
+&lt;p&gt;Jump into google cloud console and under the main menu, go to &lt;strong&gt;Compute -&amp;gt; Kubernetes Engine -&amp;gt; Kubernetes clusters&lt;/strong&gt; and
+click on Create Cluster. You’ll see a screen like below, you only need to touch 3 fields:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/create-cluster.png&quot; alt=&quot;Create Kubernetes cluster&quot; /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Name your cluster &lt;em&gt;feature-cluster&lt;/em&gt;. When we push to git, we’ll deploy our feature to nodes running on this cluster.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Pick a zone that’s closest to you. The Zonal and Regional option refers to the location of your Kubernetes master. 
+Zonal means your master service will be running in a single zone that you picked. Regional means your master service 
+will be running in multiple zones in that region for redundancy. To keep things simple for this demo we’ll stick with zonal.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Pick the latest cluster version to get all the latest features.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Leave the remaining default settings e.g. 3 nodes in the cluster on Container-Optimised OS and click create. It takes 
+some time for google to create your cluster because it has to provision the nodes. While that’s cooking, we’ll create 
+the build job.&lt;/p&gt;
+
+&lt;h2 id=&quot;step-2-create-a-build-trigger&quot;&gt;Step 2: Create a build trigger&lt;/h2&gt;
+&lt;p&gt;In the console menu, go to &lt;strong&gt;Tools -&amp;gt; Container Registry -&amp;gt; Build triggers&lt;/strong&gt;. Add a new trigger. Select your git source 
+(I use github) and repo and authorise container builder to access it. Then you’ll get to the
+Edit Trigger page like below:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/create-trigger.png&quot; alt=&quot;Container builder trigger settings&quot; /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Give your trigger a name, I name mine &lt;em&gt;feature&lt;/em&gt; because it gets triggered by a feature push and builds and deploys 
+that feature.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Set the trigger type to branch, because we want to trigger a build when a feature branch push happens. There is also
+an option to trigger on tag push, which is useful for production deployment (when you create a release tag) but we’ll
+cover that in a future post.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Set a regex to match the feature branch names. By convention I enforce the following convention for features:
+&lt;strong&gt;feature-[JIRA_TICKET_NUMBER]-description&lt;/strong&gt;. All the developers follow this naming convention when they create a new 
+feature branch. Once a convention is in place, you can set a regex expression here to match your feature branches.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;You define your build steps in the cloudbuild.yaml file. Set the location of &lt;em&gt;cloudbuild.yaml&lt;/em&gt; so container builder
+can find it in your repo. I set mine to the root of my repo.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;step-3-cloudbuildyaml&quot;&gt;Step 3: cloudbuild.yaml&lt;/h2&gt;
+&lt;p&gt;Container builder uses this file to execute a series of steps to build and deploy your app. Each build step specified
+here is a container running in its own shell. For our demo, we’ll use the cloudbuild.yaml below:&lt;/p&gt;
+
+&lt;script src=&quot;https://gist.github.com/yusinto/3922f40d0b8d0241b6c6ead1a9aa8f3f.js&quot;&gt;&lt;/script&gt;
+
+&lt;p&gt;There are 3 build steps in our &lt;em&gt;cloudbuild.yaml&lt;/em&gt; file. Each step has a &lt;strong&gt;name&lt;/strong&gt; and and an &lt;strong&gt;id&lt;/strong&gt;. The &lt;strong&gt;name&lt;/strong&gt; field refers to a 
+docker image that the build step will pull and run to execute the step. Container builder supports a &lt;a href=&quot;https://github.com/GoogleCloudPlatform/cloud-builders&quot; target=&quot;_blank&quot;&gt;common set of builder
+images&lt;/a&gt; you can use as build steps. There are also &lt;a href=&quot;https://github.com/GoogleCloudPlatform/cloud-builders-community&quot; target=&quot;_blank&quot;&gt;community
+images&lt;/a&gt;. In this example we’ll only
+use google builder steps because it’s more than sufficient for our needs.&lt;/p&gt;
+
+&lt;p&gt;The &lt;strong&gt;id&lt;/strong&gt; field is optional but useful to specify because it will be displayed in the build logs. Otherwise you’ll see the 
+&lt;strong&gt;name&lt;/strong&gt; field instead, which is not as informative. Also by specifying an id,
+you can make subsequent build steps to &lt;strong&gt;waitFor&lt;/strong&gt; this build step so those child steps can run concurrently. Speed up baby! So cool!&lt;/p&gt;
+
+&lt;p&gt;We build our docker image in the first step. By specifying &lt;strong&gt;gcr.io/cloud-builders/docker&lt;/strong&gt;, container builder
+will pull that image and run a docker container running the docker command. We’ll pass the build arguments to this 
+docker command like we would in a terminal. In the same fashion, the second step pushes the image we just created.
+These steps are equivalent to:&lt;/p&gt;
+
+&lt;p&gt;{% highlight bash %}
+docker build -t gcr.io/gke-playground/some-branch-name:latest .
+docker push gcr.io/gke-playground/some-branch-name:latest
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h2 id=&quot;step-4-deployment-templateyaml&quot;&gt;Step 4: deployment-template.yaml&lt;/h2&gt;
+&lt;p&gt;Let’s take a look at the third step which runs &lt;strong&gt;kubectl&lt;/strong&gt;. This step deploys our docker image to the Kubernetes cluster. Note
+that this step runs the &lt;strong&gt;gcr.io/cloud-builders/kubectl&lt;/strong&gt; image, but we specified the
+entrypoint as &lt;strong&gt;bash&lt;/strong&gt; meaning that the container will run the bash command when it starts rather
+than &lt;strong&gt;kubectl&lt;/strong&gt;. This is a useful technique if you need to pre-run some commands prior to executing
+the main command. We’ll come back to this in a minute after inspecting &lt;strong&gt;deployment-template.yaml&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;script src=&quot;https://gist.github.com/yusinto/9536fa7dcd28106efee7f8b217a9d06a.js&quot;&gt;&lt;/script&gt;
+
+&lt;p&gt;This is a standard kubernetes resource yaml specifying two resources to be created/updated in the cluster:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;A deployment containing our pod spec&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;A service to expose our pods to the external world so that it’s accessible via the internet.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;We use a placeholder string &lt;strong&gt;_BRANCH_NAME&lt;/strong&gt; which gets replaced by the real &lt;strong&gt;$BRANCH_NAME&lt;/strong&gt; using the &lt;strong&gt;sed&lt;/strong&gt; command
+in our build step:&lt;/p&gt;
+
+&lt;p&gt;{% highlight bash %}
+sed -e “s|_BRANCH_NAME|$BRANCH_NAME|g” deployment-template.yaml | tee deployment.yaml
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;$BRANCH_NAME&lt;/strong&gt; is injected by the Container Builder as an environment variable to all build steps. This is the git 
+branch name that triggers the build. There are &lt;a href=&quot;https://cloud.google.com/container-builder/docs/configuring-builds/substitute-variable-values&quot; target=&quot;_blank&quot;&gt;others&lt;/a&gt; 
+you can use.&lt;/p&gt;
+
+&lt;p&gt;This produces a new &lt;code class=&quot;highlighter-rouge&quot;&gt;deployment.yaml&lt;/code&gt; which gets used by &lt;code class=&quot;highlighter-rouge&quot;&gt;kubectl&lt;/code&gt; for deployment:&lt;/p&gt;
+
+&lt;p&gt;{% highlight bash %}
+kubectl apply -f deployment.yaml
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;This way, we can deploy each branch to its own infrastructure mirroring our git branching strategy.&lt;/p&gt;
+
+&lt;h2 id=&quot;step-5-whats-this-images-thing-at-the-end&quot;&gt;Step 5: What’s this &lt;strong&gt;images&lt;/strong&gt; thing at the end?&lt;/h2&gt;
+&lt;p&gt;At the end of &lt;strong&gt;cloudbuild.yaml&lt;/strong&gt;, the &lt;strong&gt;images&lt;/strong&gt; command will push the specified docker images to the remote registry. 
+Wait a minute! Didn’t we already push our docker image in build step #2? Yes and you’d be right my observant friend (if you
+are still awake reading this long post). It is common to rely on the &lt;strong&gt;images&lt;/strong&gt; command to push our docker images rather than
+explicitly doing so through a build step. However we had to push prior to executing &lt;strong&gt;kubectl&lt;/strong&gt; so we could not rely on the
+&lt;strong&gt;images&lt;/strong&gt; command which runs at the &lt;strong&gt;end&lt;/strong&gt; of all build steps. So what’s the point of having the &lt;strong&gt;images&lt;/strong&gt; command in the yaml
+at all? If you pushed an image explicitly in a build step AND specify the &lt;strong&gt;images&lt;/strong&gt; command, you will see the image pushed in the
+build results in the console. If you don’t specify the &lt;strong&gt;images&lt;/strong&gt; command, you won’t see it in the build results. Simple!&lt;/p&gt;
+
+&lt;h2 id=&quot;step-6-test-the-app&quot;&gt;Step 6: Test the app!&lt;/h2&gt;
+&lt;p&gt;It takes a while for google cloud to assign an external ip to our service. You can check under &lt;strong&gt;Compute -&amp;gt; Kubernetes Engine -&amp;gt; Discovery &amp;amp; load balancing&lt;/strong&gt;.
+The &lt;em&gt;Endpoints&lt;/em&gt; column should display a valid external ip when it’s ready. Then you can hit that link and your app should be running!&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;Deploying my app used to involve many moving parts: Jenkins, ec2 instances, load balancers, terraform, ecs. Kubernetes Engine
+greatly simplifies this by encapsulating many of the moving parts. When used in conjunction with Container Builder, the 
+dream of a continuous end to end build pipeline suddenly becomes somewhat easier to achieve. This is just the tip of the
+iceberg, I am so excited!&lt;/p&gt;
+
+&lt;p&gt;In part two of this series I’ll walk you through the teardown process to complete the feature development pipeline. 
+You don’t want unused resources running in the cloud burning your wallet! Till next time.&lt;/p&gt;
+
+&lt;hr /&gt;
+</content>
+<category term="docker" />
+<category term="kubernetes" />
+<category term="engine" />
+<category term="google" />
+<category term="cloud" />
+<category term="platform" />
+<category term="ci" />
+<category term="cd" />
+<category term="continuous" />
+<category term="deployment" />
+<category term="integration" />
+<category term="build" />
+<category term="pipeline" />
+<category term="end" />
+<category term="to" />
+<category term="end" />
+<summary>Kubernetes rocks. Kubernetes engine to be exact. I was so inspired by Kelsey Hightower’spresentation at KubeCon 2017 Ispent the next 2 weeks migrating my entire pipeline from Jenkins/AWS/Terraform to Google Cloud Platform (GCP for short) and the Kubernetes Engine. It’s the best decision I have ever made.</summary>
+</entry>
 <entry>
 <title>Launch Darkly, React and Redux: The Easy Way</title>
 <link href="http://reactjunkie.com/ld-redux-v3/" rel="alternate" type="text/html" title="Launch Darkly, React and Redux: The Easy Way" />
@@ -1701,153 +1892,5 @@ github. Let me know if this helps!&lt;/p&gt;
 <category term="image" />
 <category term="onpress" />
 <summary>Recently I started a new pet project which involves maps and markers on ios and android. Of course I startedthis new project in react native. I was expecting a somewhat challenging times ahead because it has beena few months since I last did react native development. The landscape has definitely improved, and I feelso fortunate to be a javascript developer at this present moment because of awesome tools like react-nativeat our disposal. The possibilities are truly endless.</summary>
-</entry>
-<entry>
-<title>Scheduling Feature Flag Deployment</title>
-<link href="http://reactjunkie.com/scheduling-feature-flag-deployment/" rel="alternate" type="text/html" title="Scheduling Feature Flag Deployment" />
-<published>2017-02-28T08:30:00+11:00</published>
-<updated>2017-02-28T08:30:00+11:00</updated>
-<id>http://reactjunkie.com/scheduling-feature-flag-deployment</id>
-<content type="html" xml:base="http://reactjunkie.com/scheduling-feature-flag-deployment/">&lt;h4 id=&quot;updated-mon-13-march-2017&quot;&gt;Updated Mon 13 March 2017&lt;/h4&gt;
-
-&lt;p&gt;Use Launch Darkly? Love their feature flagging and a/b testing features? Like reading blog posts that sounds like an informercial? Umm…&lt;/p&gt;
-
-&lt;p&gt;Anyway I use Launch Darkly at my workplace (I work at an airline company spelt with a Q and I live in Sydney Australia) and I recently faced a
-challenge with zero dark thirty deployments.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/images/tropic.jpg&quot; alt=&quot;Zero dark what?&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;No no what I meant was I had feature flagging in place in my app, and I had to turn flags on (and off) at unearthly hours like 12:01 AM. So being a hacker,
-I wasn’t going to lie down and wait for 12:01 AM to come by and turn on a switch. No sir! I am much much smarter than that. Instead, I spent sleepless nights
-doing 30 hour days to write a node app that will do it for me. Take that zero dark thirty deployments!&lt;/p&gt;
-
-&lt;h2 id=&quot;the-problem&quot;&gt;The problem&lt;/h2&gt;
-&lt;p&gt;Need to turn flags on/off automatically at a specified scheduled time.&lt;/p&gt;
-
-&lt;h2 id=&quot;the-solution&quot;&gt;The solution&lt;/h2&gt;
-&lt;p&gt;A cron job that uses &lt;a href=&quot;http://apidocs.launchdarkly.com/docs/update-feature-flag&quot; target=&quot;_blank&quot;&gt;launch darkly apis&lt;/a&gt; to automatically turn on/off flags.&lt;/p&gt;
-
-&lt;h2 id=&quot;enough-talk-show-me-some-code&quot;&gt;Enough talk, show me some code&lt;/h2&gt;
-&lt;p&gt;Using the rest apis, you can update your flag with something  like this:&lt;/p&gt;
-
-&lt;p&gt;{% highlight javascript %}
-const headers = {
-  Accept: ‘&lt;em&gt;/&lt;/em&gt;’,
-  ‘Content-Type’: ‘application/json’,
-  Authorization: ‘your-api-key’,
-  ‘accept-encoding’: ‘gzip, deflate’
-};
-const body = JSON.stringify([{
-  op: ‘replace’,
-  path: ‘/environments/test’;,
-  value: true,
-}]);
-const url = ‘https://app.launchdarkly.com/api/v2/flags/default/your-key’;
-const response = await fetch(url, {
-    method: ‘PATCH’,
-    headers,
-    body
-});&lt;/p&gt;
-
-&lt;p&gt;{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;Of course you’ll need to add some defensive programming for error catching
-and retries plus configuration for test and production environments
-plus notifications when updates are successful/not successful, and the
-list goes on.&lt;/p&gt;
-
-&lt;p&gt;If you go down this path, you soon realise that this is not a trivial 
-task by any means. An ad-hoc solution like this involves hard coding
-flag names and continual updates which are almost as bad as waking up at 
-12:01 AM to do the deployments manually.&lt;/p&gt;
-
-&lt;p&gt;Enter &lt;a href=&quot;https://github.com/yusinto/ld-scheduler&quot; target=&quot;_blank&quot;&gt;ld-scheduler&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h2 id=&quot;ld-scheduler&quot;&gt;ld-scheduler&lt;/h2&gt;
-&lt;p&gt;With ld-scheduler, you do this from your node app:&lt;/p&gt;
-
-&lt;p&gt;{% highlight js %}
-yarn add ld-scheduler
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;then&lt;/p&gt;
-
-&lt;p&gt;{% highlight javascript %}
-import ldScheduler from ‘ld-scheduler’;&lt;/p&gt;
-
-&lt;p&gt;ldScheduler.runEveryXSeconds({
-  environment: ‘test’,
-  apiKey: ‘your-secret-api-key’,
-  slack: ‘your-slack-webhook-url’
-});
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;and you schedule your flags through launch darkly’s dashboard:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/images/ld-scheduler-flag-settings-resized.png&quot; alt=&quot;LaunchDarkly dashboard scheduling config&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;HACK&lt;/strong&gt;: We hijack the description field to store our scheduling config as a json object where:&lt;/p&gt;
-&lt;ul&gt;
-    &lt;li&gt;taskType is killSwitch&lt;/li&gt;
-    &lt;li&gt;value is true (kill switch on) or false (kill switch off)&lt;/li&gt;
-    &lt;li&gt;
-        targetDeploymentDateTime must be in YYYY-MM-DD HH:mm Z
-        &lt;p&gt;
-            &lt;b&gt;NOTE:&lt;/b&gt; the UTC offset at the end is especially important because ld-scheduler uses moment which will use the host&#39;s timezone if it is not specified.
-             That means if you deploy ld-scheduler to the cloud say on aws lambda where the machine clock is set to UTC timezone, then your flag will be deployed at
-             UTC time, which is probably not what you want unless you are living in London!
-        &lt;/p&gt;
-    &lt;/li&gt;
-    &lt;li&gt;description is a textual string for the purpose of human readability&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;strong&gt;&lt;em&gt;AND&lt;/em&gt;&lt;/strong&gt; you need to set a tag called “${yourEnv}-scheduled”. For example, if you are scheduling a flag in the test environment,
-your tag should be called “test-scheduled”. Likewise if you are scheduling it in production, you need to add a “production-scheduled” tag.&lt;/p&gt;
-
-&lt;p&gt;When ld-scheduler runs, it will set your flag on/off according the the json configuration. It will also remove the “${yourEnv}-scheduled” tag so
-it does not get reprocessed. If there’s no other scheduled tags, then ld-scheduler also sets the “Description” field
-to the json.description string, thereby deleting the json config replacing it with the description string.&lt;/p&gt;
-
-&lt;p&gt;This way, you can safely run 2 instances of ld-scheduler; one for each environment without having to worry about race conditions.&lt;/p&gt;
-
-&lt;h2 id=&quot;extra&quot;&gt;Extra&lt;/h2&gt;
-&lt;p&gt;ld-scheduler supports a second taskType “fallThoughRollout” which you can use to set the default fallThrough rollout percentage:&lt;/p&gt;
-
-&lt;p&gt;{% highlight json %}
-{
-    “taskType”: “fallThroughRollout”,
-    “targetDeploymentDateTime”: “2017-03-3 02:33”,
-    “description”: “Human readable flag description”,
-    “value”: [
-        {
-            “variation”: 0,
-            “weight”: 90000
-        },
-        {
-            “variation”: 1,
-            “weight”: 10000
-        }
-    ]
-}
-{% endhighlight %}
-where variation 0 is true and variation 1 is false. Weight is in mili-percentage (if there’s such a word) i.e. 90000 === 90% and 10000 === 10%.
-Of course you would enter this json object in the “Description” field of your flag settings in launch darkly’s dashboard
-&lt;strong&gt;&lt;em&gt;AND&lt;/em&gt;&lt;/strong&gt; set a “${yourEnv}-scheduled” tag.&lt;/p&gt;
-
-&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
-&lt;p&gt;Check out the &lt;a href=&quot;https://github.com/yusinto/ld-scheduler/tree/master/example&quot; target=&quot;_blank&quot;&gt;sample code&lt;/a&gt; for a working example and let me know if this is useful (or not)!&lt;/p&gt;
-
-&lt;hr /&gt;
-</content>
-<category term="schedule" />
-<category term="feature" />
-<category term="flag" />
-<category term="deployment" />
-<category term="ld" />
-<category term="scheduler" />
-<category term="automate" />
-<category term="automation" />
-<category term="scheduling" />
-<summary>Updated Mon 13 March 2017</summary>
 </entry>
 </feed>
