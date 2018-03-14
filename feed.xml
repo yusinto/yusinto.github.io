@@ -1279,7 +1279,7 @@ the Graphcool console and specify the event which will trigger this logic.&lt;/p
 
 &lt;h2 id=&quot;goal&quot;&gt;Goal&lt;/h2&gt;
 &lt;p&gt;The goal is to create a stripe customer when a Graphcool customer is created. It’s a very common
-use case. The complete code is &lt;a href=&quot;https://github.com/graphcool-examples/functions/tree/master/stripe-create-customer-es6&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+use case. The complete code is &lt;a href=&quot;https://github.com/yusinto/functions/tree/master/stripe-create-customer-es6&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;Enough talk, let’s code!&lt;/p&gt;
 
@@ -1368,7 +1368,7 @@ functions. There’s a &lt;a href=&quot;#bonus-webpack-configuration&quot;&gt;bo
 end of this blog if you are interested in how the webpack config works.&lt;/p&gt;
 
 &lt;h3 id=&quot;step-31-copy-packagejson&quot;&gt;Step 3.1: Copy package.json&lt;/h3&gt;
-&lt;p&gt;Copy package.json from &lt;a href=&quot;https://github.com/graphcool-examples/functions/tree/master/stripe-create-customer-es6&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;
+&lt;p&gt;Copy package.json from &lt;a href=&quot;https://github.com/yusinto/functions/tree/master/stripe-create-customer-es6&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;
 to your root directory. Then do yarn.&lt;/p&gt;
 
 &lt;p&gt;{% highlight bash %}
@@ -1380,7 +1380,7 @@ use jest for unit tests so that’s in there too. We also need the stripe
 library and a fetch library so those are included as dependencies.&lt;/p&gt;
 
 &lt;h3 id=&quot;step-32-copy-webpackconfigjs-and-babelrc-and-create-src-dir&quot;&gt;Step 3.2: Copy webpack.config.js and .babelrc and create src dir&lt;/h3&gt;
-&lt;p&gt;Copy webpack.config.js and .babelrc files from &lt;a href=&quot;https://github.com/graphcool-examples/functions/tree/master/stripe-create-customer-es6&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;
+&lt;p&gt;Copy webpack.config.js and .babelrc files from &lt;a href=&quot;https://github.com/yusinto/functions/tree/master/stripe-create-customer-es6&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;
 into the root directory of your project. Check the
 &lt;a href=&quot;#bonus-webpack-configuration&quot;&gt;bonus section&lt;/a&gt; below if you want to dig
 into the webpack config.&lt;/p&gt;
@@ -1464,7 +1464,7 @@ const updateGraphCoolCustomer = async (id, stripeCustomerId) =&amp;gt; {
 };
 {% endhighlight %}&lt;/p&gt;
 
-&lt;p&gt;The entire file is available &lt;a href=&quot;https://github.com/graphcool-examples/functions/blob/master/stripe-create-customer-es6/src/createStripeCustomer.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;
+&lt;p&gt;The entire file is available &lt;a href=&quot;https://github.com/yusinto/functions/blob/master/stripe-create-customer-es6/src/createStripeCustomer.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;
 on github.&lt;/p&gt;
 
 &lt;h2 id=&quot;step-4-deploy-and-test&quot;&gt;Step 4: Deploy and test&lt;/h2&gt;
@@ -1492,7 +1492,7 @@ for packages webtask supports.
 GOTCHA: To enable latest es6 features and async await, we have to include two npm packages: babel-polyfill and regenerator-runtime/runtime
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;If you are interested, you can check the complete webpack config &lt;a href=&quot;https://github.com/graphcool-examples/functions/blob/master/stripe-create-customer-es6/webpack.config.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;If you are interested, you can check the complete webpack config &lt;a href=&quot;https://github.com/yusinto/functions/blob/master/stripe-create-customer-es6/webpack.config.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
 
 &lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
 &lt;p&gt;With client side subscriptions, you’ll use apollo with
