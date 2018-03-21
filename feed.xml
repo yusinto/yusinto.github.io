@@ -3,7 +3,7 @@
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
 <link href="http://reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
 <link href="http://reactjunkie.com/" rel="alternate" type="text/html" />
-<updated>2018-03-03T17:01:31+11:00</updated>
+<updated>2018-03-22T10:53:26+11:00</updated>
 <id>http://reactjunkie.com/</id>
 <title>React Junkie - Yusinto Ngadiman&#39;s Blog</title>
 <entry>
@@ -12,7 +12,9 @@
 <published>2018-02-28T07:30:00+11:00</published>
 <updated>2018-02-28T07:30:00+11:00</updated>
 <id>http://reactjunkie.com/docker-is-dead</id>
-<content type="html" xml:base="http://reactjunkie.com/docker-is-dead/">&lt;p&gt;Kubernetes rocks. Kubernetes engine to be exact. I was so inspired by Kelsey Hightower’s
+<content type="html" xml:base="http://reactjunkie.com/docker-is-dead/">&lt;p&gt;&lt;strong&gt;Update 22 Mar 2018&lt;/strong&gt;: Fixed cloudbuild.yaml to generate a docker tag every time otherwise kubernetes does not detect changes.&lt;/p&gt;
+
+&lt;p&gt;Kubernetes rocks. Kubernetes engine to be exact. I was so inspired by Kelsey Hightower’s
 &lt;a href=&quot;https://www.youtube.com/watch?v=kOa_llowQ1c&amp;amp;feature=youtu.be&quot; target=&quot;_blank&quot;&gt;presentation&lt;/a&gt; at KubeCon 2017 I
 spent the next 2 weeks migrating my entire pipeline from Jenkins/AWS/Terraform to Google Cloud Platform (GCP for short) 
 and the Kubernetes Engine. It’s the best decision I have ever made.&lt;/p&gt;
@@ -39,7 +41,7 @@ should be able to open your browser and run the code you just pushed in this wel
 &lt;/ol&gt;
 
 &lt;h2 id=&quot;step-1-create-a-kubernetes-cluster&quot;&gt;Step 1: Create a Kubernetes cluster&lt;/h2&gt;
-&lt;p&gt;Jump into google cloud console and under the main menu, go to &lt;strong&gt;Compute -&amp;gt; Kubernetes Engine -&amp;gt; Kubernetes clusters&lt;/strong&gt; and
+&lt;p&gt;Jump into google cloud console and under the main menu, go to Compute -&amp;gt; Kubernetes Engine -&amp;gt; Kubernetes clusters and
 click on Create Cluster. You’ll see a screen like below, you only need to touch 3 fields:&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/images/create-cluster.png&quot; alt=&quot;Create Kubernetes cluster&quot; /&gt;&lt;/p&gt;
@@ -63,7 +65,7 @@ some time for google to create your cluster because it has to provision the node
 the build job.&lt;/p&gt;
 
 &lt;h2 id=&quot;step-2-create-a-build-trigger&quot;&gt;Step 2: Create a build trigger&lt;/h2&gt;
-&lt;p&gt;In the console menu, go to &lt;strong&gt;Tools -&amp;gt; Container Registry -&amp;gt; Build triggers&lt;/strong&gt;. Add a new trigger. Select your git source 
+&lt;p&gt;In the console menu, go to Tools -&amp;gt; Container Registry -&amp;gt; Build triggers. Add a new trigger. Select your git source
 (I use github) and repo and authorise container builder to access it. Then you’ll get to the
 Edit Trigger page like below:&lt;/p&gt;
 
@@ -81,7 +83,7 @@ cover that in a future post.&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
     &lt;p&gt;Set a regex to match the feature branch names. By convention I enforce the following convention for features:
-&lt;strong&gt;feature-[JIRA_TICKET_NUMBER]-description&lt;/strong&gt;. All the developers follow this naming convention when they create a new 
+feature-[JIRA_TICKET_NUMBER]-description. All the developers follow this naming convention when they create a new
 feature branch. Once a convention is in place, you can set a regex expression here to match your feature branches.&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
@@ -96,32 +98,32 @@ here is a container running in its own shell. For our demo, we’ll use the clou
 
 &lt;script src=&quot;https://gist.github.com/yusinto/3922f40d0b8d0241b6c6ead1a9aa8f3f.js&quot;&gt;&lt;/script&gt;
 
-&lt;p&gt;There are 3 build steps in our &lt;em&gt;cloudbuild.yaml&lt;/em&gt; file. Each step has a &lt;strong&gt;name&lt;/strong&gt; and and an &lt;strong&gt;id&lt;/strong&gt;. The &lt;strong&gt;name&lt;/strong&gt; field refers to a 
+&lt;p&gt;There are 3 build steps in our cloudbuild.yaml file. Each step has a name and and an id. The name field refers to a
 docker image that the build step will pull and run to execute the step. Container builder supports a &lt;a href=&quot;https://github.com/GoogleCloudPlatform/cloud-builders&quot; target=&quot;_blank&quot;&gt;common set of builder
 images&lt;/a&gt; you can use as build steps. There are also &lt;a href=&quot;https://github.com/GoogleCloudPlatform/cloud-builders-community&quot; target=&quot;_blank&quot;&gt;community
 images&lt;/a&gt;. In this example we’ll only
 use google builder steps because it’s more than sufficient for our needs.&lt;/p&gt;
 
-&lt;p&gt;The &lt;strong&gt;id&lt;/strong&gt; field is optional but useful to specify because it will be displayed in the build logs. Otherwise you’ll see the 
-&lt;strong&gt;name&lt;/strong&gt; field instead, which is not as informative. Also by specifying an id,
-you can make subsequent build steps to &lt;strong&gt;waitFor&lt;/strong&gt; this build step so those child steps can run concurrently. Speed up baby! So cool!&lt;/p&gt;
+&lt;p&gt;The id field is optional but useful to specify because it will be displayed in the build logs. Otherwise you’ll see the
+name field instead, which is not as informative. Also by specifying an id,
+you can make subsequent build steps to waitFor this build step so those child steps can run concurrently. Speed up baby! So cool!&lt;/p&gt;
 
-&lt;p&gt;We build our docker image in the first step. By specifying &lt;strong&gt;gcr.io/cloud-builders/docker&lt;/strong&gt;, container builder
-will pull that image and run a docker container running the docker command. We’ll pass the build arguments to this 
-docker command like we would in a terminal. In the same fashion, the second step pushes the image we just created.
-These steps are equivalent to:&lt;/p&gt;
+&lt;p&gt;In the first step, we generate a random tag (based on an md5 hash of the current timestamp) for our docker image. Don’t always tag
+your images as latest because if the tag is unchanged, kubernetes won’t be able to detect that the image has been updated
+and won’t update your pods. We output the md5 hash to a text file in the checkout directory. The checkout directory
+persists across steps so we can access this text file later in subsequent steps.&lt;/p&gt;
 
-&lt;p&gt;{% highlight bash %}
-docker build -t gcr.io/gke-playground/some-branch-name:latest .
-docker push gcr.io/gke-playground/some-branch-name:latest
-{% endhighlight %}&lt;/p&gt;
+&lt;p&gt;In the second step we build and push our docker image. We get the md5 hash from step 1 above and save it
+to a shell variable. We can then use this to build and push our docker image.&lt;/p&gt;
+
+&lt;p&gt;Now we are ready to deploy our image!&lt;/p&gt;
 
 &lt;h2 id=&quot;step-4-deployment-templateyaml&quot;&gt;Step 4: deployment-template.yaml&lt;/h2&gt;
-&lt;p&gt;Let’s take a look at the third step which runs &lt;strong&gt;kubectl&lt;/strong&gt;. This step deploys our docker image to the Kubernetes cluster. Note
+&lt;p&gt;Let’s take a look at the third step which runs kubectl. This step deploys our docker image to the Kubernetes cluster. Note
 that this step runs the &lt;strong&gt;gcr.io/cloud-builders/kubectl&lt;/strong&gt; image, but we specified the
-entrypoint as &lt;strong&gt;bash&lt;/strong&gt; meaning that the container will run the bash command when it starts rather
-than &lt;strong&gt;kubectl&lt;/strong&gt;. This is a useful technique if you need to pre-run some commands prior to executing
-the main command. We’ll come back to this in a minute after inspecting &lt;strong&gt;deployment-template.yaml&lt;/strong&gt;:&lt;/p&gt;
+entrypoint as bash meaning that the container will run the bash command when it starts rather
+than kubectl. This is a useful technique if you need to pre-run some commands prior to executing
+the main command. We’ll come back to this in a minute after inspecting deployment-template.yaml:&lt;/p&gt;
 
 &lt;script src=&quot;https://gist.github.com/yusinto/9536fa7dcd28106efee7f8b217a9d06a.js&quot;&gt;&lt;/script&gt;
 
@@ -136,15 +138,16 @@ the main command. We’ll come back to this in a minute after inspecting &lt;str
   &lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;We use a placeholder string &lt;strong&gt;_BRANCH_NAME&lt;/strong&gt; which gets replaced by the real &lt;strong&gt;$BRANCH_NAME&lt;/strong&gt; using the &lt;strong&gt;sed&lt;/strong&gt; command
+&lt;p&gt;We use a placeholder string _BRANCH_NAME and _TAG which gets replaced by the real $BRANCH_NAME and our md5 hash using the sed command
 in our build step:&lt;/p&gt;
 
 &lt;p&gt;{% highlight bash %}
-sed -e “s|_BRANCH_NAME|$BRANCH_NAME|g” deployment-template.yaml | tee deployment.yaml
+sed -e “s|_BRANCH_NAME|$BRANCH_NAME|g” -e “s|_TAG|$tag|g” deployment-template.yaml | tee deployment.yaml
 {% endhighlight %}&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;$BRANCH_NAME&lt;/strong&gt; is injected by the Container Builder as an environment variable to all build steps. This is the git 
-branch name that triggers the build. There are &lt;a href=&quot;https://cloud.google.com/container-builder/docs/configuring-builds/substitute-variable-values&quot; target=&quot;_blank&quot;&gt;others&lt;/a&gt; 
+&lt;p&gt;Like in the previous docker-build-push step, we get the tag from the md5 hash from step 1. $BRANCH_NAME is injected by 
+the Container Builder as an environment variable to all build steps. This is the git branch name that triggers the build. 
+There are &lt;a href=&quot;https://cloud.google.com/container-builder/docs/configuring-builds/substitute-variable-values&quot; target=&quot;_blank&quot;&gt;other environment variables&lt;/a&gt; 
 you can use.&lt;/p&gt;
 
 &lt;p&gt;This produces a new &lt;code class=&quot;highlighter-rouge&quot;&gt;deployment.yaml&lt;/code&gt; which gets used by &lt;code class=&quot;highlighter-rouge&quot;&gt;kubectl&lt;/code&gt; for deployment:&lt;/p&gt;
@@ -155,18 +158,10 @@ kubectl apply -f deployment.yaml
 
 &lt;p&gt;This way, we can deploy each branch to its own infrastructure mirroring our git branching strategy.&lt;/p&gt;
 
-&lt;h2 id=&quot;step-5-whats-this-images-thing-at-the-end&quot;&gt;Step 5: What’s this &lt;strong&gt;images&lt;/strong&gt; thing at the end?&lt;/h2&gt;
-&lt;p&gt;At the end of &lt;strong&gt;cloudbuild.yaml&lt;/strong&gt;, the &lt;strong&gt;images&lt;/strong&gt; command will push the specified docker images to the remote registry. 
-Wait a minute! Didn’t we already push our docker image in build step #2? Yes and you’d be right my observant friend (if you
-are still awake reading this long post). It is common to rely on the &lt;strong&gt;images&lt;/strong&gt; command to push our docker images rather than
-explicitly doing so through a build step. However we had to push prior to executing &lt;strong&gt;kubectl&lt;/strong&gt; so we could not rely on the
-&lt;strong&gt;images&lt;/strong&gt; command which runs at the &lt;strong&gt;end&lt;/strong&gt; of all build steps. So what’s the point of having the &lt;strong&gt;images&lt;/strong&gt; command in the yaml
-at all? If you pushed an image explicitly in a build step AND specify the &lt;strong&gt;images&lt;/strong&gt; command, you will see the image pushed in the
-build results in the console. If you don’t specify the &lt;strong&gt;images&lt;/strong&gt; command, you won’t see it in the build results. Simple!&lt;/p&gt;
-
-&lt;h2 id=&quot;step-6-test-the-app&quot;&gt;Step 6: Test the app!&lt;/h2&gt;
-&lt;p&gt;It takes a while for google cloud to assign an external ip to our service. You can check under &lt;strong&gt;Compute -&amp;gt; Kubernetes Engine -&amp;gt; Discovery &amp;amp; load balancing&lt;/strong&gt;.
-The &lt;em&gt;Endpoints&lt;/em&gt; column should display a valid external ip when it’s ready. Then you can hit that link and your app should be running!&lt;/p&gt;
+&lt;h2 id=&quot;step-5-test-the-app&quot;&gt;Step 5: Test the app!&lt;/h2&gt;
+&lt;p&gt;Push a git commit to a feature branch and watch the magic happens! It takes a while for google cloud to assign an external 
+ip to our service. You can check under Compute -&amp;gt; Kubernetes Engine -&amp;gt; Discovery &amp;amp; load balancing. The &lt;em&gt;Endpoints&lt;/em&gt; column 
+should display a valid external ip when it’s ready. Then you can hit that link and your app should be running!&lt;/p&gt;
 
 &lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
 &lt;p&gt;Deploying my app used to involve many moving parts: Jenkins, ec2 instances, load balancers, terraform, ecs. Kubernetes Engine
@@ -195,7 +190,7 @@ You don’t want unused resources running in the cloud burning your wallet! Till
 <category term="end" />
 <category term="to" />
 <category term="end" />
-<summary>Kubernetes rocks. Kubernetes engine to be exact. I was so inspired by Kelsey Hightower’spresentation at KubeCon 2017 Ispent the next 2 weeks migrating my entire pipeline from Jenkins/AWS/Terraform to Google Cloud Platform (GCP for short) and the Kubernetes Engine. It’s the best decision I have ever made.</summary>
+<summary>Update 22 Mar 2018: Fixed cloudbuild.yaml to generate a docker tag every time otherwise kubernetes does not detect changes.</summary>
 </entry>
 <entry>
 <title>Launch Darkly, React and Redux: The Easy Way</title>
@@ -1279,7 +1274,7 @@ the Graphcool console and specify the event which will trigger this logic.&lt;/p
 
 &lt;h2 id=&quot;goal&quot;&gt;Goal&lt;/h2&gt;
 &lt;p&gt;The goal is to create a stripe customer when a Graphcool customer is created. It’s a very common
-use case. The complete code is &lt;a href=&quot;https://github.com/graphcool-examples/functions/tree/master/stripe-create-customer-es6&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+use case. The complete code is &lt;a href=&quot;https://github.com/yusinto/functions/tree/master/stripe-create-customer-es6&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;Enough talk, let’s code!&lt;/p&gt;
 
@@ -1368,7 +1363,7 @@ functions. There’s a &lt;a href=&quot;#bonus-webpack-configuration&quot;&gt;bo
 end of this blog if you are interested in how the webpack config works.&lt;/p&gt;
 
 &lt;h3 id=&quot;step-31-copy-packagejson&quot;&gt;Step 3.1: Copy package.json&lt;/h3&gt;
-&lt;p&gt;Copy package.json from &lt;a href=&quot;https://github.com/graphcool-examples/functions/tree/master/stripe-create-customer-es6&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;
+&lt;p&gt;Copy package.json from &lt;a href=&quot;https://github.com/yusinto/functions/tree/master/stripe-create-customer-es6&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;
 to your root directory. Then do yarn.&lt;/p&gt;
 
 &lt;p&gt;{% highlight bash %}
@@ -1380,7 +1375,7 @@ use jest for unit tests so that’s in there too. We also need the stripe
 library and a fetch library so those are included as dependencies.&lt;/p&gt;
 
 &lt;h3 id=&quot;step-32-copy-webpackconfigjs-and-babelrc-and-create-src-dir&quot;&gt;Step 3.2: Copy webpack.config.js and .babelrc and create src dir&lt;/h3&gt;
-&lt;p&gt;Copy webpack.config.js and .babelrc files from &lt;a href=&quot;https://github.com/graphcool-examples/functions/tree/master/stripe-create-customer-es6&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;
+&lt;p&gt;Copy webpack.config.js and .babelrc files from &lt;a href=&quot;https://github.com/yusinto/functions/tree/master/stripe-create-customer-es6&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;
 into the root directory of your project. Check the
 &lt;a href=&quot;#bonus-webpack-configuration&quot;&gt;bonus section&lt;/a&gt; below if you want to dig
 into the webpack config.&lt;/p&gt;
