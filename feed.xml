@@ -3,51 +3,9 @@
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
 <link href="http://reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
 <link href="http://reactjunkie.com/" rel="alternate" type="text/html" />
-<updated>2018-03-29T10:36:44+11:00</updated>
+<updated>2018-03-22T10:53:26+11:00</updated>
 <id>http://reactjunkie.com/</id>
 <title>React Junkie - Yusinto Ngadiman&#39;s Blog</title>
-<entry>
-<title>Javascript Lessons: toJSON and valueOf</title>
-<link href="http://reactjunkie.com/js-lessons-tojson-valueof/" rel="alternate" type="text/html" title="Javascript Lessons: toJSON and valueOf " />
-<published>2018-03-28T07:30:00+11:00</published>
-<updated>2018-03-28T07:30:00+11:00</updated>
-<id>http://reactjunkie.com/js-lessons-tojson-valueof</id>
-<content type="html" xml:base="http://reactjunkie.com/js-lessons-tojson-valueof/">&lt;h2 id=&quot;tojson&quot;&gt;toJSON()&lt;/h2&gt;
-&lt;p&gt;If you need a custom output when json stringifying your object, you can define
-a function called toJSON() which will be invoked automatically by
-JSON.stringify():&lt;/p&gt;
-
-&lt;p data-height=&quot;376&quot; data-theme-id=&quot;dark&quot; data-slug-hash=&quot;KoZmLa&quot; data-default-tab=&quot;js,result&quot; data-user=&quot;yusinto&quot; data-embed-version=&quot;2&quot; data-pen-title=&quot;Javascript Lessons&quot; class=&quot;codepen&quot;&gt;See the Pen &lt;a href=&quot;https://codepen.io/yusinto/pen/KoZmLa/&quot;&gt;Javascript Lessons&lt;/a&gt; by Yusinto Ngadiman (&lt;a href=&quot;https://codepen.io/yusinto&quot;&gt;&lt;a href=&quot;https://github.com/yusinto&quot; class=&quot;user-mention&quot;&gt;@yusinto&lt;/a&gt;&lt;/a&gt;) on &lt;a href=&quot;https://codepen.io&quot;&gt;CodePen&lt;/a&gt;.&lt;/p&gt;
-&lt;script async=&quot;&quot; src=&quot;https://static.codepen.io/assets/embed/ei.js&quot;&gt;&lt;/script&gt;
-
-&lt;p&gt;Without the custom toJSON() implementation, the code above will use the default
-implementation:&lt;/p&gt;
-
-&lt;p&gt;{% highlight json %}
-{“firstName”:”Yus”,”lastName”:”Ng”}
-{% endhighlight %}&lt;/p&gt;
-
-&lt;h2 id=&quot;valueof&quot;&gt;valueOf()&lt;/h2&gt;
-&lt;p&gt;Object.prototype has a built-in valueOf method which returns the primitive value
-of the object. You can override this method to return a custom primitive value
-for your object:&lt;/p&gt;
-
-&lt;p data-height=&quot;372&quot; data-theme-id=&quot;dark&quot; data-slug-hash=&quot;YaYQyo&quot; data-default-tab=&quot;js,result&quot; data-user=&quot;yusinto&quot; data-embed-version=&quot;2&quot; data-pen-title=&quot;Javascript Lessons: valueOf&quot; class=&quot;codepen&quot;&gt;See the Pen &lt;a href=&quot;https://codepen.io/yusinto/pen/YaYQyo/&quot;&gt;Javascript Lessons: valueOf&lt;/a&gt; by Yusinto Ngadiman (&lt;a href=&quot;https://codepen.io/yusinto&quot;&gt;&lt;a href=&quot;https://github.com/yusinto&quot; class=&quot;user-mention&quot;&gt;@yusinto&lt;/a&gt;&lt;/a&gt;) on &lt;a href=&quot;https://codepen.io&quot;&gt;CodePen&lt;/a&gt;.&lt;/p&gt;
-&lt;script async=&quot;&quot; src=&quot;https://static.codepen.io/assets/embed/ei.js&quot;&gt;&lt;/script&gt;
-
-&lt;p&gt;The override allows us to perform arithmetic with our object. Without the override,
-the valueOf myCar will be NaN (Not-a-Number).&lt;/p&gt;
-
-&lt;hr /&gt;
-</content>
-<category term="javascript" />
-<category term="tojson" />
-<category term="valueof" />
-<category term="json" />
-<category term="stringify" />
-<category term="lessons" />
-<summary>toJSON()If you need a custom output when json stringifying your object, you can definea function called toJSON() which will be invoked automatically byJSON.stringify():</summary>
-</entry>
 <entry>
 <title>Docker is dead long live Kubernetes</title>
 <link href="http://reactjunkie.com/docker-is-dead/" rel="alternate" type="text/html" title="Docker is dead long live Kubernetes" />
@@ -1501,7 +1459,7 @@ const updateGraphCoolCustomer = async (id, stripeCustomerId) =&amp;gt; {
 };
 {% endhighlight %}&lt;/p&gt;
 
-&lt;p&gt;The entire file is available &lt;a href=&quot;https://github.com/graphcool-examples/functions/blob/master/stripe-create-customer-es6/src/createStripeCustomer.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;
+&lt;p&gt;The entire file is available &lt;a href=&quot;https://github.com/yusinto/functions/blob/master/stripe-create-customer-es6/src/createStripeCustomer.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;
 on github.&lt;/p&gt;
 
 &lt;h2 id=&quot;step-4-deploy-and-test&quot;&gt;Step 4: Deploy and test&lt;/h2&gt;
@@ -1529,7 +1487,7 @@ for packages webtask supports.
 GOTCHA: To enable latest es6 features and async await, we have to include two npm packages: babel-polyfill and regenerator-runtime/runtime
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;If you are interested, you can check the complete webpack config &lt;a href=&quot;https://github.com/graphcool-examples/functions/blob/master/stripe-create-customer-es6/webpack.config.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;If you are interested, you can check the complete webpack config &lt;a href=&quot;https://github.com/yusinto/functions/blob/master/stripe-create-customer-es6/webpack.config.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
 
 &lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
 &lt;p&gt;With client side subscriptions, you’ll use apollo with
@@ -1682,5 +1640,252 @@ the great people I met. Till next time!&lt;/p&gt;
 <category term="paris" />
 <category term="france" />
 <summary>As I stared at the partially cloudy Parisian sky from my seat at Gare du Nord, I had a chance to reflect on the week that was. 4 days jam packed with javascript and react from morning till night followed by socialising afterwards (my fave), it’s definitely not for the faint-hearted. I admit I was a little overwhelmed by the intensity of the schedule.</summary>
+</entry>
+<entry>
+<title>Change marker image onPress in react-native-maps</title>
+<link href="http://reactjunkie.com/react-native-maps-change-marker-image-onpress/" rel="alternate" type="text/html" title="Change marker image onPress in react-native-maps" />
+<published>2017-04-25T09:30:00+10:00</published>
+<updated>2017-04-25T09:30:00+10:00</updated>
+<id>http://reactjunkie.com/react-native-maps-change-marker-image-onpress</id>
+<content type="html" xml:base="http://reactjunkie.com/react-native-maps-change-marker-image-onpress/">&lt;p&gt;Recently I started a new pet project which involves maps and markers on ios and android. Of course I started
+this new project in react native. I was expecting a somewhat challenging times ahead because it has been
+a few months since I last did react native development. The landscape has definitely improved, and I feel
+so fortunate to be a javascript developer at this present moment because of awesome tools like react-native
+at our disposal. The possibilities are truly endless.&lt;/p&gt;
+
+&lt;p&gt;Airbnb has open sourced &lt;a href=&quot;https://github.com/airbnb/react-native-maps&quot; target=&quot;_blank&quot;&gt;react-native-maps&lt;/a&gt; which 
+made it so easy to integrate mapping capabilities with your app. There are steps to follow to set it all up but 
+it’s not that hard.&lt;/p&gt;
+
+&lt;p&gt;All the code in this blog are available on &lt;a href=&quot;https://github.com/yusinto/react-native-map-markers&quot; target=&quot;_blank&quot;&gt;github&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-problem&quot;&gt;The problem&lt;/h2&gt;
+&lt;p&gt;Need to display custom map markers on react-native-maps. Then, onPress of a 
+marker, change that marker image so the user can see it has 
+been selected. The problem is there is no direct way to get the ref of 
+the selected marker. Even if there is, there is no setImage method to
+change the marker image.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-solution&quot;&gt;The solution&lt;/h2&gt;
+&lt;p&gt;Out of the box, there’s already an onPress event handler with MapView.Marker
+which is a good starting point. We will use this along with the ref and 
+image props (also supported out of the box) to solve our problem.&lt;/p&gt;
+
+&lt;h2 id=&quot;are-you-done-talking-show-me-some-code&quot;&gt;Are you done talking? Show me some code!&lt;/h2&gt;
+&lt;p&gt;So first things first, you need to install and link react-native-maps:&lt;/p&gt;
+
+&lt;p&gt;{% highlight shell %}
+# stick with 0.13.0 to avoid unresolved issues in ^0.14.0
+yarn add react-native-maps@0.13.0
+{% endhighlight %}
+then link it
+{% highlight shell %}
+react-native link react-native-maps
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;&lt;b&gt;GOTCHA&lt;/b&gt; react-native-maps requires babel-plugin-module-resolver as well
+otherwise you’ll get this error: Unknown plugin module-resolver. This is a bug
+which should be fixed in a later version.&lt;/p&gt;
+
+&lt;p&gt;{% highlight shell %}
+yarn add babel-plugin-module-resolver
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;Then we can write some code to render a basic map like this:&lt;/p&gt;
+
+&lt;p&gt;{% highlight javascript %}
+import React, { Component } from ‘react’;
+import {AppRegistry, StyleSheet, View} from ‘react-native’;
+import MapView from ‘react-native-maps’;&lt;/p&gt;
+
+&lt;p&gt;export default class MapMarkers extends Component {
+  state = {
+    region: {
+      latitude: 1,
+      longitude: 1,
+      latitudeDelta: 0.0043, // hardcode zoom levels just for example
+      longitudeDelta: 0.0034,
+    },
+  };&lt;/p&gt;
+
+&lt;p&gt;componentDidMount() {
+    navigator.geolocation.getCurrentPosition(
+      position =&amp;gt; this.setState({
+        region: {
+          …this.state.region,
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        }
+      }),
+      error =&amp;gt; alert(JSON.stringify(error)), {
+        enableHighAccuracy: true,
+        timeout: 20000,
+        maximumAge: 1000
+      }
+    );
+  }&lt;/p&gt;
+
+&lt;p&gt;// note that you need to style the map, otherwise you’ll get
+  // a blank screen
+  render() {
+    return (
+      &amp;lt;View style={styles.root}&amp;gt;
+        &amp;lt;MapView style={styles.map}
+                 showsUserLocation={true}
+                 followsUserLocation={true}
+                 initialRegion={this.state.region}
+        /&amp;gt;
+      &amp;lt;/View&amp;gt;
+    );
+  }
+}&lt;/p&gt;
+
+&lt;p&gt;const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    justifyContent: ‘center’,
+    alignItems: ‘center’,
+  },
+  map: {
+    position: ‘absolute’,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+});&lt;/p&gt;
+
+&lt;p&gt;AppRegistry.registerComponent(‘mapMarkers’, () =&amp;gt; MapMarkers);&lt;/p&gt;
+
+&lt;p&gt;{% endhighlight %}&lt;/p&gt;
+
+&lt;h2 id=&quot;ios-simulator-setup&quot;&gt;iOS Simulator Setup&lt;/h2&gt;
+&lt;p&gt;Before you run this in the simulator, you’ll need to set a custom location
+in the ios simulator. We’ll only be demoing on ios only for this blog.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/simulator_location_menu.png&quot; alt=&quot;Simulator Location Menu&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Set the custom location to Cafe Sydney -33.861924, 151.210891. If you haven’t
+been, you have to! It’s an awesome restaurant!&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/custom_location.png&quot; alt=&quot;Set Custom Location&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;run-the-project&quot;&gt;Run the project&lt;/h2&gt;
+
+&lt;p&gt;{% highlight shell %}
+react-native run-ios
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;You should see a map view with the user location set to Cafe Sydney in Australia.
+Now let’s add a few markers.&lt;/p&gt;
+
+&lt;p&gt;{% highlight js%}
+// Add these at the top of the file, straight after the imports
+const RESTAURANTS = [
+  {
+    key: ‘Cafe Sydney’,
+    title: ‘Cafe Sydney’,
+    description: ‘Customs House, 31 Alfred St, Sydney NSW 2000’,
+    latLong: {
+      latitude: -33.861924,
+      longitude: 151.210891,
+    },
+  },
+  {
+    key: ‘Four Frogs Creperie’,
+    title: ‘Four Frogs Creperie’,
+    description: ‘1 Macquarie Pl, Sydney NSW 2000’,
+    latLong: {
+      latitude: -33.861755,
+      longitude: 151.209941,
+    },
+  },
+  {
+    key: ‘Tapavino’,
+    title: ‘Tapavino’,
+    description: ‘6 Bulletin Pl, Sydney NSW 2000’,
+    latLong: {
+      latitude: -33.862512,
+      longitude: 151.209490,
+    },
+  },
+];&lt;/p&gt;
+
+&lt;p&gt;// then modify your render method to look like this
+  render() {
+    return (
+      &amp;lt;View style={styles.root}&amp;gt;
+        &amp;lt;MapView style={styles.map}
+                 showsUserLocation={true}
+                 followsUserLocation={true}
+                 initialRegion={this.state.region}
+        &amp;gt;
+          {
+            RESTAURANTS.map((m, i) =&amp;gt;
+              &amp;lt;MapView.Marker
+                coordinate={m.latLong}
+                title={m.title}
+                description={m.description}
+                key={&lt;code class=&quot;highlighter-rouge&quot;&gt;marker-${i}&lt;/code&gt;}
+              /&amp;gt;
+            )
+          }
+        &amp;lt;/MapView&amp;gt;
+      &amp;lt;/View&amp;gt;
+    );
+  }
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;You should see 3 markers on the map. Now we want to use a custom image 
+for our marker. MapView has an image prop we can set so that’s easy. 
+Then onPress of a marker, we want to change this image to a different 
+one to show the user that it has been selected. Again MapView has an 
+onPress prop which we can use to set a custom callback when a marker gets pressed.&lt;/p&gt;
+
+&lt;p&gt;Here’s the trick, onpress of a marker, we have to pass the index of the selected
+marker and save that to state. Then on the image prop, we can inspect
+if the marker being rendered matches the selected index in state, and use
+a different image if so.&lt;/p&gt;
+
+&lt;p&gt;{% highlight js%}
+// At the top of the file after imports, we require our marker images
+const marker = require(‘./assets/images/marker.png’);
+const selectedMarker = require(‘./assets/images/marker-selected.png’);&lt;/p&gt;
+
+&lt;p&gt;// Then in our class
+onPressMarker(e, index) {
+    this.setState({selectedMarkerIndex: index});
+}&lt;/p&gt;
+
+&lt;p&gt;// Then in our render method, we specify onPress and image props.
+// For brevity, I only include the relevant bits of code here
+RESTAURANTS.map((m, i) =&amp;gt;
+  &amp;lt;MapView.Marker
+    coordinate={m.latLong}
+    title={m.title}
+    description={m.description}
+    key={&lt;code class=&quot;highlighter-rouge&quot;&gt;marker-${i}&lt;/code&gt;}
+    onPress={(e) =&amp;gt; this.onPressMarker(e, i)}
+    image={this.state.selectedMarkerIndex === i ? selectedMarker : marker} // this is the crux of the blog
+  /&amp;gt;
+)
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;That’s it!&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;Check out the &lt;a href=&quot;https://github.com/yusinto/react-native-map-markers&quot; target=&quot;_blank&quot;&gt;complete code&lt;/a&gt; on 
+github. Let me know if this helps!&lt;/p&gt;
+
+&lt;hr /&gt;
+</content>
+<category term="react" />
+<category term="native" />
+<category term="maps" />
+<category term="change" />
+<category term="marker" />
+<category term="image" />
+<category term="onpress" />
+<summary>Recently I started a new pet project which involves maps and markers on ios and android. Of course I startedthis new project in react native. I was expecting a somewhat challenging times ahead because it has beena few months since I last did react native development. The landscape has definitely improved, and I feelso fortunate to be a javascript developer at this present moment because of awesome tools like react-nativeat our disposal. The possibilities are truly endless.</summary>
 </entry>
 </feed>
