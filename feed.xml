@@ -3,16 +3,60 @@
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
 <link href="http://reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
 <link href="http://reactjunkie.com/" rel="alternate" type="text/html" />
-<updated>2018-03-03T17:01:31+11:00</updated>
+<updated>2018-03-29T10:36:44+11:00</updated>
 <id>http://reactjunkie.com/</id>
 <title>React Junkie - Yusinto Ngadiman&#39;s Blog</title>
+<entry>
+<title>Javascript Lessons: toJSON and valueOf</title>
+<link href="http://reactjunkie.com/js-lessons-tojson-valueof/" rel="alternate" type="text/html" title="Javascript Lessons: toJSON and valueOf " />
+<published>2018-03-28T07:30:00+11:00</published>
+<updated>2018-03-28T07:30:00+11:00</updated>
+<id>http://reactjunkie.com/js-lessons-tojson-valueof</id>
+<content type="html" xml:base="http://reactjunkie.com/js-lessons-tojson-valueof/">&lt;h2 id=&quot;tojson&quot;&gt;toJSON()&lt;/h2&gt;
+&lt;p&gt;If you need a custom output when json stringifying your object, you can define
+a function called toJSON() which will be invoked automatically by
+JSON.stringify():&lt;/p&gt;
+
+&lt;p data-height=&quot;376&quot; data-theme-id=&quot;dark&quot; data-slug-hash=&quot;KoZmLa&quot; data-default-tab=&quot;js,result&quot; data-user=&quot;yusinto&quot; data-embed-version=&quot;2&quot; data-pen-title=&quot;Javascript Lessons&quot; class=&quot;codepen&quot;&gt;See the Pen &lt;a href=&quot;https://codepen.io/yusinto/pen/KoZmLa/&quot;&gt;Javascript Lessons&lt;/a&gt; by Yusinto Ngadiman (&lt;a href=&quot;https://codepen.io/yusinto&quot;&gt;&lt;a href=&quot;https://github.com/yusinto&quot; class=&quot;user-mention&quot;&gt;@yusinto&lt;/a&gt;&lt;/a&gt;) on &lt;a href=&quot;https://codepen.io&quot;&gt;CodePen&lt;/a&gt;.&lt;/p&gt;
+&lt;script async=&quot;&quot; src=&quot;https://static.codepen.io/assets/embed/ei.js&quot;&gt;&lt;/script&gt;
+
+&lt;p&gt;Without the custom toJSON() implementation, the code above will use the default
+implementation:&lt;/p&gt;
+
+&lt;p&gt;{% highlight json %}
+{“firstName”:”Yus”,”lastName”:”Ng”}
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h2 id=&quot;valueof&quot;&gt;valueOf()&lt;/h2&gt;
+&lt;p&gt;Object.prototype has a built-in valueOf method which returns the primitive value
+of the object. You can override this method to return a custom primitive value
+for your object:&lt;/p&gt;
+
+&lt;p data-height=&quot;372&quot; data-theme-id=&quot;dark&quot; data-slug-hash=&quot;YaYQyo&quot; data-default-tab=&quot;js,result&quot; data-user=&quot;yusinto&quot; data-embed-version=&quot;2&quot; data-pen-title=&quot;Javascript Lessons: valueOf&quot; class=&quot;codepen&quot;&gt;See the Pen &lt;a href=&quot;https://codepen.io/yusinto/pen/YaYQyo/&quot;&gt;Javascript Lessons: valueOf&lt;/a&gt; by Yusinto Ngadiman (&lt;a href=&quot;https://codepen.io/yusinto&quot;&gt;&lt;a href=&quot;https://github.com/yusinto&quot; class=&quot;user-mention&quot;&gt;@yusinto&lt;/a&gt;&lt;/a&gt;) on &lt;a href=&quot;https://codepen.io&quot;&gt;CodePen&lt;/a&gt;.&lt;/p&gt;
+&lt;script async=&quot;&quot; src=&quot;https://static.codepen.io/assets/embed/ei.js&quot;&gt;&lt;/script&gt;
+
+&lt;p&gt;The override allows us to perform arithmetic with our object. Without the override,
+the valueOf myCar will be NaN (Not-a-Number).&lt;/p&gt;
+
+&lt;hr /&gt;
+</content>
+<category term="javascript" />
+<category term="tojson" />
+<category term="valueof" />
+<category term="json" />
+<category term="stringify" />
+<category term="lessons" />
+<summary>toJSON()If you need a custom output when json stringifying your object, you can definea function called toJSON() which will be invoked automatically byJSON.stringify():</summary>
+</entry>
 <entry>
 <title>Docker is dead long live Kubernetes</title>
 <link href="http://reactjunkie.com/docker-is-dead/" rel="alternate" type="text/html" title="Docker is dead long live Kubernetes" />
 <published>2018-02-28T07:30:00+11:00</published>
 <updated>2018-02-28T07:30:00+11:00</updated>
 <id>http://reactjunkie.com/docker-is-dead</id>
-<content type="html" xml:base="http://reactjunkie.com/docker-is-dead/">&lt;p&gt;Kubernetes rocks. Kubernetes engine to be exact. I was so inspired by Kelsey Hightower’s
+<content type="html" xml:base="http://reactjunkie.com/docker-is-dead/">&lt;p&gt;&lt;strong&gt;Update 22 Mar 2018&lt;/strong&gt;: Fixed cloudbuild.yaml to generate a docker tag every time otherwise kubernetes does not detect changes.&lt;/p&gt;
+
+&lt;p&gt;Kubernetes rocks. Kubernetes engine to be exact. I was so inspired by Kelsey Hightower’s
 &lt;a href=&quot;https://www.youtube.com/watch?v=kOa_llowQ1c&amp;amp;feature=youtu.be&quot; target=&quot;_blank&quot;&gt;presentation&lt;/a&gt; at KubeCon 2017 I
 spent the next 2 weeks migrating my entire pipeline from Jenkins/AWS/Terraform to Google Cloud Platform (GCP for short) 
 and the Kubernetes Engine. It’s the best decision I have ever made.&lt;/p&gt;
@@ -39,7 +83,7 @@ should be able to open your browser and run the code you just pushed in this wel
 &lt;/ol&gt;
 
 &lt;h2 id=&quot;step-1-create-a-kubernetes-cluster&quot;&gt;Step 1: Create a Kubernetes cluster&lt;/h2&gt;
-&lt;p&gt;Jump into google cloud console and under the main menu, go to &lt;strong&gt;Compute -&amp;gt; Kubernetes Engine -&amp;gt; Kubernetes clusters&lt;/strong&gt; and
+&lt;p&gt;Jump into google cloud console and under the main menu, go to Compute -&amp;gt; Kubernetes Engine -&amp;gt; Kubernetes clusters and
 click on Create Cluster. You’ll see a screen like below, you only need to touch 3 fields:&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/images/create-cluster.png&quot; alt=&quot;Create Kubernetes cluster&quot; /&gt;&lt;/p&gt;
@@ -63,7 +107,7 @@ some time for google to create your cluster because it has to provision the node
 the build job.&lt;/p&gt;
 
 &lt;h2 id=&quot;step-2-create-a-build-trigger&quot;&gt;Step 2: Create a build trigger&lt;/h2&gt;
-&lt;p&gt;In the console menu, go to &lt;strong&gt;Tools -&amp;gt; Container Registry -&amp;gt; Build triggers&lt;/strong&gt;. Add a new trigger. Select your git source 
+&lt;p&gt;In the console menu, go to Tools -&amp;gt; Container Registry -&amp;gt; Build triggers. Add a new trigger. Select your git source
 (I use github) and repo and authorise container builder to access it. Then you’ll get to the
 Edit Trigger page like below:&lt;/p&gt;
 
@@ -81,7 +125,7 @@ cover that in a future post.&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
     &lt;p&gt;Set a regex to match the feature branch names. By convention I enforce the following convention for features:
-&lt;strong&gt;feature-[JIRA_TICKET_NUMBER]-description&lt;/strong&gt;. All the developers follow this naming convention when they create a new 
+feature-[JIRA_TICKET_NUMBER]-description. All the developers follow this naming convention when they create a new
 feature branch. Once a convention is in place, you can set a regex expression here to match your feature branches.&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
@@ -96,32 +140,32 @@ here is a container running in its own shell. For our demo, we’ll use the clou
 
 &lt;script src=&quot;https://gist.github.com/yusinto/3922f40d0b8d0241b6c6ead1a9aa8f3f.js&quot;&gt;&lt;/script&gt;
 
-&lt;p&gt;There are 3 build steps in our &lt;em&gt;cloudbuild.yaml&lt;/em&gt; file. Each step has a &lt;strong&gt;name&lt;/strong&gt; and and an &lt;strong&gt;id&lt;/strong&gt;. The &lt;strong&gt;name&lt;/strong&gt; field refers to a 
+&lt;p&gt;There are 3 build steps in our cloudbuild.yaml file. Each step has a name and and an id. The name field refers to a
 docker image that the build step will pull and run to execute the step. Container builder supports a &lt;a href=&quot;https://github.com/GoogleCloudPlatform/cloud-builders&quot; target=&quot;_blank&quot;&gt;common set of builder
 images&lt;/a&gt; you can use as build steps. There are also &lt;a href=&quot;https://github.com/GoogleCloudPlatform/cloud-builders-community&quot; target=&quot;_blank&quot;&gt;community
 images&lt;/a&gt;. In this example we’ll only
 use google builder steps because it’s more than sufficient for our needs.&lt;/p&gt;
 
-&lt;p&gt;The &lt;strong&gt;id&lt;/strong&gt; field is optional but useful to specify because it will be displayed in the build logs. Otherwise you’ll see the 
-&lt;strong&gt;name&lt;/strong&gt; field instead, which is not as informative. Also by specifying an id,
-you can make subsequent build steps to &lt;strong&gt;waitFor&lt;/strong&gt; this build step so those child steps can run concurrently. Speed up baby! So cool!&lt;/p&gt;
+&lt;p&gt;The id field is optional but useful to specify because it will be displayed in the build logs. Otherwise you’ll see the
+name field instead, which is not as informative. Also by specifying an id,
+you can make subsequent build steps to waitFor this build step so those child steps can run concurrently. Speed up baby! So cool!&lt;/p&gt;
 
-&lt;p&gt;We build our docker image in the first step. By specifying &lt;strong&gt;gcr.io/cloud-builders/docker&lt;/strong&gt;, container builder
-will pull that image and run a docker container running the docker command. We’ll pass the build arguments to this 
-docker command like we would in a terminal. In the same fashion, the second step pushes the image we just created.
-These steps are equivalent to:&lt;/p&gt;
+&lt;p&gt;In the first step, we generate a random tag (based on an md5 hash of the current timestamp) for our docker image. Don’t always tag
+your images as latest because if the tag is unchanged, kubernetes won’t be able to detect that the image has been updated
+and won’t update your pods. We output the md5 hash to a text file in the checkout directory. The checkout directory
+persists across steps so we can access this text file later in subsequent steps.&lt;/p&gt;
 
-&lt;p&gt;{% highlight bash %}
-docker build -t gcr.io/gke-playground/some-branch-name:latest .
-docker push gcr.io/gke-playground/some-branch-name:latest
-{% endhighlight %}&lt;/p&gt;
+&lt;p&gt;In the second step we build and push our docker image. We get the md5 hash from step 1 above and save it
+to a shell variable. We can then use this to build and push our docker image.&lt;/p&gt;
+
+&lt;p&gt;Now we are ready to deploy our image!&lt;/p&gt;
 
 &lt;h2 id=&quot;step-4-deployment-templateyaml&quot;&gt;Step 4: deployment-template.yaml&lt;/h2&gt;
-&lt;p&gt;Let’s take a look at the third step which runs &lt;strong&gt;kubectl&lt;/strong&gt;. This step deploys our docker image to the Kubernetes cluster. Note
+&lt;p&gt;Let’s take a look at the third step which runs kubectl. This step deploys our docker image to the Kubernetes cluster. Note
 that this step runs the &lt;strong&gt;gcr.io/cloud-builders/kubectl&lt;/strong&gt; image, but we specified the
-entrypoint as &lt;strong&gt;bash&lt;/strong&gt; meaning that the container will run the bash command when it starts rather
-than &lt;strong&gt;kubectl&lt;/strong&gt;. This is a useful technique if you need to pre-run some commands prior to executing
-the main command. We’ll come back to this in a minute after inspecting &lt;strong&gt;deployment-template.yaml&lt;/strong&gt;:&lt;/p&gt;
+entrypoint as bash meaning that the container will run the bash command when it starts rather
+than kubectl. This is a useful technique if you need to pre-run some commands prior to executing
+the main command. We’ll come back to this in a minute after inspecting deployment-template.yaml:&lt;/p&gt;
 
 &lt;script src=&quot;https://gist.github.com/yusinto/9536fa7dcd28106efee7f8b217a9d06a.js&quot;&gt;&lt;/script&gt;
 
@@ -136,15 +180,16 @@ the main command. We’ll come back to this in a minute after inspecting &lt;str
   &lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;We use a placeholder string &lt;strong&gt;_BRANCH_NAME&lt;/strong&gt; which gets replaced by the real &lt;strong&gt;$BRANCH_NAME&lt;/strong&gt; using the &lt;strong&gt;sed&lt;/strong&gt; command
+&lt;p&gt;We use a placeholder string _BRANCH_NAME and _TAG which gets replaced by the real $BRANCH_NAME and our md5 hash using the sed command
 in our build step:&lt;/p&gt;
 
 &lt;p&gt;{% highlight bash %}
-sed -e “s|_BRANCH_NAME|$BRANCH_NAME|g” deployment-template.yaml | tee deployment.yaml
+sed -e “s|_BRANCH_NAME|$BRANCH_NAME|g” -e “s|_TAG|$tag|g” deployment-template.yaml | tee deployment.yaml
 {% endhighlight %}&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;$BRANCH_NAME&lt;/strong&gt; is injected by the Container Builder as an environment variable to all build steps. This is the git 
-branch name that triggers the build. There are &lt;a href=&quot;https://cloud.google.com/container-builder/docs/configuring-builds/substitute-variable-values&quot; target=&quot;_blank&quot;&gt;others&lt;/a&gt; 
+&lt;p&gt;Like in the previous docker-build-push step, we get the tag from the md5 hash from step 1. $BRANCH_NAME is injected by 
+the Container Builder as an environment variable to all build steps. This is the git branch name that triggers the build. 
+There are &lt;a href=&quot;https://cloud.google.com/container-builder/docs/configuring-builds/substitute-variable-values&quot; target=&quot;_blank&quot;&gt;other environment variables&lt;/a&gt; 
 you can use.&lt;/p&gt;
 
 &lt;p&gt;This produces a new &lt;code class=&quot;highlighter-rouge&quot;&gt;deployment.yaml&lt;/code&gt; which gets used by &lt;code class=&quot;highlighter-rouge&quot;&gt;kubectl&lt;/code&gt; for deployment:&lt;/p&gt;
@@ -155,18 +200,10 @@ kubectl apply -f deployment.yaml
 
 &lt;p&gt;This way, we can deploy each branch to its own infrastructure mirroring our git branching strategy.&lt;/p&gt;
 
-&lt;h2 id=&quot;step-5-whats-this-images-thing-at-the-end&quot;&gt;Step 5: What’s this &lt;strong&gt;images&lt;/strong&gt; thing at the end?&lt;/h2&gt;
-&lt;p&gt;At the end of &lt;strong&gt;cloudbuild.yaml&lt;/strong&gt;, the &lt;strong&gt;images&lt;/strong&gt; command will push the specified docker images to the remote registry. 
-Wait a minute! Didn’t we already push our docker image in build step #2? Yes and you’d be right my observant friend (if you
-are still awake reading this long post). It is common to rely on the &lt;strong&gt;images&lt;/strong&gt; command to push our docker images rather than
-explicitly doing so through a build step. However we had to push prior to executing &lt;strong&gt;kubectl&lt;/strong&gt; so we could not rely on the
-&lt;strong&gt;images&lt;/strong&gt; command which runs at the &lt;strong&gt;end&lt;/strong&gt; of all build steps. So what’s the point of having the &lt;strong&gt;images&lt;/strong&gt; command in the yaml
-at all? If you pushed an image explicitly in a build step AND specify the &lt;strong&gt;images&lt;/strong&gt; command, you will see the image pushed in the
-build results in the console. If you don’t specify the &lt;strong&gt;images&lt;/strong&gt; command, you won’t see it in the build results. Simple!&lt;/p&gt;
-
-&lt;h2 id=&quot;step-6-test-the-app&quot;&gt;Step 6: Test the app!&lt;/h2&gt;
-&lt;p&gt;It takes a while for google cloud to assign an external ip to our service. You can check under &lt;strong&gt;Compute -&amp;gt; Kubernetes Engine -&amp;gt; Discovery &amp;amp; load balancing&lt;/strong&gt;.
-The &lt;em&gt;Endpoints&lt;/em&gt; column should display a valid external ip when it’s ready. Then you can hit that link and your app should be running!&lt;/p&gt;
+&lt;h2 id=&quot;step-5-test-the-app&quot;&gt;Step 5: Test the app!&lt;/h2&gt;
+&lt;p&gt;Push a git commit to a feature branch and watch the magic happens! It takes a while for google cloud to assign an external 
+ip to our service. You can check under Compute -&amp;gt; Kubernetes Engine -&amp;gt; Discovery &amp;amp; load balancing. The &lt;em&gt;Endpoints&lt;/em&gt; column 
+should display a valid external ip when it’s ready. Then you can hit that link and your app should be running!&lt;/p&gt;
 
 &lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
 &lt;p&gt;Deploying my app used to involve many moving parts: Jenkins, ec2 instances, load balancers, terraform, ecs. Kubernetes Engine
@@ -195,7 +232,7 @@ You don’t want unused resources running in the cloud burning your wallet! Till
 <category term="end" />
 <category term="to" />
 <category term="end" />
-<summary>Kubernetes rocks. Kubernetes engine to be exact. I was so inspired by Kelsey Hightower’spresentation at KubeCon 2017 Ispent the next 2 weeks migrating my entire pipeline from Jenkins/AWS/Terraform to Google Cloud Platform (GCP for short) and the Kubernetes Engine. It’s the best decision I have ever made.</summary>
+<summary>Update 22 Mar 2018: Fixed cloudbuild.yaml to generate a docker tag every time otherwise kubernetes does not detect changes.</summary>
 </entry>
 <entry>
 <title>Launch Darkly, React and Redux: The Easy Way</title>
@@ -1464,7 +1501,7 @@ const updateGraphCoolCustomer = async (id, stripeCustomerId) =&amp;gt; {
 };
 {% endhighlight %}&lt;/p&gt;
 
-&lt;p&gt;The entire file is available &lt;a href=&quot;https://github.com/yusinto/functions/blob/master/stripe-create-customer-es6/src/createStripeCustomer.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;
+&lt;p&gt;The entire file is available &lt;a href=&quot;https://github.com/graphcool-examples/functions/blob/master/stripe-create-customer-es6/src/createStripeCustomer.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;
 on github.&lt;/p&gt;
 
 &lt;h2 id=&quot;step-4-deploy-and-test&quot;&gt;Step 4: Deploy and test&lt;/h2&gt;
@@ -1492,7 +1529,7 @@ for packages webtask supports.
 GOTCHA: To enable latest es6 features and async await, we have to include two npm packages: babel-polyfill and regenerator-runtime/runtime
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;If you are interested, you can check the complete webpack config &lt;a href=&quot;https://github.com/yusinto/functions/blob/master/stripe-create-customer-es6/webpack.config.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;If you are interested, you can check the complete webpack config &lt;a href=&quot;https://github.com/graphcool-examples/functions/blob/master/stripe-create-customer-es6/webpack.config.js&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
 
 &lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
 &lt;p&gt;With client side subscriptions, you’ll use apollo with
@@ -1645,252 +1682,5 @@ the great people I met. Till next time!&lt;/p&gt;
 <category term="paris" />
 <category term="france" />
 <summary>As I stared at the partially cloudy Parisian sky from my seat at Gare du Nord, I had a chance to reflect on the week that was. 4 days jam packed with javascript and react from morning till night followed by socialising afterwards (my fave), it’s definitely not for the faint-hearted. I admit I was a little overwhelmed by the intensity of the schedule.</summary>
-</entry>
-<entry>
-<title>Change marker image onPress in react-native-maps</title>
-<link href="http://reactjunkie.com/react-native-maps-change-marker-image-onpress/" rel="alternate" type="text/html" title="Change marker image onPress in react-native-maps" />
-<published>2017-04-25T09:30:00+10:00</published>
-<updated>2017-04-25T09:30:00+10:00</updated>
-<id>http://reactjunkie.com/react-native-maps-change-marker-image-onpress</id>
-<content type="html" xml:base="http://reactjunkie.com/react-native-maps-change-marker-image-onpress/">&lt;p&gt;Recently I started a new pet project which involves maps and markers on ios and android. Of course I started
-this new project in react native. I was expecting a somewhat challenging times ahead because it has been
-a few months since I last did react native development. The landscape has definitely improved, and I feel
-so fortunate to be a javascript developer at this present moment because of awesome tools like react-native
-at our disposal. The possibilities are truly endless.&lt;/p&gt;
-
-&lt;p&gt;Airbnb has open sourced &lt;a href=&quot;https://github.com/airbnb/react-native-maps&quot; target=&quot;_blank&quot;&gt;react-native-maps&lt;/a&gt; which 
-made it so easy to integrate mapping capabilities with your app. There are steps to follow to set it all up but 
-it’s not that hard.&lt;/p&gt;
-
-&lt;p&gt;All the code in this blog are available on &lt;a href=&quot;https://github.com/yusinto/react-native-map-markers&quot; target=&quot;_blank&quot;&gt;github&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h2 id=&quot;the-problem&quot;&gt;The problem&lt;/h2&gt;
-&lt;p&gt;Need to display custom map markers on react-native-maps. Then, onPress of a 
-marker, change that marker image so the user can see it has 
-been selected. The problem is there is no direct way to get the ref of 
-the selected marker. Even if there is, there is no setImage method to
-change the marker image.&lt;/p&gt;
-
-&lt;h2 id=&quot;the-solution&quot;&gt;The solution&lt;/h2&gt;
-&lt;p&gt;Out of the box, there’s already an onPress event handler with MapView.Marker
-which is a good starting point. We will use this along with the ref and 
-image props (also supported out of the box) to solve our problem.&lt;/p&gt;
-
-&lt;h2 id=&quot;are-you-done-talking-show-me-some-code&quot;&gt;Are you done talking? Show me some code!&lt;/h2&gt;
-&lt;p&gt;So first things first, you need to install and link react-native-maps:&lt;/p&gt;
-
-&lt;p&gt;{% highlight shell %}
-# stick with 0.13.0 to avoid unresolved issues in ^0.14.0
-yarn add react-native-maps@0.13.0
-{% endhighlight %}
-then link it
-{% highlight shell %}
-react-native link react-native-maps
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;&lt;b&gt;GOTCHA&lt;/b&gt; react-native-maps requires babel-plugin-module-resolver as well
-otherwise you’ll get this error: Unknown plugin module-resolver. This is a bug
-which should be fixed in a later version.&lt;/p&gt;
-
-&lt;p&gt;{% highlight shell %}
-yarn add babel-plugin-module-resolver
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;Then we can write some code to render a basic map like this:&lt;/p&gt;
-
-&lt;p&gt;{% highlight javascript %}
-import React, { Component } from ‘react’;
-import {AppRegistry, StyleSheet, View} from ‘react-native’;
-import MapView from ‘react-native-maps’;&lt;/p&gt;
-
-&lt;p&gt;export default class MapMarkers extends Component {
-  state = {
-    region: {
-      latitude: 1,
-      longitude: 1,
-      latitudeDelta: 0.0043, // hardcode zoom levels just for example
-      longitudeDelta: 0.0034,
-    },
-  };&lt;/p&gt;
-
-&lt;p&gt;componentDidMount() {
-    navigator.geolocation.getCurrentPosition(
-      position =&amp;gt; this.setState({
-        region: {
-          …this.state.region,
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        }
-      }),
-      error =&amp;gt; alert(JSON.stringify(error)), {
-        enableHighAccuracy: true,
-        timeout: 20000,
-        maximumAge: 1000
-      }
-    );
-  }&lt;/p&gt;
-
-&lt;p&gt;// note that you need to style the map, otherwise you’ll get
-  // a blank screen
-  render() {
-    return (
-      &amp;lt;View style={styles.root}&amp;gt;
-        &amp;lt;MapView style={styles.map}
-                 showsUserLocation={true}
-                 followsUserLocation={true}
-                 initialRegion={this.state.region}
-        /&amp;gt;
-      &amp;lt;/View&amp;gt;
-    );
-  }
-}&lt;/p&gt;
-
-&lt;p&gt;const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    justifyContent: ‘center’,
-    alignItems: ‘center’,
-  },
-  map: {
-    position: ‘absolute’,
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
-});&lt;/p&gt;
-
-&lt;p&gt;AppRegistry.registerComponent(‘mapMarkers’, () =&amp;gt; MapMarkers);&lt;/p&gt;
-
-&lt;p&gt;{% endhighlight %}&lt;/p&gt;
-
-&lt;h2 id=&quot;ios-simulator-setup&quot;&gt;iOS Simulator Setup&lt;/h2&gt;
-&lt;p&gt;Before you run this in the simulator, you’ll need to set a custom location
-in the ios simulator. We’ll only be demoing on ios only for this blog.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/images/simulator_location_menu.png&quot; alt=&quot;Simulator Location Menu&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Set the custom location to Cafe Sydney -33.861924, 151.210891. If you haven’t
-been, you have to! It’s an awesome restaurant!&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/images/custom_location.png&quot; alt=&quot;Set Custom Location&quot; /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;run-the-project&quot;&gt;Run the project&lt;/h2&gt;
-
-&lt;p&gt;{% highlight shell %}
-react-native run-ios
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;You should see a map view with the user location set to Cafe Sydney in Australia.
-Now let’s add a few markers.&lt;/p&gt;
-
-&lt;p&gt;{% highlight js%}
-// Add these at the top of the file, straight after the imports
-const RESTAURANTS = [
-  {
-    key: ‘Cafe Sydney’,
-    title: ‘Cafe Sydney’,
-    description: ‘Customs House, 31 Alfred St, Sydney NSW 2000’,
-    latLong: {
-      latitude: -33.861924,
-      longitude: 151.210891,
-    },
-  },
-  {
-    key: ‘Four Frogs Creperie’,
-    title: ‘Four Frogs Creperie’,
-    description: ‘1 Macquarie Pl, Sydney NSW 2000’,
-    latLong: {
-      latitude: -33.861755,
-      longitude: 151.209941,
-    },
-  },
-  {
-    key: ‘Tapavino’,
-    title: ‘Tapavino’,
-    description: ‘6 Bulletin Pl, Sydney NSW 2000’,
-    latLong: {
-      latitude: -33.862512,
-      longitude: 151.209490,
-    },
-  },
-];&lt;/p&gt;
-
-&lt;p&gt;// then modify your render method to look like this
-  render() {
-    return (
-      &amp;lt;View style={styles.root}&amp;gt;
-        &amp;lt;MapView style={styles.map}
-                 showsUserLocation={true}
-                 followsUserLocation={true}
-                 initialRegion={this.state.region}
-        &amp;gt;
-          {
-            RESTAURANTS.map((m, i) =&amp;gt;
-              &amp;lt;MapView.Marker
-                coordinate={m.latLong}
-                title={m.title}
-                description={m.description}
-                key={&lt;code class=&quot;highlighter-rouge&quot;&gt;marker-${i}&lt;/code&gt;}
-              /&amp;gt;
-            )
-          }
-        &amp;lt;/MapView&amp;gt;
-      &amp;lt;/View&amp;gt;
-    );
-  }
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;You should see 3 markers on the map. Now we want to use a custom image 
-for our marker. MapView has an image prop we can set so that’s easy. 
-Then onPress of a marker, we want to change this image to a different 
-one to show the user that it has been selected. Again MapView has an 
-onPress prop which we can use to set a custom callback when a marker gets pressed.&lt;/p&gt;
-
-&lt;p&gt;Here’s the trick, onpress of a marker, we have to pass the index of the selected
-marker and save that to state. Then on the image prop, we can inspect
-if the marker being rendered matches the selected index in state, and use
-a different image if so.&lt;/p&gt;
-
-&lt;p&gt;{% highlight js%}
-// At the top of the file after imports, we require our marker images
-const marker = require(‘./assets/images/marker.png’);
-const selectedMarker = require(‘./assets/images/marker-selected.png’);&lt;/p&gt;
-
-&lt;p&gt;// Then in our class
-onPressMarker(e, index) {
-    this.setState({selectedMarkerIndex: index});
-}&lt;/p&gt;
-
-&lt;p&gt;// Then in our render method, we specify onPress and image props.
-// For brevity, I only include the relevant bits of code here
-RESTAURANTS.map((m, i) =&amp;gt;
-  &amp;lt;MapView.Marker
-    coordinate={m.latLong}
-    title={m.title}
-    description={m.description}
-    key={&lt;code class=&quot;highlighter-rouge&quot;&gt;marker-${i}&lt;/code&gt;}
-    onPress={(e) =&amp;gt; this.onPressMarker(e, i)}
-    image={this.state.selectedMarkerIndex === i ? selectedMarker : marker} // this is the crux of the blog
-  /&amp;gt;
-)
-{% endhighlight %}&lt;/p&gt;
-
-&lt;p&gt;That’s it!&lt;/p&gt;
-
-&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
-&lt;p&gt;Check out the &lt;a href=&quot;https://github.com/yusinto/react-native-map-markers&quot; target=&quot;_blank&quot;&gt;complete code&lt;/a&gt; on 
-github. Let me know if this helps!&lt;/p&gt;
-
-&lt;hr /&gt;
-</content>
-<category term="react" />
-<category term="native" />
-<category term="maps" />
-<category term="change" />
-<category term="marker" />
-<category term="image" />
-<category term="onpress" />
-<summary>Recently I started a new pet project which involves maps and markers on ios and android. Of course I startedthis new project in react native. I was expecting a somewhat challenging times ahead because it has beena few months since I last did react native development. The landscape has definitely improved, and I feelso fortunate to be a javascript developer at this present moment because of awesome tools like react-nativeat our disposal. The possibilities are truly endless.</summary>
 </entry>
 </feed>

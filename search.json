@@ -1,6 +1,13 @@
 [
   
     {
+      "title"    : "Javascript Lessons: toJSON and valueOf ",
+      "tags"     : "javascript, tojson, valueof, json, stringify, and lessons",
+      "url"      : "/js-lessons-tojson-valueof/",
+      "date"     : "28 Mar 2018"
+    } ,
+  
+    {
       "title"    : "Docker is dead long live Kubernetes",
       "tags"     : "docker, kubernetes, engine, google, cloud, platform, ci, cd, continuous, deployment, integration, build, pipeline, end, to, and end",
       "url"      : "/docker-is-dead/",
