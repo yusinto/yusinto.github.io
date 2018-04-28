@@ -3,9 +3,136 @@
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
 <link href="http://reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
 <link href="http://reactjunkie.com/" rel="alternate" type="text/html" />
-<updated>2018-04-06T10:29:27+10:00</updated>
+<updated>2018-04-28T21:07:50+10:00</updated>
 <id>http://reactjunkie.com/</id>
 <title>React Junkie - Yusinto Ngadiman&#39;s Blog</title>
+<entry>
+<title>Relay Schema Stitching with Pesisted Queries</title>
+<link href="http://reactjunkie.com/relay-schema-stitching/" rel="alternate" type="text/html" title="Relay Schema Stitching with Pesisted Queries" />
+<published>2018-04-27T07:30:00+10:00</published>
+<updated>2018-04-27T07:30:00+10:00</updated>
+<id>http://reactjunkie.com/relay-schema-stitching</id>
+<content type="html" xml:base="http://reactjunkie.com/relay-schema-stitching/">&lt;p&gt;Schema stitching was introduced by Apollo, so there is a general misconception that it
+only works with the apollo stack but it works with relay as well! In this blog
+I’ll show you how to stitch your relay schema with any remote graphql schema.&lt;/p&gt;
+
+&lt;p&gt;You can find the complete project in &lt;a href=&quot;https://github.com/yusinto/relay-compiler-plus/tree/master/example-stitching&quot; target=&quot;_blank&quot;&gt;github&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;goal&quot;&gt;Goal&lt;/h2&gt;
+&lt;p&gt;Given a local schema that looks like this:&lt;/p&gt;
+
+&lt;script src=&quot;https://gist.github.com/yusinto/c4c6a8f376a36f600ddb0f1f24c952df.js&quot;&gt;&lt;/script&gt;
+
+&lt;p&gt;Stitch it so that business details are coming from a remote graphql server, in this case from &lt;a href=&quot;https://eu1.prisma.sh/public-nickelwarrior-830/wendarie-prisma/dev&quot; target=&quot;_blank&quot;&gt;prisma&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;step-1-install-graphql-cli&quot;&gt;Step 1: Install graphql-cli&lt;/h2&gt;
+&lt;p&gt;We’ll use graphql cli to download the remote schema:&lt;/p&gt;
+
+&lt;p&gt;{% highlight bash %}
+yarn add -D graphql-cli
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h2 id=&quot;step-2-download-the-remote-schema&quot;&gt;Step 2: Download the remote schema&lt;/h2&gt;
+&lt;p&gt;Graphql cli looks for a .graphqlconfig.yml by default, so we’ll create that file
+and it looks like this:&lt;/p&gt;
+
+&lt;script src=&quot;https://gist.github.com/yusinto/7cfbeeac5e0b6a35dde44a72e5e1a268.js&quot;&gt;&lt;/script&gt;
+
+&lt;p&gt;In this example, our business details are hosted in &lt;a href=&quot;https://eu1.prisma.sh/public-nickelwarrior-830/wendarie-prisma/dev&quot; target=&quot;_blank&quot;&gt;prisma&lt;/a&gt; 
+but you can use any graphql endpoint. &lt;a href=&quot;https://prisma.io&quot; target=&quot;_blank&quot;&gt;Prisma&lt;/a&gt; is created by the guys from 
+graphcool, check it out if you haven’t!&lt;/p&gt;
+
+&lt;p&gt;Run the following to download the remote schema to ./remote.schema.graphql:
+{% highlight bash %}
+graphql get-schema
+{% endhighlight %}&lt;/p&gt;
+
+&lt;h2 id=&quot;step-3-stitch&quot;&gt;Step 3: Stitch&lt;/h2&gt;
+&lt;p&gt;The stitching part is standard, following &lt;a href=&quot;https://www.apollographql.com/docs/graphql-tools/schema-stitching.html&quot; target=&quot;_blank&quot;&gt;Apollo’s doco&lt;/a&gt;:&lt;/p&gt;
+
+&lt;script src=&quot;https://gist.github.com/yusinto/9ab425fc0a100f81c183e824f1405b57.js&quot;&gt;&lt;/script&gt;
+
+&lt;p&gt;&lt;strong&gt;Important bits&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Line 11: Import the remote schema we downloaded from step 2 using graphql-import. This gets
+fed into makeRemoteExecutableSchema.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Line 14: Use apollo-link to resolve remote queries! If you look at the documentation, there is
+a second option of using a fetcher. However doing this will forward the Document AST
+to the remote server instead of the query string, which breaks most graphql servers except 
+apollo-server.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Line 20: Extend the Place type to include a reference to Business, which will be resolved to
+the remote server via mergeSchemas in line 29.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Line 29: This defines the resolver for the business field. The key here is the &lt;code class=&quot;highlighter-rouge&quot;&gt;delegateToSchema&lt;/code&gt;
+method which gives you access to the current &lt;code class=&quot;highlighter-rouge&quot;&gt;Place&lt;/code&gt; being queried based on the fragment defined
+in line 30, and access to the remote schema so you can query the remote server with any queries 
+you want. In this instance, the query we want to execute on prisma is equivalent to:&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;script src=&quot;https://gist.github.com/yusinto/650e2f21fc82d8e5e07577a9683e0e76.js&quot;&gt;&lt;/script&gt;
+
+&lt;h2 id=&quot;step-4-compile&quot;&gt;Step 4: Compile&lt;/h2&gt;
+&lt;p&gt;Say we have a relay query like so:&lt;/p&gt;
+
+&lt;script src=&quot;https://gist.github.com/yusinto/44be0c2447ceb723197e3a9bbf2894c9.js&quot;&gt;&lt;/script&gt;
+
+&lt;p&gt;We’ll compile our relay queries using &lt;a href=&quot;https://github.com/yusinto/relay-compiler-plus&quot; target=&quot;_blank&quot;&gt;relay-compiler-plus&lt;/a&gt;.
+This way we’ll get schema stitching plus persisted queries for free! You can still use the standard relay-compiler,
+but you won’t get persisted queries (not yet anyway. I have submitted a &lt;a href=&quot;https://github.com/facebook/relay/pull/2354&quot; target=&quot;_blank&quot;&gt;pr&lt;/a&gt;) 
+and you can’t compile directly from graphql-js.&lt;/p&gt;
+
+&lt;p&gt;{% highlight bash %}
+yarn add -D relay-compiler-plus
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;Add the following npm command to your package.json:
+{% highlight bash %}
+“rcp”: “relay-compiler-plus –webpackConfig path/to/webpack.config.js –src src”,
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;Ensure the webpack entry is pointing to mergedSchema.js from step 3. Then run:
+{% highlight bash %}
+npm run rcp
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;This should produce the standard relay query files plus a queryMap.json file under src. You’ll see in queryMap.json that 
+the remote query exists as if it’s local!&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;It is possible to use relay and schema stitching. It is surprisingly straight forward thanks to the tools provided
+by Apollo. It is impossible to document every single step in this blog without boring everyone to death. People don’t read
+blogs more than 4 mins long these days… so perhaps it’s best to see it in action.&lt;/p&gt;
+
+&lt;p&gt;Check out the full project on &lt;a href=&quot;https://github.com/yusinto/relay-compiler-plus/tree/master/example-stitching&quot; target=&quot;_blank&quot;&gt;github&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Happy stitching!&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/loui-stitch.jpg&quot; alt=&quot;Loui stitch?&quot; /&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+</content>
+<category term="relay" />
+<category term="schema" />
+<category term="stitching" />
+<category term="graphql" />
+<category term="apollo" />
+<category term="react" />
+<category term="js" />
+<category term="javascript" />
+<category term="prisma" />
+<category term="graphcool" />
+<category term="persisted" />
+<category term="queries" />
+<summary>Schema stitching was introduced by Apollo, so there is a general misconception that itonly works with the apollo stack but it works with relay as well! In this blogI’ll show you how to stitch your relay schema with any remote graphql schema.</summary>
+</entry>
 <entry>
 <title>Javascript Lessons: toJSON and valueOf</title>
 <link href="http://reactjunkie.com/js-lessons-tojson-valueof/" rel="alternate" type="text/html" title="Javascript Lessons: toJSON and valueOf " />
@@ -1441,132 +1568,5 @@ This feels right for me. Also, you can apply the same technique to test react co
 <category term="graphql" />
 <category term="jest" />
 <summary>Graphcool is cool. Graphcool functions are even cooler. There are two types of functions:request pipeline and server side subscription. Request pipeline function gets triggeredat a specified stage of a crud request. You write custom business logic you want to executeas part of your api requests here. It is synchronous.</summary>
-</entry>
-<entry>
-<title>React Europe</title>
-<link href="http://reactjunkie.com/react-europe/" rel="alternate" type="text/html" title="React Europe" />
-<published>2017-05-20T09:30:00+10:00</published>
-<updated>2017-05-20T09:30:00+10:00</updated>
-<id>http://reactjunkie.com/react-europe</id>
-<content type="html" xml:base="http://reactjunkie.com/react-europe/">&lt;p&gt;As I stared at the partially cloudy Parisian sky from my seat at Gare du Nord, 
-I had a chance to reflect on the week that was. 4 days jam packed with 
-javascript and react from morning till night followed by socialising afterwards 
-(my fave), it’s definitely not for the faint-hearted. I admit I was a little 
-overwhelmed by the intensity of the schedule.&lt;/p&gt;
-
-&lt;h2 id=&quot;workshops&quot;&gt;Workshops&lt;/h2&gt;
-&lt;p&gt;I attended a 2-day advanced react workshop with &lt;a href=&quot;https://github.com/nikgraf&quot; target=&quot;_blank&quot;&gt;Nik Graf (serverless)&lt;/a&gt;
-and &lt;a href=&quot;https://github.com/mxstbr&quot; target=&quot;_blank&quot;&gt;Max Stoiber (styled components)&lt;/a&gt;. 
-I learnt loads about the react children api which I never really used before from Max and about
-the apollo graphql client for react from both Nik and Max. The exercises were very hands-on and realistic.
-In one exercise we had to implement a graphql backend and apollo front end for a recipe application.
-This involves setting up the graphql types, queries and mutations.&lt;/p&gt;
-
-&lt;p&gt;I am already using graphql and relay at work (qantasassure.com) so I thought this would be a piece of cake.
-Not exactly. It turns out the tools for graphql in the backend and frontend have
-evolved so much since I set it up 6 months ago, it was almost foreign to me. In a good way.
-I learnt it’s so much easier and simpler now to setup a graphql server with types and queries and mutations.
-Apollo really has done a lot of work to simplify the integration of graphql into react.&lt;/p&gt;
-
-&lt;p&gt;It’s so good to finally see the face behind the code! I am both a fan and user of serverless
-and styled components, so thanks for teaching me so much guys!&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/images/max_nik.png&quot; alt=&quot;Max Stoiber and Nik Graf&quot; /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;the-main-event&quot;&gt;The main event&lt;/h2&gt;
-&lt;p&gt;Prior to the start of the conference we heard word that Dan Abramov will not make it to Paris.
-He had some visa issues which didn’t allow him to enter Paris. Fuck. I should really ask for
-a refund.&lt;/p&gt;
-
-&lt;p&gt;Anyway the conference started with Andrew Clark (recompose) announcing the imminent release
-of react fiber (eta end of year). He’s one of the better speakers in the conference. I tend to
-pay more attention to people who use the stage and are comfortable moving about on the stage.
-The delivery style of the presentation is also important. Some speakers tend to just read off
-the screen and narrate, just the recipe to put people to sleep. Think kids and bedtime 
-story time. I expected more from all the speakers in this regard.&lt;/p&gt;
-
-&lt;p&gt;Andrew and a few others like Lee Byron, Kevin Lacker, Sunil Pai were excellent though. Part improvised 
-part narratted, I really enjoy their presentations. Sunil in particular is my favourite speaker,
-he’s really funny. His name reminds of the movie Life of Pi (of course his name is Pai, not Pi).&lt;/p&gt;
-
-&lt;p&gt;My picks:&lt;/p&gt;
-
-&lt;p&gt;&lt;b&gt;Lee Byron&lt;/b&gt; - released &lt;a href=&quot;https://facebook.github.io/relay/docs/relay-modern.html&quot; target=&quot;_blank&quot;&gt;Relay Modern v1.0&lt;/a&gt; 
-live on stage. Relay Modern now supports static queries, client side only fields and subscriptions. 
-Client side only fields mean that you can use relay to replace redux. Relay classic will still be supported in npm under
-react-relay/classic.&lt;/p&gt;
-
-&lt;p&gt;&lt;b&gt;Sunil Pai&lt;/b&gt; - author of glamour, glam and rakt. Rakt is an ambitious project which aims to umm do everything. By everything I mean
-taking care of code splitting, data fetching, inline styling (via glamour) and more. It is still not finished yet, so check
-&lt;a href=&quot;https://github.com/threepointone/rakt&quot; target=&quot;_blank&quot;&gt;Sunil’s page&lt;/a&gt; often. Sunil is my favourite speaker at the conference, he’s
-engaging, impromptu and funny. All ingredients for a captivating talk.&lt;/p&gt;
-
-&lt;p&gt;&lt;b&gt;Andrew Clarke&lt;/b&gt; - talks about React Fiber which will be released with React 16 at the end of the year. He also
-briefly talked about react portals, which are components which don’t quite fit in the dom tree like modals
-and overlays.&lt;/p&gt;
-
-&lt;p&gt;&lt;b&gt;Sarah Drasner&lt;/b&gt; - shows really cool css animations/transforms using &lt;a href=&quot;https://greensock.com/get-started-js&quot; target=&quot;_blank&quot;&gt;GreenSock&lt;/a&gt;. 
-It’s so cool and easy to use.&lt;/p&gt;
-
-&lt;p&gt;&lt;b&gt;Wix lightning talk&lt;/b&gt; - introduces &lt;a href=&quot;https://github.com/wix/detox&quot; target=&quot;_blank&quot;&gt;detox&lt;/a&gt; which is a functional 
-testing framework for react native. It’s super cool! It does grey box e2e testing of your react native apps automatically and it’s super fast!
-If you use react native you must check it out.&lt;/p&gt;
-
-&lt;p&gt;&lt;b&gt;Apollo lightning talk&lt;/b&gt; - Apollo has released a &lt;a href=&quot;https://github.com/apollographql/apollo-client-devtools&quot; target=&quot;_blank&quot;&gt;chrome devtool plugin&lt;/a&gt;
-for graphql. It runs graphiql in chrome devtools! It also has a query inspector and a store inspector. Check it out!&lt;/p&gt;
-
-&lt;p&gt;&lt;b&gt;Expo lightning talk&lt;/b&gt; - Expo has created a playground for react native at &lt;a href=&quot;http://snack.expo.io&quot; target=&quot;_blank&quot;&gt;snack.expo.io&lt;/a&gt;.
-You can run your react native code on the web without the simulator! It’s like jsfiddle for react native.&lt;/p&gt;
-
-&lt;p&gt;&lt;b&gt;Sasha Aickin&lt;/b&gt; - talks about streaming react dom to the client in chunks to boost performance. This involves chunk rendering, which is a
-technique involving breaking up a page into different chunks, each with its own html, js, css and data. Each chunk
-gets flushed to the client side separately, increasing parallelism and hence performance. Check out his github package 
-&lt;a href=&quot;https://github.com/aickin/react-dom-stream&quot; target=&quot;_blank&quot;&gt;react-dom-stream&lt;/a&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;social-insights&quot;&gt;Social Insights&lt;/h2&gt;
-&lt;p&gt;Perhaps the best lessons I learnt from the conference are not from the speakers, but from the people I met. There
-were many like me, all keen to share their views, opinions and experience and also to listen. Talking to these
-developers gave me a chance to validate some of the assumptions I make in my projects and to see the tools and 
-techniques others use in their apps.&lt;/p&gt;
-
-&lt;p&gt;These are some of the people I met and the insights I gathered from them:&lt;/p&gt;
-
-&lt;p&gt;&lt;b&gt;Dafeng Guo cofounder of strikingly&lt;/b&gt; - started strikingly with 2 other founders in YCombinator in 2012. They had 0 paying customers
-in 2012, now they have over 130 employees and a lot more customers :). I am a user of strikingly and I can’t recommend it enough. He also
-showed me strikingly’s latest wechat feature where strikingly websites now are automatically converted to wechat apps. That’s super cool!
-&lt;img src=&quot;/assets/images/dafeng.png&quot; alt=&quot;Dafeng&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;b&gt;Griffith Tchen Pan&lt;/b&gt; - works at myworkpapers.com. Started in Gold Coast Australia and now has offices in USA and London. 8 years of
- dedication and commitment to a product pays off. That’s what I learned from him.
- &lt;img src=&quot;/assets/images/griffith.png&quot; alt=&quot;Griffith&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;b&gt;Brian Christensen&lt;/b&gt; Danish guy I met at the workshop. Arguably the smartest guy in Denmark, he knows everything from docker to glam to
-elm, and does not have a CI in place at his workplace. Just kidding Brian :). He drinks a lot.
-&lt;img src=&quot;/assets/images/brian.png&quot; alt=&quot;Brian&quot; /&gt;&lt;/p&gt;
-
-&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
-&lt;p&gt;It’s not the best organised conference I’ve been for a few reasons.&lt;/p&gt;
-
-&lt;p&gt;Firstly as I mentioned above, some of the speakers weren’t really very engaging. 
-It was really tough to keep awake at times. Second the food was really really bad. 
-During the workshops, there was no protein whatsoever for lunch. It was only 
-salad, quinoa, rice, pasta. Where’s the meat!!?! Or fish??!? Thirdly the cancellation of Dan Abramov was 
-disappointing. Even Max Stoiber didn’t stick around to give his presentation (no reason given). 
-Maybe they were put off by the food…&lt;/p&gt;
-
-&lt;p&gt;I travelled 26 hours from Sydney Australia, stopping at 3 different countries en route to Paris, 
-and then back. Is it worth it? Yes. I definitely won’t forget it. Here are more pics from all
-the great people I met. Till next time!&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/images/react_conference_collage.png&quot; alt=&quot;Brian&quot; /&gt;&lt;/p&gt;
-
-&lt;hr /&gt;
-</content>
-<category term="react" />
-<category term="europe" />
-<category term="conference" />
-<category term="paris" />
-<category term="france" />
-<summary>As I stared at the partially cloudy Parisian sky from my seat at Gare du Nord, I had a chance to reflect on the week that was. 4 days jam packed with javascript and react from morning till night followed by socialising afterwards (my fave), it’s definitely not for the faint-hearted. I admit I was a little overwhelmed by the intensity of the schedule.</summary>
 </entry>
 </feed>

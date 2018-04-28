@@ -1,6 +1,13 @@
 [
   
     {
+      "title"    : "Relay Schema Stitching with Pesisted Queries",
+      "tags"     : "relay, schema, stitching, graphql, apollo, react, js, javascript, prisma, graphcool, persisted, and queries",
+      "url"      : "/relay-schema-stitching/",
+      "date"     : "27 Apr 2018"
+    } ,
+  
+    {
       "title"    : "Javascript Lessons: toJSON and valueOf ",
       "tags"     : "javascript, tojson, valueof, json, stringify, and lessons",
       "url"      : "/js-lessons-tojson-valueof/",
