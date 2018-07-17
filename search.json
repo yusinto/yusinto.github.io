@@ -134,6 +134,13 @@
     } ,
   
     {
+      "title"    : "Implementing feature toggle with launch darkly and react redux",
+      "tags"     : "react, redux, feature, toggle, launch, darkly, and toggling",
+      "url"      : "/react-feature-toggle-launch-darkly/",
+      "date"     : "16 Sep 2016"
+    } ,
+  
+    {
       "title"    : "Deploying react apps on docker using ecs and terraform part 1",
       "tags"     : "react, docker, ecs, terraform, deploy, continuous, integration, and deployment",
       "url"      : "/docker-ecs-terraform-react/",
