@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://reactjunkie.com/react-site-nav/</loc>
+<lastmod>2018-07-13T07:30:00+10:00</lastmod>
+</url>
+<url>
 <loc>http://reactjunkie.com/ld-react-context-api/</loc>
 <lastmod>2018-05-30T07:30:00+10:00</lastmod>
 </url>
@@ -73,10 +77,6 @@
 <lastmod>2016-10-22T10:52:00+11:00</lastmod>
 </url>
 <url>
-<loc>http://reactjunkie.com/react-feature-toggle-launch-darkly/</loc>
-<lastmod>2016-09-16T10:52:00+10:00</lastmod>
-</url>
-<url>
 <loc>http://reactjunkie.com/docker-ecs-terraform-react/</loc>
 <lastmod>2016-09-03T10:52:00+10:00</lastmod>
 </url>
@@ -119,10 +119,10 @@
 <loc>http://reactjunkie.com/about/</loc>
 </url>
 <url>
-<loc>http://reactjunkie.com/</loc>
+<loc>http://reactjunkie.com/blog/</loc>
 </url>
 <url>
-<loc>http://reactjunkie.com/blog/</loc>
+<loc>http://reactjunkie.com/</loc>
 </url>
 <url>
 <loc>http://reactjunkie.com/projects/</loc>

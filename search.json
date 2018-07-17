@@ -1,6 +1,13 @@
 [
   
     {
+      "title"    : "Introducing react-site-nav",
+      "tags"     : "react, site, nav, navigation, bar, navbar, stripe, styled, components, menu, css, animations, grid, and cssgrid",
+      "url"      : "/react-site-nav/",
+      "date"     : "13 Jul 2018"
+    } ,
+  
+    {
       "title"    : "React integration with Launch Darkly using ld-react",
       "tags"     : "ld-react, launch, darkly, react, feature, flag, integration, context, api, and toggle",
       "url"      : "/ld-react-context-api/",
@@ -124,13 +131,6 @@
       "tags"     : "universal, hot, reload, webpack, server, client, and bundle",
       "url"      : "/universal-hot-reload/",
       "date"     : "22 Oct 2016"
-    } ,
-  
-    {
-      "title"    : "Implementing feature toggle with launch darkly and react redux",
-      "tags"     : "react, redux, feature, toggle, launch, darkly, and toggling",
-      "url"      : "/react-feature-toggle-launch-darkly/",
-      "date"     : "16 Sep 2016"
     } ,
   
     {
