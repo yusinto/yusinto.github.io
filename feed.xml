@@ -3,7 +3,7 @@
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
 <link href="http://reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
 <link href="http://reactjunkie.com/" rel="alternate" type="text/html" />
-<updated>2018-07-17T14:32:31+10:00</updated>
+<updated>2018-07-17T14:35:59+10:00</updated>
 <id>http://reactjunkie.com/</id>
 <title>React Junkie - Yusinto Ngadiman&#39;s Blog</title>
 <entry>
@@ -18,6 +18,7 @@ and css animations. Play with the &lt;a href=&quot;https://now-evztwufdfm.now.sh
 or check out the video below.&lt;/p&gt;
 
 &lt;p align=&quot;center&quot;&gt;
+{% youtube 4fThkT_vlBE %}
 &lt;/p&gt;
 
 &lt;h2 id=&quot;goal&quot;&gt;Goal&lt;/h2&gt;
