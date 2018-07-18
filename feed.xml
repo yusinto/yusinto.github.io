@@ -3,7 +3,7 @@
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
 <link href="http://reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
 <link href="http://reactjunkie.com/" rel="alternate" type="text/html" />
-<updated>2018-07-17T14:40:58+10:00</updated>
+<updated>2018-07-18T12:29:55+10:00</updated>
 <id>http://reactjunkie.com/</id>
 <title>React Junkie - Yusinto Ngadiman&#39;s Blog</title>
 <entry>
@@ -100,7 +100,7 @@ li:hover {
 &lt;h2 id=&quot;tadaa&quot;&gt;Tadaa&lt;/h2&gt;
 &lt;p&gt;&lt;img src=&quot;/assets/images/before-after.png&quot; alt=&quot;Before and after&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Check out the live demo &lt;a href=&quot;https://build-licattzisr.now.sh/&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;. The complete stylesheet:&lt;/p&gt;
+&lt;p&gt;Check out the live demo &lt;a href=&quot;https://build-yzcyfqkxqz.now.sh&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;. The complete stylesheet:&lt;/p&gt;
 
 &lt;script src=&quot;https://gist.github.com/yusinto/9a04ad983ff2b03a140683d45ef9405b.js&quot;&gt;&lt;/script&gt;
 
