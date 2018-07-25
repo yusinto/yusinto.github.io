@@ -3,7 +3,7 @@
 <generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator>
 <link href="http://reactjunkie.com/feed.xml" rel="self" type="application/atom+xml" />
 <link href="http://reactjunkie.com/" rel="alternate" type="text/html" />
-<updated>2018-07-18T12:29:55+10:00</updated>
+<updated>2018-07-25T10:49:33+10:00</updated>
 <id>http://reactjunkie.com/</id>
 <title>React Junkie - Yusinto Ngadiman&#39;s Blog</title>
 <entry>
@@ -14,7 +14,7 @@
 <id>http://reactjunkie.com/react-site-nav</id>
 <content type="html" xml:base="http://reactjunkie.com/react-site-nav/">&lt;p&gt;Stripe has a beautiful site nav and this package is inspired by that.
 Introducing react-site-nav, a beautifully animated site nav powered by styled components
-and css animations. Play with the &lt;a href=&quot;https://now-evztwufdfm.now.sh&quot; target=&quot;_blank&quot;&gt;live demo&lt;/a&gt; powered by now
+and css animations. Play with the &lt;a href=&quot;https://react-site-nav.now.sh&quot; target=&quot;_blank&quot;&gt;live demo&lt;/a&gt; powered by now
 or check out the video below.&lt;/p&gt;
 
 &lt;p align=&quot;center&quot;&gt;
