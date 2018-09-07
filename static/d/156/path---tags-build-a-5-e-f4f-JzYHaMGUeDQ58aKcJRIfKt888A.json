@@ -1,0 +1,1 @@
+{"data":{"allMarkdownRemark":{"totalCount":2,"edges":[{"node":{"frontmatter":{"title":"Docker is dead long live Kubernetes","path":"/docker-is-dead"}}},{"node":{"frontmatter":{"title":"Building graphql schema without babelrc","path":"/build-graphql-schema-without-babelrc"}}}]}},"pageContext":{"tag":"build"}}
