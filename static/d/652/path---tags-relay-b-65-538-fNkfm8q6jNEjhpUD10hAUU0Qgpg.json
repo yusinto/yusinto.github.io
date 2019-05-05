@@ -1,0 +1,1 @@
+{"data":{"allMarkdownRemark":{"totalCount":2,"edges":[{"node":{"frontmatter":{"title":"Relay Schema Stitching with Pesisted Queries","path":"/relay-schema-stitching"}}},{"node":{"frontmatter":{"title":"Relay Modern Server Side Rendering","path":"/relay-modern-persisted-queries"}}}]}},"pageContext":{"tag":"relay"}}
