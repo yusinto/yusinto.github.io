@@ -1,0 +1,1 @@
+{"componentChunkName":"component---src-pages-tag-template-js","path":"/tags/eslint/","result":{"data":{"allMarkdownRemark":{"totalCount":1,"edges":[{"node":{"frontmatter":{"title":"Using github actions with eslint and typescript","path":"/github-actions-eslint-typescript"}}}]}},"pageContext":{"isCreatedByStatefulCreatePages":false,"tag":"eslint"}}}

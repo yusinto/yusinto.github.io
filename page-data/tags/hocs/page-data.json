@@ -1,0 +1,1 @@
+{"componentChunkName":"component---src-pages-tag-template-js","path":"/tags/hocs/","result":{"data":{"allMarkdownRemark":{"totalCount":1,"edges":[{"node":{"frontmatter":{"title":"React HOC with Typescript and Jest","path":"/react-hoc-typescript"}}}]}},"pageContext":{"isCreatedByStatefulCreatePages":false,"tag":"hocs"}}}

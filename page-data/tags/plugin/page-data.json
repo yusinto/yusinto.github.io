@@ -1,0 +1,1 @@
+{"componentChunkName":"component---src-pages-tag-template-js","path":"/tags/plugin/","result":{"data":{"allMarkdownRemark":{"totalCount":1,"edges":[{"node":{"frontmatter":{"title":"Writing a figma plugin with hot reload, react and graphql","path":"/react-graphql-figma-plugin"}}}]}},"pageContext":{"isCreatedByStatefulCreatePages":false,"tag":"plugin"}}}

@@ -1,0 +1,1 @@
+{"componentChunkName":"component---src-pages-tag-template-js","path":"/tags/terraform/","result":{"data":{"allMarkdownRemark":{"totalCount":1,"edges":[{"node":{"frontmatter":{"title":"Deploying react apps on docker using ecs and terraform part 1","path":"/docker-ecs-terraform-react"}}}]}},"pageContext":{"isCreatedByStatefulCreatePages":false,"tag":"terraform"}}}

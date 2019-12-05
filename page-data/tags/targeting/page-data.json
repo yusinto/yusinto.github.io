@@ -1,0 +1,1 @@
+{"componentChunkName":"component---src-pages-tag-template-js","path":"/tags/targeting/","result":{"data":{"allMarkdownRemark":{"totalCount":1,"edges":[{"node":{"frontmatter":{"title":"Targeting users with React Redux and Launch Darkly","path":"/launch-darkly-part-two"}}}]}},"pageContext":{"isCreatedByStatefulCreatePages":false,"tag":"targeting"}}}

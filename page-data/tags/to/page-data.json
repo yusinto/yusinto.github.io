@@ -1,0 +1,1 @@
+{"componentChunkName":"component---src-pages-tag-template-js","path":"/tags/to/","result":{"data":{"allMarkdownRemark":{"totalCount":1,"edges":[{"node":{"frontmatter":{"title":"Docker is dead long live Kubernetes","path":"/docker-is-dead"}}}]}},"pageContext":{"isCreatedByStatefulCreatePages":false,"tag":"to"}}}

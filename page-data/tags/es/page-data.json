@@ -1,0 +1,1 @@
+{"componentChunkName":"component---src-pages-tag-template-js","path":"/tags/es/","result":{"data":{"allMarkdownRemark":{"totalCount":1,"edges":[{"node":{"frontmatter":{"title":"Using es modules in node","path":"/node-es-modules"}}}]}},"pageContext":{"isCreatedByStatefulCreatePages":false,"tag":"es"}}}

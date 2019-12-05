@@ -1,0 +1,1 @@
+{"componentChunkName":"component---src-pages-tag-template-js","path":"/tags/reactjunkie/","result":{"data":{"allMarkdownRemark":{"totalCount":2,"edges":[{"node":{"frontmatter":{"title":"React Day NYC","path":"/react-day-nyc"}}},{"node":{"frontmatter":{"title":"Hello Gatsby","path":"/gatsby"}}}]}},"pageContext":{"isCreatedByStatefulCreatePages":false,"tag":"reactjunkie"}}}
