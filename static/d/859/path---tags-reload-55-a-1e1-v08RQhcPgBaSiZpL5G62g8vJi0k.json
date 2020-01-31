@@ -1,1 +1,0 @@
-{"data":{"allMarkdownRemark":{"totalCount":2,"edges":[{"node":{"frontmatter":{"title":"Writing a figma plugin with hot reload, react and graphql","path":"/react-graphql-figma-plugin"}}},{"node":{"frontmatter":{"title":"Hot Reloading Universally Bundled Webpack Apps","path":"/universal-hot-reload"}}}]}},"pageContext":{"tag":"reload"}}
